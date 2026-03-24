@@ -181,12 +181,6 @@ final class IRCViewModel: ObservableObject {
             warnings.append("OPER automation requires both OPER Name and OPER Password")
         }
 
-        let hasNickServAccount = !config.nickServAccount.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
-        let hasNickServPassword = !config.nickServPassword.isEmpty
-        if hasNickServAccount && !hasNickServPassword {
-            warnings.append("NickServ Account is set but NickServ Password is empty")
-        }
-
         if config.enableSASL && config.saslMechanism == .plain && config.saslPassword.isEmpty {
             warnings.append("SASL PLAIN is enabled without a SASL password")
         }
@@ -217,9 +211,7 @@ final class IRCViewModel: ObservableObject {
     }
 
     var isNickServConfigurationIncomplete: Bool {
-        let hasNickServAccount = !config.nickServAccount.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
-        let hasNickServPassword = !config.nickServPassword.isEmpty
-        return hasNickServAccount && !hasNickServPassword
+        false
     }
 
     var isSASLPlainConfigurationIncomplete: Bool {

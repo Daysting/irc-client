@@ -331,12 +331,8 @@ final class IRCClient {
         hasCompletedRegistration = true
 
         if !config.nickServPassword.isEmpty {
-            onStatus?("Sending /NS IDENTIFY")
-            if config.nickServAccount.isEmpty {
-                sendRaw("PRIVMSG NickServ :IDENTIFY \(config.nickServPassword)")
-            } else {
-                sendRaw("PRIVMSG NickServ :IDENTIFY \(config.nickServAccount) \(config.nickServPassword)")
-            }
+            onStatus?("Sending /NS IDENTIFY with password")
+            sendRaw("PRIVMSG NickServ :IDENTIFY \(config.nickServPassword)")
         }
 
         if !config.operName.isEmpty && !config.operPassword.isEmpty {

@@ -253,19 +253,8 @@ struct ContentView: View {
                             example: "SASL=ON, Mechanism=PLAIN, Password=<your account password>"
                         )
                     }
-                    TextField("NickServ Account", text: $vm.config.nickServAccount)
+                    SecureField("NickServ Password (/NS IDENTIFY)", text: $vm.config.nickServPassword)
                         .textFieldStyle(.roundedBorder)
-                        .validationBorder(color: vm.isNickServConfigurationIncomplete ? .orange : nil)
-                    SecureField("NickServ Password (fallback)", text: $vm.config.nickServPassword)
-                        .textFieldStyle(.roundedBorder)
-                        .validationBorder(color: vm.isNickServConfigurationIncomplete ? .orange : nil)
-                    if vm.isNickServConfigurationIncomplete {
-                        ValidationHintIcon(
-                            color: .orange,
-                            tooltip: "NickServ Account is set but password is missing. Add NickServ Password for IDENTIFY fallback.",
-                            example: "NickServ Account=alice, NickServ Password=********"
-                        )
-                    }
                 }
 
                 HStack(spacing: 10) {

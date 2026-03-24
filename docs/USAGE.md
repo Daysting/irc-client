@@ -47,8 +47,9 @@ You can use one or more of these together.
 
 ### NickServ fallback
 
-1. Set `NickServ Account`.
-2. Set `NickServ Password`.
+1. Set `NickServ Password`.
+
+On connect, the client sends `/NS IDENTIFY <password>` automatically.
 
 ### Delayed join
 

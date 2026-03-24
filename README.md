@@ -39,7 +39,7 @@ For Xcode launch and bug-testing workflow, see `docs/XCODE_DEBUGGING.md`.
 - Connection profile persists across app restarts (host, nick, channel, TLS/SASL/auth settings)
 - Alternate nickname fallback when preferred nick is in use
 - Automatic `/OPER` login from saved profile credentials
-- Automatic `/NS IDENTIFY` at login from saved profile credentials
+- Automatic `/NS IDENTIFY <password>` at login when NickServ password is provided
 - Automatic channel auto-join from saved channel list
 - Inline profile validation hints for common configuration mistakes
 - Field-level visual highlighting for invalid/incomplete profile inputs
@@ -92,7 +92,7 @@ Or use the helper script:
 4. Optional profile automation:
   - `Alt Nicks`: comma-separated fallbacks used when nickname is already in use.
   - `Auto Join Channels`: comma-separated channels to join/open after login.
-  - `NickServ Account` + `NickServ Password`: runs `/NS IDENTIFY` at login.
+  - `NickServ Password`: runs `/NS IDENTIFY <password>` at login.
   - `OPER Name` + `OPER Password`: runs `/OPER` at login.
 5. Optional secure auth:
   - Enable `SASL` and choose mechanism:
