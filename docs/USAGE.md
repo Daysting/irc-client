@@ -70,6 +70,8 @@ Both are required for automatic `/OPER`.
 - Slash commands send raw IRC commands, for example:
   - `/join #help`
   - `/whois nick`
+- Action command:
+  - `/me waves` sends an IRC ACTION message.
 
 Anope aliases:
 - `/ms HELP` sends to MemoServ.
@@ -98,6 +100,19 @@ Context menu actions include:
 - Close other private tabs
 - Reopen last closed private tab
 - Recently closed private tabs
+
+User list pane:
+- The right-side `Users` pane shows users for the active channel.
+- In private windows, it shows the peer nickname.
+- Click a user to open/select a private conversation tab with that user.
+- Right-click a user for quick actions:
+  - `Open Private Chat`
+  - `WHOIS` (prefills the command in input)
+  - `Mention` (prefills `nick: ` in input)
+
+Message display format:
+- Standard chat messages are displayed as `<username> message`.
+- Action messages display as `* username action`.
 
 ## 6) Operator-Aware Commands
 

@@ -107,6 +107,7 @@ struct ContentView: View {
     @State private var showImportStrategyConfirmation = false
     @State private var pendingImportData: Data?
     @State private var pendingImportFileName: String = ""
+    @State private var selectedUserNick: String?
     @FocusState private var focusedField: FocusField?
 
     private var useCustomAppearance: Bool {
@@ -145,7 +146,7 @@ struct ContentView: View {
                 serverConfigPanel
                 paneTabsPanel
                 serviceShortcuts
-                logPanel
+                chatContentPanel
                 inputPanel
             }
             .padding(16)
@@ -526,6 +527,66 @@ struct ContentView: View {
                     }
                 }
             }
+        }
+    }
+
+    private var userListPanel: some View {
+        GroupBox("Users") {
+            List {
+                if vm.activeUserList.isEmpty {
+                    Text("No users to display")
+                        .foregroundStyle(.secondary)
+                } else {
+                    ForEach(vm.activeUserList, id: \.self) { user in
+                        Text(user)
+                            .font(.system(size: 12, weight: .regular, design: .monospaced))
+                            .frame(maxWidth: .infinity, alignment: .leading)
+                            .padding(.vertical, 2)
+                            .padding(.horizontal, 4)
+                            .background(
+                                RoundedRectangle(cornerRadius: 4)
+                                    .fill(selectedUserNick == user ? Color.accentColor.opacity(0.22) : .clear)
+                            )
+                            .contentShape(Rectangle())
+                            .onTapGesture {
+                                selectedUserNick = user
+                            }
+                            .onTapGesture(count: 2) {
+                                selectedUserNick = user
+                                vm.openPrivateConversation(with: user)
+                            }
+                        .contextMenu {
+                            Button("Open Private Chat") {
+                                selectedUserNick = user
+                                vm.openPrivateConversation(with: user)
+                            }
+                            Button("WHOIS") {
+                                selectedUserNick = user
+                                vm.prefillWhois(for: user)
+                            }
+                            Button("Mention") {
+                                selectedUserNick = user
+                                vm.prefillMention(for: user)
+                            }
+                        }
+                    }
+                }
+            }
+            .scrollContentBackground(.hidden)
+            .background(
+                useCustomAppearance
+                    ? color(from: vm.config.appearanceBackgroundColor).opacity(0.82)
+                    : Color.clear
+            )
+        }
+        .frame(minWidth: 180, idealWidth: 220, maxWidth: 260)
+    }
+
+    private var chatContentPanel: some View {
+        HStack(spacing: 10) {
+            logPanel
+                .frame(maxWidth: .infinity)
+            userListPanel
         }
     }
 

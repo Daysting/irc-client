@@ -77,6 +77,7 @@ final class IRCViewModel: ObservableObject {
     @Published var themeDraftName: String = ""
     @Published var themeStatusMessage: String = ""
     @Published var themeStatusIsError: Bool = false
+    @Published private(set) var channelUsersByPaneID: [String: Set<String>] = [:]
 
     private let client = IRCClient()
     private var isRestoringState = false
@@ -144,6 +145,18 @@ final class IRCViewModel: ObservableObject {
 
     var activeLogs: [String] {
         activeWindow.logs
+    }
+
+    var activeUserList: [String] {
+        switch activeWindow.type {
+        case .channel:
+            let users = channelUsersByPaneID[activeWindow.id] ?? []
+            return users.sorted { $0.localizedCaseInsensitiveCompare($1) == .orderedAscending }
+        case .privateMessage:
+            return [activeWindow.target].filter { !$0.isEmpty }
+        case .server:
+            return []
+        }
     }
 
     var profileValidationErrors: [String] {
@@ -553,10 +566,54 @@ final class IRCViewModel: ObservableObject {
         send(command: expanded)
     }
 
+    func openPrivateConversation(with nick: String) {
+        let cleaned = nick.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard !cleaned.isEmpty else { return }
+        ensurePrivatePane(cleaned)
+        selectWindow(paneID(for: cleaned))
+    }
+
+    func prefillWhois(for nick: String) {
+        let cleaned = nick.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard !cleaned.isEmpty else { return }
+        input = "/WHOIS \(cleaned)"
+    }
+
+    func prefillMention(for nick: String) {
+        let cleaned = nick.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard !cleaned.isEmpty else { return }
+
+        let mention = "\(cleaned): "
+        if input.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
+            input = mention
+        } else if !input.contains(cleaned) {
+            input = "\(mention)\(input)"
+        }
+    }
+
     private func send(command: String) {
         if let expanded = expandedAnopeAlias(command) {
             client.sendRaw(expanded)
             appendLog("> \(expanded)", to: activeWindow.id)
+            return
+        }
+
+        if command.lowercased().hasPrefix("/me") {
+            let payload = command.dropFirst(3).trimmingCharacters(in: .whitespacesAndNewlines)
+            guard !payload.isEmpty else {
+                appendLog("[hint] Usage: /me <action>", to: activeWindow.id)
+                return
+            }
+
+            let target = messageTarget()
+            if target.hasPrefix("#") {
+                ensureChannelPane(target)
+            } else {
+                ensurePrivatePane(target)
+            }
+
+            client.sendRaw("PRIVMSG \(target) :\u{1}ACTION \(payload)\u{1}")
+            appendLog("* \(config.nickname) \(payload)", to: paneID(for: target))
             return
         }
 
@@ -578,7 +635,7 @@ final class IRCViewModel: ObservableObject {
             ensurePrivatePane(target)
         }
         client.sendMessage(channel: target, message: command)
-        appendLog("> PRIVMSG \(target) :\(command)", to: paneID(for: target))
+        appendLog("<\(config.nickname)> \(command)", to: paneID(for: target))
     }
 
     private func expandCommandTemplate(_ template: String) -> String {
@@ -627,8 +684,11 @@ final class IRCViewModel: ObservableObject {
     private func handleIncomingLine(_ line: String) {
         appendLog(line, to: IRCWindowPane.serverID, markUnread: true)
 
+        processUserListEvent(line)
+
         if let channel = parseOwnJoinChannel(line) {
             ensureChannelPane(channel)
+            upsertUser(config.nickname, inChannel: channel)
             return
         }
 
@@ -638,7 +698,16 @@ final class IRCViewModel: ObservableObject {
             } else {
                 ensurePrivatePane(routed.target)
             }
-            appendLog(line, to: paneID(for: routed.target), markUnread: true)
+
+            if routed.isAction {
+                appendLog("* \(routed.sender) \(routed.message)", to: paneID(for: routed.target), markUnread: true)
+            } else {
+                appendLog("<\(routed.sender)> \(routed.message)", to: paneID(for: routed.target), markUnread: true)
+            }
+
+            if routed.target.hasPrefix("#") {
+                upsertUser(routed.sender, inChannel: routed.target)
+            }
         }
     }
 
@@ -657,7 +726,7 @@ final class IRCViewModel: ObservableObject {
         return rawChannel.hasPrefix("#") ? rawChannel : nil
     }
 
-    private func parseIncomingPrivmsgTarget(_ line: String) -> (target: String, sender: String)? {
+    private func parseIncomingPrivmsgTarget(_ line: String) -> (target: String, sender: String, message: String, isAction: Bool)? {
         guard line.hasPrefix(":"), line.contains(" PRIVMSG ") else { return nil }
 
         let prefixEnd = line.firstIndex(of: " ") ?? line.endIndex
@@ -666,13 +735,168 @@ final class IRCViewModel: ObservableObject {
 
         guard let privmsgRange = line.range(of: " PRIVMSG ") else { return nil }
         let afterPrivmsg = line[privmsgRange.upperBound...]
-        let target = afterPrivmsg.split(separator: " ", maxSplits: 1, omittingEmptySubsequences: true).first.map(String.init) ?? ""
+        let split = afterPrivmsg.split(separator: " ", maxSplits: 1, omittingEmptySubsequences: true)
+        let target = split.first.map(String.init) ?? ""
         guard !target.isEmpty else { return nil }
 
-        if target.caseInsensitiveCompare(config.nickname) == .orderedSame, !sender.isEmpty {
-            return (target: sender, sender: sender)
+        let message = parseTrailingMessage(from: line)
+        let actionPrefix = "\u{1}ACTION "
+        let isAction = message.hasPrefix(actionPrefix) && message.hasSuffix("\u{1}")
+        let normalizedMessage: String
+        if isAction {
+            normalizedMessage = String(message.dropFirst(actionPrefix.count).dropLast())
+        } else {
+            normalizedMessage = message
         }
-        return (target: target, sender: sender)
+
+        if target.caseInsensitiveCompare(config.nickname) == .orderedSame, !sender.isEmpty {
+            return (target: sender, sender: sender, message: normalizedMessage, isAction: isAction)
+        }
+        return (target: target, sender: sender, message: normalizedMessage, isAction: isAction)
+    }
+
+    private func parseTrailingMessage(from line: String) -> String {
+        guard let range = line.range(of: " :") else { return "" }
+        return String(line[range.upperBound...])
+    }
+
+    private func processUserListEvent(_ line: String) {
+        if let names = parseNamesReply(line) {
+            setUsers(names.users, forChannel: names.channel)
+            return
+        }
+
+        if let join = parseJoinEvent(line) {
+            upsertUser(join.nick, inChannel: join.channel)
+            return
+        }
+
+        if let part = parsePartEvent(line) {
+            removeUser(part.nick, fromChannel: part.channel)
+            return
+        }
+
+        if let nick = parseNickChangeEvent(line) {
+            renameUser(oldNick: nick.oldNick, newNick: nick.newNick)
+            return
+        }
+
+        if let quitNick = parseQuitEvent(line) {
+            removeUserFromAllChannels(quitNick)
+        }
+    }
+
+    private func parseNamesReply(_ line: String) -> (channel: String, users: [String])? {
+        guard line.hasPrefix(":"), line.contains(" 353 ") else { return nil }
+        guard let trailing = line.range(of: " :") else { return nil }
+
+        let header = String(line[..<trailing.lowerBound])
+        let tokens = header.split(separator: " ", omittingEmptySubsequences: true).map(String.init)
+        guard tokens.count >= 5 else { return nil }
+
+        let channel = tokens[4]
+        guard channel.hasPrefix("#") else { return nil }
+
+        let nickListRaw = String(line[trailing.upperBound...])
+        let users = nickListRaw
+            .split(separator: " ", omittingEmptySubsequences: true)
+            .map { normalizeNickToken(String($0)) }
+            .filter { !$0.isEmpty }
+
+        return (channel: channel, users: users)
+    }
+
+    private func parseJoinEvent(_ line: String) -> (nick: String, channel: String)? {
+        guard line.hasPrefix(":"), line.contains(" JOIN ") else { return nil }
+        guard let commandRange = line.range(of: " JOIN ") else { return nil }
+
+        let prefix = String(line[line.index(after: line.startIndex)..<commandRange.lowerBound])
+        let nick = prefix.split(separator: "!", maxSplits: 1).first.map(String.init) ?? ""
+        guard !nick.isEmpty else { return nil }
+
+        let suffix = String(line[commandRange.upperBound...]).trimmingCharacters(in: CharacterSet(charactersIn: ":"))
+        guard suffix.hasPrefix("#") else { return nil }
+        return (nick: nick, channel: suffix)
+    }
+
+    private func parsePartEvent(_ line: String) -> (nick: String, channel: String)? {
+        guard line.hasPrefix(":"), line.contains(" PART ") else { return nil }
+        let tokens = line.split(separator: " ", omittingEmptySubsequences: true)
+        guard tokens.count >= 3 else { return nil }
+        let nick = tokens[0].dropFirst().split(separator: "!", maxSplits: 1).first.map(String.init) ?? ""
+        let channel = String(tokens[2]).trimmingCharacters(in: CharacterSet(charactersIn: ":"))
+        guard !nick.isEmpty, channel.hasPrefix("#") else { return nil }
+        return (nick: nick, channel: channel)
+    }
+
+    private func parseQuitEvent(_ line: String) -> String? {
+        guard line.hasPrefix(":"), line.contains(" QUIT") else { return nil }
+        let nick = line
+            .dropFirst()
+            .split(separator: "!", maxSplits: 1)
+            .first
+            .map(String.init) ?? ""
+        return nick.isEmpty ? nil : nick
+    }
+
+    private func parseNickChangeEvent(_ line: String) -> (oldNick: String, newNick: String)? {
+        guard line.hasPrefix(":"), line.contains(" NICK ") else { return nil }
+        let tokens = line.split(separator: " ", omittingEmptySubsequences: true)
+        guard tokens.count >= 3 else { return nil }
+
+        let oldNick = tokens[0].dropFirst().split(separator: "!", maxSplits: 1).first.map(String.init) ?? ""
+        let newNick = String(tokens[2]).trimmingCharacters(in: CharacterSet(charactersIn: ":"))
+        guard !oldNick.isEmpty, !newNick.isEmpty else { return nil }
+        return (oldNick: oldNick, newNick: newNick)
+    }
+
+    private func normalizeNickToken(_ token: String) -> String {
+        token.trimmingCharacters(in: CharacterSet(charactersIn: "@+%~&!"))
+    }
+
+    private func setUsers(_ users: [String], forChannel channel: String) {
+        channelUsersByPaneID[paneID(for: channel)] = Set(users)
+    }
+
+    private func upsertUser(_ nick: String, inChannel channel: String) {
+        let normalizedNick = normalizeNickToken(nick)
+        guard !normalizedNick.isEmpty else { return }
+
+        let key = paneID(for: channel)
+        var users = channelUsersByPaneID[key] ?? []
+        users.insert(normalizedNick)
+        channelUsersByPaneID[key] = users
+    }
+
+    private func removeUser(_ nick: String, fromChannel channel: String) {
+        let normalizedNick = normalizeNickToken(nick)
+        guard !normalizedNick.isEmpty else { return }
+
+        let key = paneID(for: channel)
+        guard var users = channelUsersByPaneID[key] else { return }
+        users.remove(normalizedNick)
+        channelUsersByPaneID[key] = users
+    }
+
+    private func removeUserFromAllChannels(_ nick: String) {
+        let normalizedNick = normalizeNickToken(nick)
+        guard !normalizedNick.isEmpty else { return }
+        for key in channelUsersByPaneID.keys {
+            channelUsersByPaneID[key]?.remove(normalizedNick)
+        }
+    }
+
+    private func renameUser(oldNick: String, newNick: String) {
+        let oldNormalized = normalizeNickToken(oldNick)
+        let newNormalized = normalizeNickToken(newNick)
+        guard !oldNormalized.isEmpty, !newNormalized.isEmpty else { return }
+
+        for key in channelUsersByPaneID.keys {
+            if channelUsersByPaneID[key]?.contains(oldNormalized) == true {
+                channelUsersByPaneID[key]?.remove(oldNormalized)
+                channelUsersByPaneID[key]?.insert(newNormalized)
+            }
+        }
     }
 
     private func ensureChannelPane(_ channel: String) {
