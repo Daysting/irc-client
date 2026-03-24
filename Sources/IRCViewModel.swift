@@ -125,6 +125,7 @@ final class IRCViewModel: ObservableObject {
     @Published var themeStatusMessage: String = ""
     @Published var themeStatusIsError: Bool = false
     @Published private(set) var channelUsersByPaneID: [String: [String: String]] = [:]
+    @Published private(set) var channelTopicsByPaneID: [String: String] = [:]
 
     private let client = IRCClient()
     private var isRestoringState = false
@@ -213,6 +214,13 @@ final class IRCViewModel: ObservableObject {
         case .server:
             return []
         }
+    }
+
+    var activeChannelTopic: String {
+        guard activeWindow.type == .channel else { return "" }
+        let topic = channelTopicsByPaneID[activeWindow.id]?
+            .trimmingCharacters(in: .whitespacesAndNewlines) ?? ""
+        return topic.isEmpty ? "No topic set" : topic
     }
 
     var profileValidationErrors: [String] {
@@ -463,6 +471,7 @@ final class IRCViewModel: ObservableObject {
         appendLog("[action] Connecting to \(config.host):\(config.port) TLS=\(config.useTLS) SASL=\(saslState) NickServ=\(nickServState) DelayJoin=\(delayedJoinState)", to: IRCWindowPane.serverID)
         pendingNamesByPaneID.removeAll()
         channelUsersByPaneID.removeAll()
+        channelTopicsByPaneID.removeAll()
         client.connect(config: config)
     }
 
@@ -472,6 +481,7 @@ final class IRCViewModel: ObservableObject {
         isOperator = false
         pendingNamesByPaneID.removeAll()
         channelUsersByPaneID.removeAll()
+        channelTopicsByPaneID.removeAll()
         appendLog("[action] Disconnected", to: IRCWindowPane.serverID)
     }
 
@@ -742,6 +752,11 @@ final class IRCViewModel: ObservableObject {
     private func handleIncomingLine(_ line: String) {
         appendLog(line, to: IRCWindowPane.serverID, markUnread: true)
 
+        if let topicEvent = parseTopicEvent(line) {
+            ensureChannelPane(topicEvent.channel)
+            setChannelTopic(topicEvent.topic, forChannel: topicEvent.channel)
+        }
+
         processUserListEvent(line)
 
         if let channel = parseOwnJoinChannel(line) {
@@ -813,9 +828,50 @@ final class IRCViewModel: ObservableObject {
         return (target: target, sender: sender, message: normalizedMessage, isAction: isAction)
     }
 
+    private func parseTopicEvent(_ line: String) -> (channel: String, topic: String?)? {
+        if line.hasPrefix(":"), line.contains(" 332 ") {
+            let tokens = line.split(separator: " ", omittingEmptySubsequences: true).map(String.init)
+            guard tokens.count >= 4 else { return nil }
+            let channel = tokens[3].trimmingCharacters(in: CharacterSet(charactersIn: ":"))
+            guard channel.hasPrefix("#") else { return nil }
+            let topic = parseTrailingMessage(from: line)
+            return (channel: channel, topic: topic)
+        }
+
+        if line.hasPrefix(":"), line.contains(" 331 ") {
+            let tokens = line.split(separator: " ", omittingEmptySubsequences: true).map(String.init)
+            guard tokens.count >= 4 else { return nil }
+            let channel = tokens[3].trimmingCharacters(in: CharacterSet(charactersIn: ":"))
+            guard channel.hasPrefix("#") else { return nil }
+            return (channel: channel, topic: nil)
+        }
+
+        if line.hasPrefix(":"), line.contains(" TOPIC ") {
+            let tokens = line.split(separator: " ", omittingEmptySubsequences: true).map(String.init)
+            guard tokens.count >= 3 else { return nil }
+            guard tokens[1] == "TOPIC" else { return nil }
+            let channel = tokens[2].trimmingCharacters(in: CharacterSet(charactersIn: ":"))
+            guard channel.hasPrefix("#") else { return nil }
+            let topic = parseTrailingMessage(from: line)
+            return (channel: channel, topic: topic)
+        }
+
+        return nil
+    }
+
     private func parseTrailingMessage(from line: String) -> String {
         guard let range = line.range(of: " :") else { return "" }
         return String(line[range.upperBound...])
+    }
+
+    private func setChannelTopic(_ topic: String?, forChannel channel: String) {
+        let key = paneID(for: channel)
+        let cleaned = topic?.trimmingCharacters(in: .whitespacesAndNewlines) ?? ""
+        if cleaned.isEmpty {
+            channelTopicsByPaneID.removeValue(forKey: key)
+        } else {
+            channelTopicsByPaneID[key] = cleaned
+        }
     }
 
     private func processUserListEvent(_ line: String) {

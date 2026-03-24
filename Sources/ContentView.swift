@@ -499,13 +499,38 @@ struct ContentView: View {
     }
 
     private var chatContentPanel: some View {
-        HStack(spacing: 10) {
-            logPanel
-                .frame(maxWidth: .infinity)
+        VStack(spacing: 8) {
             if vm.activeWindow.type == .channel {
-                userListPanel
+                channelTopicPanel
+            }
+
+            HStack(spacing: 10) {
+                logPanel
+                    .frame(maxWidth: .infinity)
+                if vm.activeWindow.type == .channel {
+                    userListPanel
+                }
             }
         }
+    }
+
+    private var channelTopicPanel: some View {
+        HStack(alignment: .top, spacing: 8) {
+            Text("Topic:")
+                .font(themedFont(size: 12, weight: .semibold))
+                .foregroundStyle(.secondary)
+
+            Text(vm.activeChannelTopic)
+                .font(themedFont(size: 12))
+                .foregroundStyle(useCustomAppearance ? color(from: vm.config.appearanceTextColor) : .primary)
+                .textSelection(.enabled)
+                .frame(maxWidth: .infinity, alignment: .leading)
+                .lineLimit(2)
+        }
+        .padding(.horizontal, 10)
+        .padding(.vertical, 8)
+        .background(Color.secondary.opacity(0.12))
+        .clipShape(RoundedRectangle(cornerRadius: 8))
     }
 
     private var inputPanel: some View {

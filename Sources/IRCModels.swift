@@ -580,7 +580,7 @@ enum IRCCommandCatalog {
         ),
         IRCContextCommand(
             id: "channel-topic",
-            title: "TOPIC",
+            title: "Refresh Topic",
             command: "/TOPIC {channel}",
             windowTypes: [.channel],
             requiresOperator: false
