@@ -1,0 +1,124 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="using:DaystingIRC.Windows"
+        x:Class="DaystingIRC.Windows.MainWindow"
+        Width="1480"
+        Height="920"
+        MinWidth="1160"
+        MinHeight="760"
+        Title="Daysting IRC for Windows"
+        mc:Ignorable="d">
+  <Design.DataContext>
+    <local:MainWindowViewModel />
+  </Design.DataContext>
+
+  <Grid RowDefinitions="Auto,*,Auto" ColumnDefinitions="*">
+    <Border Grid.Row="0" Margin="12,12,12,8" Padding="14" Background="#101820" CornerRadius="12">
+      <StackPanel Spacing="10">
+        <StackPanel Orientation="Horizontal" Spacing="12">
+          <TextBlock Text="Daysting IRC" FontSize="24" FontWeight="SemiBold" Foreground="#F7F3E9" />
+          <Border Background="#D39E3F" CornerRadius="999" Padding="10,4">
+            <TextBlock Text="Windows build" FontWeight="SemiBold" Foreground="#1B1F23" />
+          </Border>
+          <TextBlock Text="irc.daysting.com:6697 over TLS 1.2+" VerticalAlignment="Center" Foreground="#D8E0E8" />
+        </StackPanel>
+
+        <StackPanel Spacing="8">
+          <WrapPanel ItemHeight="36" Orientation="Horizontal">
+            <TextBox Width="180" Margin="0,0,8,0" Watermark="Nick" Text="{Binding Profile.Nickname}" />
+            <TextBox Width="180" Margin="0,0,8,0" Watermark="Primary channel" Text="{Binding Profile.PrimaryChannel}" />
+            <TextBox Width="230" Margin="0,0,8,0" Watermark="Alt nicks (comma-separated)" Text="{Binding Profile.AlternateNicknamesCsv}" />
+            <TextBox Width="260" Margin="0,0,8,0" Watermark="Auto join channels" Text="{Binding Profile.AutoJoinChannelsCsv}" />
+            <Button Width="110" Margin="0,0,8,0" Content="Connect" Click="ConnectClicked" IsEnabled="{Binding CanConnect}" />
+            <Button Width="110" Content="Disconnect" Click="DisconnectClicked" IsEnabled="{Binding IsConnected}" />
+          </WrapPanel>
+
+          <WrapPanel ItemHeight="36" Orientation="Horizontal">
+            <CheckBox Margin="0,8,12,0" Content="Use SASL" IsChecked="{Binding Profile.EnableSasl}" />
+            <ComboBox Width="150" Margin="0,0,8,0" ItemsSource="{Binding SaslMechanisms}" SelectedItem="{Binding Profile.SaslMechanism}" />
+            <TextBox Width="180" Margin="0,0,8,0" Watermark="SASL user" Text="{Binding Profile.SaslUsername}" />
+            <TextBox Width="180" Margin="0,0,8,0" Watermark="SASL password" Text="{Binding Profile.SaslPassword}" />
+            <TextBox Width="200" Margin="0,0,8,0" Watermark="NickServ password" Text="{Binding Profile.NickServPassword}" />
+            <CheckBox Margin="0,8,12,0" Content="Delay join" IsChecked="{Binding Profile.DelayJoinUntilNickServIdentify}" />
+            <NumericUpDown Width="110" Minimum="3" Maximum="30" Value="{Binding Profile.NickServIdentifyTimeoutSeconds}" />
+          </WrapPanel>
+
+          <WrapPanel ItemHeight="36" Orientation="Horizontal">
+            <TextBox Width="160" Margin="0,0,8,0" Watermark="Username" Text="{Binding Profile.Username}" />
+            <TextBox Width="190" Margin="0,0,8,0" Watermark="Real name" Text="{Binding Profile.RealName}" />
+            <TextBox Width="170" Margin="0,0,8,0" Watermark="OPER name" Text="{Binding Profile.OperName}" />
+            <TextBox Width="170" Margin="0,0,8,0" Watermark="OPER password" Text="{Binding Profile.OperPassword}" />
+            <TextBlock VerticalAlignment="Center" Foreground="#D8E0E8" Text="Type /ns, /cs, /ms, /os, /hs, or /bs for service shortcuts." />
+          </WrapPanel>
+        </StackPanel>
+      </StackPanel>
+    </Border>
+
+    <Grid Grid.Row="1" Margin="12,0,12,8" ColumnDefinitions="3*,1*">
+      <Border Grid.Column="0" Margin="0,0,8,0" Background="#F4EFE4" CornerRadius="12" Padding="8">
+        <TabControl ItemsSource="{Binding Panes}" SelectedItem="{Binding SelectedPane}">
+          <TabControl.ItemTemplate>
+            <DataTemplate>
+              <Border Padding="8,4" Background="#E7DDC7" CornerRadius="8">
+                <StackPanel Orientation="Horizontal" Spacing="8">
+                  <TextBlock Text="{Binding Title}" FontWeight="SemiBold" />
+                  <Border Background="#101820" CornerRadius="999" Padding="6,1" IsVisible="{Binding HasUnread}">
+                    <TextBlock Text="{Binding UnreadCount}" Foreground="#F7F3E9" FontSize="11" />
+                  </Border>
+                  <Button Padding="4,0" IsVisible="{Binding CanClose}" Tag="{Binding}" Click="ClosePaneClicked">x</Button>
+                </StackPanel>
+              </Border>
+            </DataTemplate>
+          </TabControl.ItemTemplate>
+
+          <TabControl.ContentTemplate>
+            <DataTemplate>
+              <Grid RowDefinitions="Auto,*">
+                <Border Background="#EAE3D2" CornerRadius="8" Padding="10" Margin="0,0,0,8" IsVisible="{Binding HasTopic}">
+                  <TextBlock Text="{Binding Topic}" TextWrapping="Wrap" FontStyle="Italic" />
+                </Border>
+                <ListBox Grid.Row="1" ItemsSource="{Binding Messages}" Background="#FBF8F2" BorderThickness="0">
+                  <ListBox.ItemTemplate>
+                    <DataTemplate>
+                      <TextBlock Text="{Binding}" TextWrapping="Wrap" Margin="0,0,0,4" />
+                    </DataTemplate>
+                  </ListBox.ItemTemplate>
+                </ListBox>
+              </Grid>
+            </DataTemplate>
+          </TabControl.ContentTemplate>
+        </TabControl>
+      </Border>
+
+      <Border Grid.Column="1" Background="#E7EEF2" CornerRadius="12" Padding="12">
+        <StackPanel Spacing="10">
+          <TextBlock Text="Channel Users" FontSize="18" FontWeight="SemiBold" />
+          <TextBlock Text="{Binding SelectedPane.Topic}" TextWrapping="Wrap" FontStyle="Italic" IsVisible="{Binding SelectedPane.HasTopic}" />
+          <ListBox ItemsSource="{Binding SelectedPane.Users}" Background="#F7FAFC" BorderThickness="0">
+            <ListBox.ItemTemplate>
+              <DataTemplate>
+                <TextBlock Text="{Binding DisplayName}" />
+              </DataTemplate>
+            </ListBox.ItemTemplate>
+          </ListBox>
+          <Border Background="#D9E4EA" CornerRadius="10" Padding="10">
+            <StackPanel Spacing="4">
+              <TextBlock Text="State" FontWeight="SemiBold" />
+              <TextBlock Text="{Binding StatusText}" TextWrapping="Wrap" />
+              <TextBlock Text="{Binding IsOperator, StringFormat=Operator: {0}}" />
+            </StackPanel>
+          </Border>
+        </StackPanel>
+      </Border>
+    </Grid>
+
+    <Border Grid.Row="2" Margin="12,0,12,12" Padding="10" Background="#101820" CornerRadius="12">
+      <Grid ColumnDefinitions="*,120">
+        <TextBox Grid.Column="0" Watermark="Send a message or slash command" Text="{Binding InputText}" KeyDown="InputKeyDown" IsEnabled="{Binding IsConnected}" />
+        <Button Grid.Column="1" Margin="10,0,0,0" Content="Send" Click="SendClicked" IsEnabled="{Binding IsConnected}" />
+      </Grid>
+    </Border>
+  </Grid>
+</Window>

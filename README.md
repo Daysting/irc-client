@@ -1,13 +1,18 @@
-# Daysting IRC (macOS)
+# Daysting IRC
 
-A native SwiftUI macOS IRC client starter configured for:
+A native SwiftUI macOS IRC client starter, plus a Windows desktop port, configured for:
 
 - Server: `irc.daysting.com`
 - Port: `6697`
 - TLS: enabled by default (minimum TLS 1.2)
 - Anope shortcuts: MemoServ and OperServ commands
 
-This client is locked to `irc.daysting.com:6697` with TLS enabled.
+Both clients are locked to `irc.daysting.com:6697` with TLS enabled.
+
+## Platform builds
+
+- macOS app: SwiftUI project in `Sources/` and `DaystingIRC.xcodeproj`
+- Windows app: Avalonia desktop project in `Windows/DaystingIRC.Windows`
 
 ## Full Usage Guide
 
@@ -68,6 +73,8 @@ For Xcode launch and bug-testing workflow, see `docs/XCODE_DEBUGGING.md`.
 
 ## Build and run
 
+### macOS
+
 ```bash
 swift build
 swift run
@@ -90,6 +97,18 @@ Or use the helper script:
 ```bash
 ./scripts/open_in_xcode.sh
 ```
+
+### Windows
+
+The Windows client lives in `Windows/DaystingIRC.Windows`.
+
+```bash
+cd Windows/DaystingIRC.Windows
+dotnet build
+dotnet run
+```
+
+For Windows-specific notes, see `docs/WINDOWS.md`.
 
 ## Usage
 
