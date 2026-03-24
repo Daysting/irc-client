@@ -41,6 +41,11 @@ struct IRCWindowPane: Identifiable, Equatable {
 
 @MainActor
 final class IRCViewModel: ObservableObject {
+    enum ThemeImportStrategy {
+        case replaceExistingNames
+        case keepBoth
+    }
+
     @Published var config = IRCServerConfig() {
         didSet {
             persistConnectionProfileIfNeeded()
@@ -59,6 +64,15 @@ final class IRCViewModel: ObservableObject {
             persistPaneSessionIfNeeded()
         }
     }
+    @Published var savedThemes: [AppearanceThemePreset] = [] {
+        didSet {
+            persistSavedThemesIfNeeded()
+        }
+    }
+    @Published var selectedThemeID: String = ""
+    @Published var themeDraftName: String = ""
+    @Published var themeStatusMessage: String = ""
+    @Published var themeStatusIsError: Bool = false
 
     private let client = IRCClient()
     private var isRestoringState = false
@@ -70,12 +84,15 @@ final class IRCViewModel: ObservableObject {
     private let historyStorageKey = "DaystingIRC.closedPrivateHistory.v1"
     private let paneSessionStorageKey = "DaystingIRC.paneSession.v1"
     private let profileStorageKey = "DaystingIRC.connectionProfile.v1"
+    private let themesStorageKey = "DaystingIRC.savedThemes.v1"
     private let maxPersistedHistory = 50
 
     init() {
         isRestoringState = true
         config = loadConnectionProfile()
         closedPrivateHistory = loadClosedPrivateHistory()
+        savedThemes = loadSavedThemes()
+        selectedThemeID = savedThemes.first?.id ?? ""
         restorePaneSession()
         isRestoringState = false
 
@@ -189,6 +206,170 @@ final class IRCViewModel: ObservableObject {
 
     var isSASLPlainConfigurationIncomplete: Bool {
         config.enableSASL && config.saslMechanism == .plain && config.saslPassword.isEmpty
+    }
+
+    var hasSelectedSavedTheme: Bool {
+        savedThemes.contains(where: { $0.id == selectedThemeID })
+    }
+
+    func saveCurrentTheme() {
+        let trimmed = themeDraftName.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard !trimmed.isEmpty else { return }
+
+        let clampedSize = max(10, min(24, config.appearanceFontSize))
+        if let existingIndex = savedThemes.firstIndex(where: { $0.name.caseInsensitiveCompare(trimmed) == .orderedSame }) {
+            let existingID = savedThemes[existingIndex].id
+            savedThemes[existingIndex] = AppearanceThemePreset(
+                id: existingID,
+                name: trimmed,
+                fontFamily: config.appearanceFontFamily,
+                fontSize: clampedSize,
+                textColor: config.appearanceTextColor,
+                backgroundColor: config.appearanceBackgroundColor
+            )
+            selectedThemeID = existingID
+            appendLog("[theme] Overwrote theme \(trimmed)", to: IRCWindowPane.serverID)
+            setThemeStatus("Overwrote theme \(trimmed)", isError: false)
+            return
+        }
+
+        let preset = AppearanceThemePreset(
+            id: UUID().uuidString,
+            name: trimmed,
+            fontFamily: config.appearanceFontFamily,
+            fontSize: clampedSize,
+            textColor: config.appearanceTextColor,
+            backgroundColor: config.appearanceBackgroundColor
+        )
+        savedThemes.append(preset)
+        selectedThemeID = preset.id
+        appendLog("[theme] Saved theme \(preset.name)", to: IRCWindowPane.serverID)
+        setThemeStatus("Saved theme \(preset.name)", isError: false)
+    }
+
+    func applySelectedTheme() {
+        guard let theme = savedThemes.first(where: { $0.id == selectedThemeID }) else { return }
+        config.enableCustomAppearance = true
+        config.appearanceFontFamily = theme.fontFamily
+        config.appearanceFontSize = max(10, min(24, theme.fontSize))
+        config.appearanceTextColor = theme.textColor
+        config.appearanceBackgroundColor = theme.backgroundColor
+        appendLog("[theme] Applied theme \(theme.name)", to: IRCWindowPane.serverID)
+        setThemeStatus("Applied theme \(theme.name)", isError: false)
+    }
+
+    func deleteSelectedTheme() {
+        guard let index = savedThemes.firstIndex(where: { $0.id == selectedThemeID }) else { return }
+        let removedName = savedThemes[index].name
+        savedThemes.remove(at: index)
+        selectedThemeID = savedThemes.first?.id ?? ""
+        appendLog("[theme] Deleted theme \(removedName)", to: IRCWindowPane.serverID)
+        setThemeStatus("Deleted theme \(removedName)", isError: false)
+    }
+
+    func resetAppearanceToDefaults() {
+        config.enableCustomAppearance = false
+        config.appearanceFontFamily = .system
+        config.appearanceFontSize = 13
+        config.appearanceTextColor = .defaultText
+        config.appearanceBackgroundColor = .defaultBackground
+        appendLog("[theme] Appearance reset to defaults", to: IRCWindowPane.serverID)
+        setThemeStatus("Appearance reset to defaults", isError: false)
+    }
+
+    func exportThemesData() -> Data? {
+        let encoder = JSONEncoder()
+        encoder.outputFormatting = [.prettyPrinted, .sortedKeys]
+        return try? encoder.encode(savedThemes)
+    }
+
+    @discardableResult
+    func importThemesData(_ data: Data, strategy: ThemeImportStrategy) -> Int {
+        let decoder = JSONDecoder()
+        guard let incoming = try? decoder.decode([AppearanceThemePreset].self, from: data) else {
+            setThemeStatus("Import failed: invalid theme JSON", isError: true)
+            return 0
+        }
+
+        var updates = 0
+        for theme in incoming {
+            let normalizedName = theme.name.trimmingCharacters(in: .whitespacesAndNewlines)
+            guard !normalizedName.isEmpty else { continue }
+
+            let normalized = AppearanceThemePreset(
+                id: theme.id.isEmpty ? UUID().uuidString : theme.id,
+                name: normalizedName,
+                fontFamily: theme.fontFamily,
+                fontSize: max(10, min(24, theme.fontSize)),
+                textColor: theme.textColor,
+                backgroundColor: theme.backgroundColor
+            )
+
+            switch strategy {
+            case .replaceExistingNames:
+                if let index = savedThemes.firstIndex(where: { $0.name.caseInsensitiveCompare(normalized.name) == .orderedSame }) {
+                    let preservedID = savedThemes[index].id
+                    savedThemes[index] = AppearanceThemePreset(
+                        id: preservedID,
+                        name: normalized.name,
+                        fontFamily: normalized.fontFamily,
+                        fontSize: normalized.fontSize,
+                        textColor: normalized.textColor,
+                        backgroundColor: normalized.backgroundColor
+                    )
+                    selectedThemeID = preservedID
+                    updates += 1
+                } else {
+                    savedThemes.append(normalized)
+                    selectedThemeID = normalized.id
+                    updates += 1
+                }
+            case .keepBoth:
+                let uniqueName = uniqueImportedThemeName(baseName: normalized.name)
+                let imported = AppearanceThemePreset(
+                    id: UUID().uuidString,
+                    name: uniqueName,
+                    fontFamily: normalized.fontFamily,
+                    fontSize: normalized.fontSize,
+                    textColor: normalized.textColor,
+                    backgroundColor: normalized.backgroundColor
+                )
+                savedThemes.append(imported)
+                selectedThemeID = imported.id
+                updates += 1
+            }
+        }
+
+        if updates == 0 {
+            setThemeStatus("Import completed: no valid themes found", isError: true)
+            return 0
+        }
+
+        appendLog("[theme] Imported \(updates) theme(s)", to: IRCWindowPane.serverID)
+        setThemeStatus("Imported \(updates) theme(s)", isError: false)
+        return updates
+    }
+
+    func setThemeStatus(_ message: String, isError: Bool) {
+        themeStatusMessage = message
+        themeStatusIsError = isError
+    }
+
+    private func uniqueImportedThemeName(baseName: String) -> String {
+        if !savedThemes.contains(where: { $0.name.caseInsensitiveCompare(baseName) == .orderedSame }) {
+            return baseName
+        }
+
+        let importedBase = "\(baseName) (Imported)"
+        if !savedThemes.contains(where: { $0.name.caseInsensitiveCompare(importedBase) == .orderedSame }) {
+            return importedBase
+        }
+
+        var suffix = 2
+        while savedThemes.contains(where: { $0.name.caseInsensitiveCompare("\(importedBase) \(suffix)") == .orderedSame }) {
+            suffix += 1
+        }
+        return "\(importedBase) \(suffix)"
     }
 
     func connect() {
@@ -572,6 +753,11 @@ final class IRCViewModel: ObservableObject {
         persistConnectionProfile()
     }
 
+    private func persistSavedThemesIfNeeded() {
+        guard !isRestoringState else { return }
+        persistSavedThemes()
+    }
+
     private func persistConnectionProfile() {
         let encoder = JSONEncoder()
         guard let data = try? encoder.encode(config) else { return }
@@ -584,6 +770,18 @@ final class IRCViewModel: ObservableObject {
         }
         let decoder = JSONDecoder()
         return (try? decoder.decode(IRCServerConfig.self, from: data)) ?? IRCServerConfig()
+    }
+
+    private func persistSavedThemes() {
+        let encoder = JSONEncoder()
+        guard let data = try? encoder.encode(savedThemes) else { return }
+        UserDefaults.standard.set(data, forKey: themesStorageKey)
+    }
+
+    private func loadSavedThemes() -> [AppearanceThemePreset] {
+        guard let data = UserDefaults.standard.data(forKey: themesStorageKey) else { return [] }
+        let decoder = JSONDecoder()
+        return (try? decoder.decode([AppearanceThemePreset].self, from: data)) ?? []
     }
 
     private func persistPaneSession() {

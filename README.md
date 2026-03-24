@@ -7,6 +7,10 @@ A native SwiftUI macOS IRC client starter configured for:
 - TLS: enabled by default (minimum TLS 1.2)
 - Anope shortcuts: MemoServ and OperServ commands
 
+## Full Usage Guide
+
+For complete step-by-step instructions, see `docs/USAGE.md`.
+
 ## Features
 
 - TLS connection via Apple Network framework (`NWConnection`)
@@ -33,7 +37,12 @@ A native SwiftUI macOS IRC client starter configured for:
 - Automatic channel auto-join from saved channel list
 - Inline profile validation hints for common configuration mistakes
 - Field-level visual highlighting for invalid/incomplete profile inputs
-- Inline hover tooltips next to highlighted fields with field-specific fix guidance
+- Inline hover tooltips and click popovers next to highlighted fields with field-specific fix guidance and fix examples
+- One-click copy button in each validation popover example
+- Customizable app appearance: global font family, font size, text color, and background color
+- Named theme presets: save, apply, delete, and reset appearance
+- Theme preset import/export as JSON files
+- Theme delete confirmation and import conflict strategy selection (Replace Existing Names or Keep Both)
 - PING/PONG keepalive handling
 - Slash command support
 - Anope aliases:
@@ -90,7 +99,18 @@ open Package.swift
 18. Open pane layout, selected pane, and unread counts are restored when the app starts.
 19. Connection profile settings are restored when the app starts.
 20. Invalid fields are highlighted in red (blocking) or orange (warning) directly in the connection form.
-21. Hover the warning icon next to a highlighted field to see field-specific remediation guidance.
+21. Hover the warning icon next to a highlighted field to preview remediation guidance.
+22. Click the warning icon to open a popover with the same guidance text.
+23. Each popover includes a "Fix example" value pattern for quick correction.
+24. Use the popover `Copy` button to copy the example pattern to your clipboard.
+25. Optional: enable `Custom Theme` to personalize font family, font size, text color, and app background color.
+26. Enter a theme name and click `Save Theme` to store your current appearance settings.
+27. Saving with an existing theme name overwrites that theme.
+28. Use `Saved Themes` + `Apply Theme` to switch presets.
+29. Use `Delete Theme` to remove a preset and `Reset Theme` to restore defaults.
+30. `Delete Theme` asks for confirmation before removing the preset.
+31. Use `Export Themes` to write your presets to a JSON file.
+32. `Import Themes` lets you choose conflict handling: `Replace Existing Names` or `Keep Both`.
 
 ## Security notes
 

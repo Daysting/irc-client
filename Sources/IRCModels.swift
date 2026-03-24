@@ -1,5 +1,46 @@
 import Foundation
 
+struct RGBAColor: Codable, Equatable {
+    var red: Double
+    var green: Double
+    var blue: Double
+    var alpha: Double
+
+    static let defaultText = RGBAColor(red: 0.08, green: 0.08, blue: 0.10, alpha: 1.0)
+    static let defaultBackground = RGBAColor(red: 0.95, green: 0.96, blue: 0.98, alpha: 1.0)
+}
+
+enum AppearanceFontFamily: String, CaseIterable, Identifiable, Codable {
+    case system
+    case rounded
+    case monospaced
+    case serif
+
+    var id: String { rawValue }
+
+    var title: String {
+        switch self {
+        case .system:
+            return "System"
+        case .rounded:
+            return "Rounded"
+        case .monospaced:
+            return "Monospaced"
+        case .serif:
+            return "Serif"
+        }
+    }
+}
+
+struct AppearanceThemePreset: Identifiable, Codable, Equatable {
+    var id: String
+    var name: String
+    var fontFamily: AppearanceFontFamily
+    var fontSize: Double
+    var textColor: RGBAColor
+    var backgroundColor: RGBAColor
+}
+
 enum SASLMechanism: String, CaseIterable, Identifiable, Codable {
     case plain = "PLAIN"
     case external = "EXTERNAL"
@@ -63,6 +104,11 @@ struct IRCServerConfig: Codable {
     var operPassword: String = ""
     var delayJoinUntilNickServIdentify: Bool = false
     var nickServIdentifyTimeoutSeconds: Int = 10
+    var enableCustomAppearance: Bool = false
+    var appearanceFontFamily: AppearanceFontFamily = .system
+    var appearanceFontSize: Double = 13
+    var appearanceTextColor: RGBAColor = .defaultText
+    var appearanceBackgroundColor: RGBAColor = .defaultBackground
 }
 
 enum IRCCommandCatalog {
