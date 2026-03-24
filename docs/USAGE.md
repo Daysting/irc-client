@@ -11,7 +11,7 @@ swift build
 swift run
 ```
 
-2. In the `Connection` panel, verify:
+2. The server endpoint is fixed and not editable:
 - Host: `irc.daysting.com`
 - Port: `6697`
 - TLS: enabled
@@ -23,7 +23,6 @@ swift run
 ## 2) Required vs Optional Fields
 
 Required to connect:
-- `Host` must not be empty.
 - `Channel` must start with `#`.
 
 Optional but recommended:
@@ -116,6 +115,9 @@ Controls:
 - Font size
 - Text color
 - Background color
+
+Note:
+- The `Server` log pane always uses a terminal-style monospaced font for better ASCII art rendering.
 
 Theme presets:
 1. Enter a `Theme Name`.

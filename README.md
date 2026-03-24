@@ -7,6 +7,8 @@ A native SwiftUI macOS IRC client starter configured for:
 - TLS: enabled by default (minimum TLS 1.2)
 - Anope shortcuts: MemoServ and OperServ commands
 
+This client is locked to `irc.daysting.com:6697` with TLS enabled.
+
 ## Full Usage Guide
 
 For complete step-by-step instructions, see `docs/USAGE.md`.
@@ -42,6 +44,7 @@ For Xcode launch and bug-testing workflow, see `docs/XCODE_DEBUGGING.md`.
 - Inline hover tooltips and click popovers next to highlighted fields with field-specific fix guidance and fix examples
 - One-click copy button in each validation popover example
 - Customizable app appearance: global font family, font size, text color, and background color
+- Server pane uses a terminal-style monospaced log font suitable for ASCII art
 - Named theme presets: save, apply, delete, and reset appearance
 - Theme preset import/export as JSON files
 - Theme delete confirmation and import conflict strategy selection (Replace Existing Names or Keep Both)
@@ -74,7 +77,7 @@ Or use the helper script:
 ## Usage
 
 1. Launch app.
-2. Confirm host is `irc.daysting.com`, port `6697`, TLS enabled.
+2. Server is fixed to `irc.daysting.com:6697` with TLS enabled (not editable).
 3. Set nickname and channel.
 4. Optional profile automation:
   - `Alt Nicks`: comma-separated fallbacks used when nickname is already in use.

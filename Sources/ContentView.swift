@@ -108,10 +108,6 @@ struct ContentView: View {
         vm.config.enableCustomAppearance
     }
 
-    private var effectiveTextColor: Color {
-        useCustomAppearance ? color(from: vm.config.appearanceTextColor) : .primary
-    }
-
     private var effectiveBackgroundColor: Color {
         useCustomAppearance ? color(from: vm.config.appearanceBackgroundColor) : Color(nsColor: .windowBackgroundColor)
     }
@@ -150,7 +146,6 @@ struct ContentView: View {
             .padding(16)
         }
         .font(effectiveBaseFont)
-        .foregroundStyle(effectiveTextColor)
         .confirmationDialog("Delete selected theme?", isPresented: $showDeleteThemeConfirmation, titleVisibility: .visible) {
             Button("Delete", role: .destructive) {
                 vm.deleteSelectedTheme()
@@ -180,22 +175,10 @@ struct ContentView: View {
         GroupBox("Connection") {
             VStack(spacing: 10) {
                 HStack(spacing: 10) {
-                    TextField("Host", text: $vm.config.host)
-                        .textFieldStyle(.roundedBorder)
-                        .validationBorder(color: vm.isHostInvalid ? .red : nil)
-                    if vm.isHostInvalid {
-                        ValidationHintIcon(
-                            color: .red,
-                            tooltip: "Host is required. Enter a server hostname, for example irc.daysting.com.",
-                            example: "irc.daysting.com"
-                        )
-                    }
-                    TextField("Port", value: $vm.config.port, formatter: NumberFormatter())
-                        .frame(width: 90)
-                        .textFieldStyle(.roundedBorder)
-                    Toggle("TLS", isOn: $vm.config.useTLS)
-                        .toggleStyle(.switch)
-                        .frame(width: 90)
+                    Text("Server: \(IRCViewModel.lockedHost):\(IRCViewModel.lockedPort) (TLS)")
+                        .font(themedFont(size: 13, weight: .semibold))
+                        .foregroundStyle(.secondary)
+                        .frame(width: 320, alignment: .leading)
                     TextField("Nick", text: $vm.config.nickname)
                         .textFieldStyle(.roundedBorder)
                     TextField("Channel", text: $vm.config.channel)
@@ -504,7 +487,8 @@ struct ContentView: View {
                 List {
                     ForEach(Array(vm.activeLogs.enumerated()), id: \.offset) { idx, line in
                         Text(line)
-                            .font(themedFont(size: max(11, CGFloat(vm.config.appearanceFontSize))))
+                            .font(windowLogFont(for: vm.activeWindow.type, size: max(11, CGFloat(vm.config.appearanceFontSize))))
+                            .foregroundStyle(useCustomAppearance ? color(from: vm.config.appearanceTextColor) : .primary)
                             .textSelection(.enabled)
                             .id(idx)
                     }
@@ -535,6 +519,7 @@ struct ContentView: View {
         HStack(spacing: 10) {
             TextField("Message \(vm.activeWindowTitle) or use command (/ms HELP, /os HELP, /join #chan)", text: $vm.input)
                 .textFieldStyle(.roundedBorder)
+                .foregroundStyle(.primary)
                 .onSubmit {
                     vm.sendCurrentInput()
                 }
@@ -570,6 +555,13 @@ struct ContentView: View {
         case .serif:
             return .system(size: clamped, weight: weight, design: .serif)
         }
+    }
+
+    private func windowLogFont(for windowType: IRCWindowType, size: CGFloat) -> Font {
+        if windowType == .server {
+            return .system(size: max(11, min(32, size)), weight: .regular, design: .monospaced)
+        }
+        return themedFont(size: size)
     }
 
     private func color(from rgba: RGBAColor) -> Color {

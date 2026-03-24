@@ -41,6 +41,10 @@ struct IRCWindowPane: Identifiable, Equatable {
 
 @MainActor
 final class IRCViewModel: ObservableObject {
+    static let lockedHost = "irc.daysting.com"
+    static let lockedPort: UInt16 = 6697
+    static let lockedTLS = true
+
     enum ThemeImportStrategy {
         case replaceExistingNames
         case keepBoth
@@ -90,6 +94,10 @@ final class IRCViewModel: ObservableObject {
     init() {
         isRestoringState = true
         config = loadConnectionProfile()
+        // The client is intentionally locked to the production Daysting endpoint.
+        config.host = Self.lockedHost
+        config.port = Self.lockedPort
+        config.useTLS = Self.lockedTLS
         closedPrivateHistory = loadClosedPrivateHistory()
         savedThemes = loadSavedThemes()
         selectedThemeID = savedThemes.first?.id ?? ""
@@ -140,9 +148,6 @@ final class IRCViewModel: ObservableObject {
 
     var profileValidationErrors: [String] {
         var errors: [String] = []
-        if config.host.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
-            errors.append("Host cannot be empty")
-        }
         if !config.channel.hasPrefix("#") {
             errors.append("Primary channel must start with #")
         }
@@ -181,7 +186,7 @@ final class IRCViewModel: ObservableObject {
     }
 
     var isHostInvalid: Bool {
-        config.host.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
+        false
     }
 
     var isPrimaryChannelInvalid: Bool {
@@ -373,6 +378,10 @@ final class IRCViewModel: ObservableObject {
     }
 
     func connect() {
+        config.host = Self.lockedHost
+        config.port = Self.lockedPort
+        config.useTLS = Self.lockedTLS
+
         for channel in autoJoinChannels(from: config) {
             ensureChannelPane(channel)
         }
