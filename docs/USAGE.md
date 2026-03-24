@@ -89,6 +89,7 @@ Contextual Anope menus:
 - Open the right-click/context menu in the active window and choose `Anope Services`.
 - Service menus are filtered by the active window type.
 - If a command requires parameters, a popup input form appears and then runs the generated command.
+- In the popup, turn on `Advanced` to see a live command preview and include optional parameters only when provided.
 - Example: `NickServ > Register` asks for `Password` then `Email`, then runs `/ns register <password> <email>`.
 
 ## 5) Tabs and Windows

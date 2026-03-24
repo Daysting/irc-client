@@ -117,6 +117,15 @@ struct AnopeInputField: Identifiable {
     let label: String
     let placeholder: String
     let secure: Bool
+    let isOptional: Bool
+
+    init(id: String, label: String, placeholder: String, secure: Bool, isOptional: Bool = false) {
+        self.id = id
+        self.label = label
+        self.placeholder = placeholder
+        self.secure = secure
+        self.isOptional = isOptional
+    }
 }
 
 struct AnopeMenuAction: Identifiable {
@@ -157,20 +166,20 @@ enum AnopeCommandCatalog {
             AnopeInputField(id: "description", label: "Description", placeholder: "Channel description", secure: false)
         ]),
         AnopeMenuAction(id: "cs-op", service: .chanServ, title: "Op", commandTemplate: "/cs op {channel} {nick}", windowTypes: [.channel], inputFields: [
-            AnopeInputField(id: "channel", label: "Channel", placeholder: "#channel", secure: false),
-            AnopeInputField(id: "nick", label: "Nickname", placeholder: "nickname", secure: false)
+            AnopeInputField(id: "channel", label: "Channel", placeholder: "#channel", secure: false, isOptional: true),
+            AnopeInputField(id: "nick", label: "Nickname", placeholder: "nickname", secure: false, isOptional: true)
         ]),
         AnopeMenuAction(id: "cs-deop", service: .chanServ, title: "Deop", commandTemplate: "/cs deop {channel} {nick}", windowTypes: [.channel], inputFields: [
-            AnopeInputField(id: "channel", label: "Channel", placeholder: "#channel", secure: false),
-            AnopeInputField(id: "nick", label: "Nickname", placeholder: "nickname", secure: false)
+            AnopeInputField(id: "channel", label: "Channel", placeholder: "#channel", secure: false, isOptional: true),
+            AnopeInputField(id: "nick", label: "Nickname", placeholder: "nickname", secure: false, isOptional: true)
         ]),
         AnopeMenuAction(id: "cs-voice", service: .chanServ, title: "Voice", commandTemplate: "/cs voice {channel} {nick}", windowTypes: [.channel], inputFields: [
-            AnopeInputField(id: "channel", label: "Channel", placeholder: "#channel", secure: false),
-            AnopeInputField(id: "nick", label: "Nickname", placeholder: "nickname", secure: false)
+            AnopeInputField(id: "channel", label: "Channel", placeholder: "#channel", secure: false, isOptional: true),
+            AnopeInputField(id: "nick", label: "Nickname", placeholder: "nickname", secure: false, isOptional: true)
         ]),
         AnopeMenuAction(id: "cs-devoice", service: .chanServ, title: "Devoice", commandTemplate: "/cs devoice {channel} {nick}", windowTypes: [.channel], inputFields: [
-            AnopeInputField(id: "channel", label: "Channel", placeholder: "#channel", secure: false),
-            AnopeInputField(id: "nick", label: "Nickname", placeholder: "nickname", secure: false)
+            AnopeInputField(id: "channel", label: "Channel", placeholder: "#channel", secure: false, isOptional: true),
+            AnopeInputField(id: "nick", label: "Nickname", placeholder: "nickname", secure: false, isOptional: true)
         ]),
 
         AnopeMenuAction(id: "ms-help", service: .memoServ, title: "Help", commandTemplate: "/ms help", windowTypes: [.server, .channel, .privateMessage], inputFields: []),

@@ -105,6 +105,7 @@ struct ContentView: View {
     @State private var selectedUserNick: String?
     @State private var activeAnopeAction: AnopeMenuAction?
     @State private var anopeInputValues: [String: String] = [:]
+    @State private var anopeAdvancedMode = false
     @FocusState private var focusedField: FocusField?
 
     private var useCustomAppearance: Bool {
@@ -565,6 +566,9 @@ struct ContentView: View {
             Text("\(action.service.title) > \(action.title)")
                 .font(.headline)
 
+            Toggle("Advanced Mode", isOn: $anopeAdvancedMode)
+                .toggleStyle(.switch)
+
             ForEach(action.inputFields) { field in
                 if field.secure {
                     SecureField(field.label, text: Binding(
@@ -579,6 +583,27 @@ struct ContentView: View {
                     ), prompt: Text(field.placeholder))
                     .textFieldStyle(.roundedBorder)
                 }
+
+                if anopeAdvancedMode && field.isOptional {
+                    Text("Optional")
+                        .font(.caption)
+                        .foregroundStyle(.secondary)
+                }
+            }
+
+            if anopeAdvancedMode {
+                VStack(alignment: .leading, spacing: 6) {
+                    Text("Command Preview")
+                        .font(.caption)
+                        .foregroundStyle(.secondary)
+                    Text(buildAnopeCommand(action, forPreview: true))
+                        .font(.system(.body, design: .monospaced))
+                        .textSelection(.enabled)
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                        .padding(8)
+                        .background(Color.secondary.opacity(0.12))
+                        .clipShape(RoundedRectangle(cornerRadius: 6))
+                }
             }
 
             HStack {
@@ -590,7 +615,9 @@ struct ContentView: View {
                     runAnopeAction(action)
                 }
                 .keyboardShortcut(.defaultAction)
-                .disabled(action.inputFields.contains { (anopeInputValues[$0.id] ?? "").trimmingCharacters(in: .whitespacesAndNewlines).isEmpty })
+                .disabled(action.inputFields.contains {
+                    !$0.isOptional && (anopeInputValues[$0.id] ?? "").trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
+                })
             }
         }
         .padding(16)
@@ -614,13 +641,35 @@ struct ContentView: View {
     }
 
     private func runAnopeAction(_ action: AnopeMenuAction) {
-        var command = action.commandTemplate
-        for field in action.inputFields {
-            let value = (anopeInputValues[field.id] ?? "").trimmingCharacters(in: .whitespacesAndNewlines)
-            command = command.replacingOccurrences(of: "{\(field.id)}", with: value)
-        }
+        let command = buildAnopeCommand(action, forPreview: false)
         vm.executeAnopeCommand(command)
         activeAnopeAction = nil
+    }
+
+    private func buildAnopeCommand(_ action: AnopeMenuAction, forPreview: Bool) -> String {
+        var command = action.commandTemplate
+        for field in action.inputFields {
+            let token = "{\(field.id)}"
+            let value = (anopeInputValues[field.id] ?? "").trimmingCharacters(in: .whitespacesAndNewlines)
+
+            if value.isEmpty {
+                if forPreview {
+                    command = command.replacingOccurrences(of: token, with: field.isOptional ? "<optional>" : "<\(field.id)>")
+                } else {
+                    command = command.replacingOccurrences(of: token, with: "")
+                }
+            } else {
+                command = command.replacingOccurrences(of: token, with: value)
+            }
+        }
+
+        if forPreview {
+            return command.replacingOccurrences(of: "\\s+", with: " ", options: .regularExpression)
+        }
+
+        return command
+            .replacingOccurrences(of: "\\s+", with: " ", options: .regularExpression)
+            .trimmingCharacters(in: .whitespacesAndNewlines)
     }
 
     private func themedFont(size: CGFloat, weight: Font.Weight = .regular) -> Font {

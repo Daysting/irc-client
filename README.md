@@ -121,18 +121,19 @@ Or use the helper script:
 12. Open `Context Commands` from the active pane for command shortcuts relevant to that pane type.
 13. Use `Anope Services` in contextual menus for service commands by service type.
 14. If a service command needs parameters (for example NickServ Register), a popup form collects input and runs the command.
-15. Private/query tabs can be closed with the `x` button on the tab.
-16. Private/query tabs can also be closed with middle-click on the tab.
-17. Use `Close All Private Tabs` from `Context Commands` to clean up query tabs quickly.
-18. Use `Close Other Private Tabs` to keep only the current private tab.
-19. Use `Reopen Last Closed Private Tab` to restore the last query tab you closed.
-20. Use `Recently Closed Private Tabs` to reopen a specific query tab from history.
-21. Operator commands are enabled only after the server reports operator status (for example after successful `/OPER`).
-22. Recently closed private-tab history is restored when the app starts.
-23. Open pane layout, selected pane, and unread counts are restored when the app starts.
-24. Connection profile settings are restored when the app starts.
-25. Invalid fields are highlighted in red (blocking) or orange (warning) directly in the connection form.
-26. Hover the warning icon next to a highlighted field to preview remediation guidance.
+15. In the popup, enable `Advanced` to show a live command preview and include optional parameters only when filled.
+16. Private/query tabs can be closed with the `x` button on the tab.
+17. Private/query tabs can also be closed with middle-click on the tab.
+18. Use `Close All Private Tabs` from `Context Commands` to clean up query tabs quickly.
+19. Use `Close Other Private Tabs` to keep only the current private tab.
+20. Use `Reopen Last Closed Private Tab` to restore the last query tab you closed.
+21. Use `Recently Closed Private Tabs` to reopen a specific query tab from history.
+22. Operator commands are enabled only after the server reports operator status (for example after successful `/OPER`).
+23. Recently closed private-tab history is restored when the app starts.
+24. Open pane layout, selected pane, and unread counts are restored when the app starts.
+25. Connection profile settings are restored when the app starts.
+26. Invalid fields are highlighted in red (blocking) or orange (warning) directly in the connection form.
+27. Hover the warning icon next to a highlighted field to preview remediation guidance.
 27. Click the warning icon to open a popover with the same guidance text.
 28. Each popover includes a "Fix example" value pattern for quick correction.
 29. Use the popover `Copy` button to copy the example pattern to your clipboard.
