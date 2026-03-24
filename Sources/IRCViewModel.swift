@@ -492,7 +492,7 @@ final class IRCViewModel: ObservableObject {
 
     func canCloseWindow(_ windowID: String) -> Bool {
         guard let pane = windows.first(where: { $0.id == windowID }) else { return false }
-        return pane.type == .privateMessage
+        return pane.type == .privateMessage || pane.type == .channel
     }
 
     var canReopenLastPrivateWindow: Bool {
@@ -517,9 +517,22 @@ final class IRCViewModel: ObservableObject {
 
     func closeWindow(_ windowID: String) {
         guard canCloseWindow(windowID) else { return }
-        if let pane = windows.first(where: { $0.id == windowID }) {
+        guard let pane = windows.first(where: { $0.id == windowID }) else { return }
+
+        if pane.type == .privateMessage {
             recordClosedPrivatePane(pane)
         }
+
+        if pane.type == .channel {
+            if isConnected, !pane.target.isEmpty {
+                client.sendRaw("PART \(pane.target) :Leaving")
+                appendLog("> PART \(pane.target) :Leaving", to: IRCWindowPane.serverID)
+            }
+            channelUsersByPaneID.removeValue(forKey: pane.id)
+            channelTopicsByPaneID.removeValue(forKey: pane.id)
+            pendingNamesByPaneID.removeValue(forKey: pane.id)
+        }
+
         windows.removeAll { $0.id == windowID }
 
         if selectedWindowID == windowID {

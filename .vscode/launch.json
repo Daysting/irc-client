@@ -1,0 +1,24 @@
+{
+    "configurations": [
+        {
+            "type": "swift",
+            "request": "launch",
+            "args": [],
+            "cwd": "${workspaceFolder:irc-client}",
+            "name": "Debug DaystingIRC",
+            "target": "DaystingIRC",
+            "configuration": "debug",
+            "preLaunchTask": "swift: Build Debug DaystingIRC"
+        },
+        {
+            "type": "swift",
+            "request": "launch",
+            "args": [],
+            "cwd": "${workspaceFolder:irc-client}",
+            "name": "Release DaystingIRC",
+            "target": "DaystingIRC",
+            "configuration": "release",
+            "preLaunchTask": "swift: Build Release DaystingIRC"
+        }
+    ]
+}

@@ -6,6 +6,8 @@ settings:
     SWIFT_VERSION: 5.10
     MACOSX_DEPLOYMENT_TARGET: 13.0
     PRODUCT_BUNDLE_IDENTIFIER: com.daysting.ircclient
+    MARKETING_VERSION: 1.1
+    CURRENT_PROJECT_VERSION: 1.1
     DEVELOPMENT_TEAM: ""
 targets:
   DaystingIRC:
@@ -20,7 +22,7 @@ targets:
         GENERATE_INFOPLIST_FILE: YES
         INFOPLIST_KEY_CFBundleDisplayName: DaystingIRC
         INFOPLIST_KEY_NSPrincipalClass: NSApplication
-        INFOPLIST_KEY_NSHumanReadableCopyright: ""
+        INFOPLIST_KEY_NSHumanReadableCopyright: "Copyright © 2026 Erick Hofer. All rights reserved."
 schemes:
   DaystingIRC:
     build:
