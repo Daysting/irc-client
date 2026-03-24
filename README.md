@@ -11,6 +11,8 @@ A native SwiftUI macOS IRC client starter configured for:
 
 For complete step-by-step instructions, see `docs/USAGE.md`.
 
+For Xcode launch and bug-testing workflow, see `docs/XCODE_DEBUGGING.md`.
+
 ## Features
 
 - TLS connection via Apple Network framework (`NWConnection`)
@@ -61,6 +63,12 @@ If you want to open this as an Xcode project:
 
 ```bash
 open Package.swift
+```
+
+Or use the helper script:
+
+```bash
+./scripts/open_in_xcode.sh
 ```
 
 ## Usage

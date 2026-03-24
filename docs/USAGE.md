@@ -184,3 +184,7 @@ Check `Auto Join Channels` format:
 5. Add auto-join channels.
 6. Save your appearance as a named theme.
 7. Export themes to keep a backup.
+
+## 12) Xcode Bug Testing
+
+For complete Xcode run/debug instructions, see `docs/XCODE_DEBUGGING.md`.
