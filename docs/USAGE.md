@@ -90,6 +90,8 @@ Contextual Anope menus:
 - Service menus are filtered by the active window type.
 - If a command requires parameters, a popup input form appears and then runs the generated command.
 - In the popup, turn on `Advanced` to see a live command preview and include optional parameters only when provided.
+- OperServ now includes extended tools (AKILL/SQLINE/SZLINE/SGLINE/IGNORE/SESSION/module commands), plus `OperType List/Info` and `Add Oper` for entitlement-based operator provisioning.
+- Use `OperServ > Custom OperServ Command` to run any additional OperServ subcommand not listed as a shortcut.
 - Example: `NickServ > Register` asks for `Password` then `Email`, then runs `/ns register <password> <email>`.
 
 ## 5) Tabs and Windows

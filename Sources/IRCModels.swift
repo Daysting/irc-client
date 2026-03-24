@@ -140,6 +140,9 @@ struct AnopeMenuAction: Identifiable {
 enum AnopeCommandCatalog {
     static let actions: [AnopeMenuAction] = [
         AnopeMenuAction(id: "ns-help", service: .nickServ, title: "Help", commandTemplate: "/ns help", windowTypes: [.server, .channel, .privateMessage], inputFields: []),
+        AnopeMenuAction(id: "ns-custom", service: .nickServ, title: "Custom NickServ Command", commandTemplate: "/ns {command}", windowTypes: [.server, .channel, .privateMessage], inputFields: [
+            AnopeInputField(id: "command", label: "Command", placeholder: "command args...", secure: false)
+        ]),
         AnopeMenuAction(id: "ns-register", service: .nickServ, title: "Register", commandTemplate: "/ns register {password} {email}", windowTypes: [.server, .channel], inputFields: [
             AnopeInputField(id: "password", label: "Password", placeholder: "password", secure: true),
             AnopeInputField(id: "email", label: "Email", placeholder: "user@example.com", secure: false)
@@ -147,6 +150,58 @@ enum AnopeCommandCatalog {
         AnopeMenuAction(id: "ns-identify", service: .nickServ, title: "Identify", commandTemplate: "/ns identify {password}", windowTypes: [.server, .channel, .privateMessage], inputFields: [
             AnopeInputField(id: "password", label: "Password", placeholder: "password", secure: true)
         ]),
+        AnopeMenuAction(id: "ns-logout", service: .nickServ, title: "Logout", commandTemplate: "/ns logout", windowTypes: [.server, .channel, .privateMessage], inputFields: []),
+        AnopeMenuAction(id: "ns-info", service: .nickServ, title: "Info", commandTemplate: "/ns info {nick}", windowTypes: [.server, .channel, .privateMessage], inputFields: [
+            AnopeInputField(id: "nick", label: "Nickname", placeholder: "nickname", secure: false, isOptional: true)
+        ]),
+        AnopeMenuAction(id: "ns-list", service: .nickServ, title: "List", commandTemplate: "/ns list {pattern}", windowTypes: [.server], inputFields: [
+            AnopeInputField(id: "pattern", label: "Pattern", placeholder: "nick*", secure: false)
+        ]),
+        AnopeMenuAction(id: "ns-status", service: .nickServ, title: "Status", commandTemplate: "/ns status {nick}", windowTypes: [.server, .channel, .privateMessage], inputFields: [
+            AnopeInputField(id: "nick", label: "Nickname", placeholder: "nickname", secure: false)
+        ]),
+        AnopeMenuAction(id: "ns-alist", service: .nickServ, title: "AList", commandTemplate: "/ns alist", windowTypes: [.server, .channel, .privateMessage], inputFields: []),
+        AnopeMenuAction(id: "ns-update", service: .nickServ, title: "Update", commandTemplate: "/ns update", windowTypes: [.server, .channel, .privateMessage], inputFields: []),
+        AnopeMenuAction(id: "ns-group", service: .nickServ, title: "Group", commandTemplate: "/ns group {target} {password}", windowTypes: [.server, .channel], inputFields: [
+            AnopeInputField(id: "target", label: "Target Nick", placeholder: "registeredNick", secure: false),
+            AnopeInputField(id: "password", label: "Password", placeholder: "password", secure: true)
+        ]),
+        AnopeMenuAction(id: "ns-ungroup", service: .nickServ, title: "Ungroup", commandTemplate: "/ns ungroup", windowTypes: [.server, .channel, .privateMessage], inputFields: []),
+        AnopeMenuAction(id: "ns-drop", service: .nickServ, title: "Drop", commandTemplate: "/ns drop {nick}", windowTypes: [.server, .channel, .privateMessage], inputFields: [
+            AnopeInputField(id: "nick", label: "Nickname", placeholder: "nickname", secure: false, isOptional: true)
+        ]),
+        AnopeMenuAction(id: "ns-set-password", service: .nickServ, title: "Set Password", commandTemplate: "/ns set password {newpassword}", windowTypes: [.server, .channel, .privateMessage], inputFields: [
+            AnopeInputField(id: "newpassword", label: "New Password", placeholder: "new password", secure: true)
+        ]),
+        AnopeMenuAction(id: "ns-set-email", service: .nickServ, title: "Set Email", commandTemplate: "/ns set email {email}", windowTypes: [.server, .channel, .privateMessage], inputFields: [
+            AnopeInputField(id: "email", label: "Email", placeholder: "user@example.com", secure: false)
+        ]),
+        AnopeMenuAction(id: "ns-set-kill", service: .nickServ, title: "Set Kill", commandTemplate: "/ns set kill {value}", windowTypes: [.server, .channel, .privateMessage], inputFields: [
+            AnopeInputField(id: "value", label: "Kill Value", placeholder: "ON/OFF/QUICK/IMMED", secure: false)
+        ]),
+        AnopeMenuAction(id: "ns-set-protect", service: .nickServ, title: "Set Protect", commandTemplate: "/ns set protect {value}", windowTypes: [.server, .channel, .privateMessage], inputFields: [
+            AnopeInputField(id: "value", label: "Protect Value", placeholder: "ON/OFF", secure: false)
+        ]),
+        AnopeMenuAction(id: "ns-set-hide-email", service: .nickServ, title: "Set Hide Email", commandTemplate: "/ns set hide email {value}", windowTypes: [.server, .channel, .privateMessage], inputFields: [
+            AnopeInputField(id: "value", label: "Hide Email", placeholder: "ON/OFF", secure: false)
+        ]),
+        AnopeMenuAction(id: "ns-set-hide-usermask", service: .nickServ, title: "Set Hide Usermask", commandTemplate: "/ns set hide usermask {value}", windowTypes: [.server, .channel, .privateMessage], inputFields: [
+            AnopeInputField(id: "value", label: "Hide Usermask", placeholder: "ON/OFF", secure: false)
+        ]),
+        AnopeMenuAction(id: "ns-cert-add", service: .nickServ, title: "Cert Add", commandTemplate: "/ns cert add {fingerprint}", windowTypes: [.server, .channel, .privateMessage], inputFields: [
+            AnopeInputField(id: "fingerprint", label: "Fingerprint", placeholder: "SHA256 fingerprint", secure: false)
+        ]),
+        AnopeMenuAction(id: "ns-cert-del", service: .nickServ, title: "Cert Del", commandTemplate: "/ns cert del {fingerprint}", windowTypes: [.server, .channel, .privateMessage], inputFields: [
+            AnopeInputField(id: "fingerprint", label: "Fingerprint", placeholder: "SHA256 fingerprint", secure: false)
+        ]),
+        AnopeMenuAction(id: "ns-cert-list", service: .nickServ, title: "Cert List", commandTemplate: "/ns cert list", windowTypes: [.server, .channel, .privateMessage], inputFields: []),
+        AnopeMenuAction(id: "ns-access-add", service: .nickServ, title: "Access Add", commandTemplate: "/ns access add {mask}", windowTypes: [.server, .channel, .privateMessage], inputFields: [
+            AnopeInputField(id: "mask", label: "Mask", placeholder: "nick!user@host", secure: false)
+        ]),
+        AnopeMenuAction(id: "ns-access-del", service: .nickServ, title: "Access Del", commandTemplate: "/ns access del {mask}", windowTypes: [.server, .channel, .privateMessage], inputFields: [
+            AnopeInputField(id: "mask", label: "Mask", placeholder: "nick!user@host", secure: false)
+        ]),
+        AnopeMenuAction(id: "ns-access-list", service: .nickServ, title: "Access List", commandTemplate: "/ns access list", windowTypes: [.server, .channel, .privateMessage], inputFields: []),
         AnopeMenuAction(id: "ns-ghost", service: .nickServ, title: "Ghost", commandTemplate: "/ns ghost {nick} {password}", windowTypes: [.server, .channel], inputFields: [
             AnopeInputField(id: "nick", label: "Nickname", placeholder: "nickname", secure: false),
             AnopeInputField(id: "password", label: "Password", placeholder: "password", secure: true)
@@ -161,23 +216,130 @@ enum AnopeCommandCatalog {
         ]),
 
         AnopeMenuAction(id: "cs-help", service: .chanServ, title: "Help", commandTemplate: "/cs help", windowTypes: [.server, .channel], inputFields: []),
+        AnopeMenuAction(id: "cs-custom", service: .chanServ, title: "Custom ChanServ Command", commandTemplate: "/cs {command}", windowTypes: [.server, .channel], inputFields: [
+            AnopeInputField(id: "command", label: "Command", placeholder: "command args...", secure: false)
+        ]),
         AnopeMenuAction(id: "cs-register", service: .chanServ, title: "Register", commandTemplate: "/cs register {channel} {description}", windowTypes: [.server, .channel], inputFields: [
             AnopeInputField(id: "channel", label: "Channel", placeholder: "#channel", secure: false),
             AnopeInputField(id: "description", label: "Description", placeholder: "Channel description", secure: false)
         ]),
-        AnopeMenuAction(id: "cs-op", service: .chanServ, title: "Op", commandTemplate: "/cs op {channel} {nick}", windowTypes: [.channel], inputFields: [
+        AnopeMenuAction(id: "cs-identify", service: .chanServ, title: "Identify", commandTemplate: "/cs identify {channel} {password}", windowTypes: [.server, .channel], inputFields: [
+            AnopeInputField(id: "channel", label: "Channel", placeholder: "#channel", secure: false),
+            AnopeInputField(id: "password", label: "Password", placeholder: "channel password", secure: true)
+        ]),
+        AnopeMenuAction(id: "cs-info", service: .chanServ, title: "Info", commandTemplate: "/cs info {channel}", windowTypes: [.server, .channel], inputFields: [
+            AnopeInputField(id: "channel", label: "Channel", placeholder: "#channel", secure: false, isOptional: true)
+        ]),
+        AnopeMenuAction(id: "cs-list", service: .chanServ, title: "List", commandTemplate: "/cs list {pattern}", windowTypes: [.server], inputFields: [
+            AnopeInputField(id: "pattern", label: "Pattern", placeholder: "#chan*", secure: false)
+        ]),
+        AnopeMenuAction(id: "cs-drop", service: .chanServ, title: "Drop", commandTemplate: "/cs drop {channel}", windowTypes: [.server, .channel], inputFields: [
+            AnopeInputField(id: "channel", label: "Channel", placeholder: "#channel", secure: false)
+        ]),
+        AnopeMenuAction(id: "cs-topic", service: .chanServ, title: "Topic", commandTemplate: "/cs topic {channel} {topic}", windowTypes: [.server, .channel], inputFields: [
+            AnopeInputField(id: "channel", label: "Channel", placeholder: "#channel", secure: false, isOptional: true),
+            AnopeInputField(id: "topic", label: "Topic", placeholder: "new topic", secure: false)
+        ]),
+        AnopeMenuAction(id: "cs-set-desc", service: .chanServ, title: "Set Description", commandTemplate: "/cs set {channel} desc {description}", windowTypes: [.server, .channel], inputFields: [
+            AnopeInputField(id: "channel", label: "Channel", placeholder: "#channel", secure: false, isOptional: true),
+            AnopeInputField(id: "description", label: "Description", placeholder: "channel description", secure: false)
+        ]),
+        AnopeMenuAction(id: "cs-set-url", service: .chanServ, title: "Set URL", commandTemplate: "/cs set {channel} url {url}", windowTypes: [.server, .channel], inputFields: [
+            AnopeInputField(id: "channel", label: "Channel", placeholder: "#channel", secure: false, isOptional: true),
+            AnopeInputField(id: "url", label: "URL", placeholder: "https://example.com", secure: false)
+        ]),
+        AnopeMenuAction(id: "cs-set-email", service: .chanServ, title: "Set Email", commandTemplate: "/cs set {channel} email {email}", windowTypes: [.server, .channel], inputFields: [
+            AnopeInputField(id: "channel", label: "Channel", placeholder: "#channel", secure: false, isOptional: true),
+            AnopeInputField(id: "email", label: "Email", placeholder: "ops@example.com", secure: false)
+        ]),
+        AnopeMenuAction(id: "cs-set-mlock", service: .chanServ, title: "Set MLOCK", commandTemplate: "/cs set {channel} mlock {modes}", windowTypes: [.server, .channel], inputFields: [
+            AnopeInputField(id: "channel", label: "Channel", placeholder: "#channel", secure: false, isOptional: true),
+            AnopeInputField(id: "modes", label: "Modes", placeholder: "+nt", secure: false)
+        ]),
+        AnopeMenuAction(id: "cs-set-private", service: .chanServ, title: "Set Private", commandTemplate: "/cs set {channel} private {value}", windowTypes: [.server, .channel], inputFields: [
+            AnopeInputField(id: "channel", label: "Channel", placeholder: "#channel", secure: false, isOptional: true),
+            AnopeInputField(id: "value", label: "Private", placeholder: "ON/OFF", secure: false)
+        ]),
+        AnopeMenuAction(id: "cs-set-secure", service: .chanServ, title: "Set Secure", commandTemplate: "/cs set {channel} secure {value}", windowTypes: [.server, .channel], inputFields: [
+            AnopeInputField(id: "channel", label: "Channel", placeholder: "#channel", secure: false, isOptional: true),
+            AnopeInputField(id: "value", label: "Secure", placeholder: "ON/OFF", secure: false)
+        ]),
+        AnopeMenuAction(id: "cs-set-keeptopic", service: .chanServ, title: "Set KeepTopic", commandTemplate: "/cs set {channel} keeptopic {value}", windowTypes: [.server, .channel], inputFields: [
+            AnopeInputField(id: "channel", label: "Channel", placeholder: "#channel", secure: false, isOptional: true),
+            AnopeInputField(id: "value", label: "KeepTopic", placeholder: "ON/OFF", secure: false)
+        ]),
+        AnopeMenuAction(id: "cs-set-topiclock", service: .chanServ, title: "Set TopicLock", commandTemplate: "/cs set {channel} topiclock {value}", windowTypes: [.server, .channel], inputFields: [
+            AnopeInputField(id: "channel", label: "Channel", placeholder: "#channel", secure: false, isOptional: true),
+            AnopeInputField(id: "value", label: "TopicLock", placeholder: "ON/OFF", secure: false)
+        ]),
+        AnopeMenuAction(id: "cs-op", service: .chanServ, title: "Op", commandTemplate: "/cs op {channel} {nick}", windowTypes: [.channel, .server], inputFields: [
             AnopeInputField(id: "channel", label: "Channel", placeholder: "#channel", secure: false, isOptional: true),
             AnopeInputField(id: "nick", label: "Nickname", placeholder: "nickname", secure: false, isOptional: true)
         ]),
-        AnopeMenuAction(id: "cs-deop", service: .chanServ, title: "Deop", commandTemplate: "/cs deop {channel} {nick}", windowTypes: [.channel], inputFields: [
+        AnopeMenuAction(id: "cs-deop", service: .chanServ, title: "Deop", commandTemplate: "/cs deop {channel} {nick}", windowTypes: [.channel, .server], inputFields: [
             AnopeInputField(id: "channel", label: "Channel", placeholder: "#channel", secure: false, isOptional: true),
             AnopeInputField(id: "nick", label: "Nickname", placeholder: "nickname", secure: false, isOptional: true)
         ]),
-        AnopeMenuAction(id: "cs-voice", service: .chanServ, title: "Voice", commandTemplate: "/cs voice {channel} {nick}", windowTypes: [.channel], inputFields: [
+        AnopeMenuAction(id: "cs-voice", service: .chanServ, title: "Voice", commandTemplate: "/cs voice {channel} {nick}", windowTypes: [.channel, .server], inputFields: [
             AnopeInputField(id: "channel", label: "Channel", placeholder: "#channel", secure: false, isOptional: true),
             AnopeInputField(id: "nick", label: "Nickname", placeholder: "nickname", secure: false, isOptional: true)
         ]),
-        AnopeMenuAction(id: "cs-devoice", service: .chanServ, title: "Devoice", commandTemplate: "/cs devoice {channel} {nick}", windowTypes: [.channel], inputFields: [
+        AnopeMenuAction(id: "cs-devoice", service: .chanServ, title: "Devoice", commandTemplate: "/cs devoice {channel} {nick}", windowTypes: [.channel, .server], inputFields: [
+            AnopeInputField(id: "channel", label: "Channel", placeholder: "#channel", secure: false, isOptional: true),
+            AnopeInputField(id: "nick", label: "Nickname", placeholder: "nickname", secure: false, isOptional: true)
+        ]),
+        AnopeMenuAction(id: "cs-kick", service: .chanServ, title: "Kick", commandTemplate: "/cs kick {channel} {nick} {reason}", windowTypes: [.channel, .server], inputFields: [
+            AnopeInputField(id: "channel", label: "Channel", placeholder: "#channel", secure: false, isOptional: true),
+            AnopeInputField(id: "nick", label: "Nickname", placeholder: "nickname", secure: false),
+            AnopeInputField(id: "reason", label: "Reason", placeholder: "reason", secure: false, isOptional: true)
+        ]),
+        AnopeMenuAction(id: "cs-ban", service: .chanServ, title: "Ban", commandTemplate: "/cs ban {channel} {nick}", windowTypes: [.channel, .server], inputFields: [
+            AnopeInputField(id: "channel", label: "Channel", placeholder: "#channel", secure: false, isOptional: true),
+            AnopeInputField(id: "nick", label: "Nickname/Mask", placeholder: "nickname or *!*@host", secure: false)
+        ]),
+        AnopeMenuAction(id: "cs-unban", service: .chanServ, title: "Unban", commandTemplate: "/cs unban {channel} {nick}", windowTypes: [.channel, .server], inputFields: [
+            AnopeInputField(id: "channel", label: "Channel", placeholder: "#channel", secure: false, isOptional: true),
+            AnopeInputField(id: "nick", label: "Nickname/Mask", placeholder: "nickname or *!*@host", secure: false)
+        ]),
+        AnopeMenuAction(id: "cs-akick-add", service: .chanServ, title: "AKICK Add", commandTemplate: "/cs akick {channel} add {mask} {reason}", windowTypes: [.channel, .server], inputFields: [
+            AnopeInputField(id: "channel", label: "Channel", placeholder: "#channel", secure: false, isOptional: true),
+            AnopeInputField(id: "mask", label: "Mask", placeholder: "nick!user@host", secure: false),
+            AnopeInputField(id: "reason", label: "Reason", placeholder: "reason", secure: false, isOptional: true)
+        ]),
+        AnopeMenuAction(id: "cs-akick-del", service: .chanServ, title: "AKICK Del", commandTemplate: "/cs akick {channel} del {mask}", windowTypes: [.channel, .server], inputFields: [
+            AnopeInputField(id: "channel", label: "Channel", placeholder: "#channel", secure: false, isOptional: true),
+            AnopeInputField(id: "mask", label: "Mask", placeholder: "nick!user@host", secure: false)
+        ]),
+        AnopeMenuAction(id: "cs-akick-list", service: .chanServ, title: "AKICK List", commandTemplate: "/cs akick {channel} list", windowTypes: [.channel, .server], inputFields: [
+            AnopeInputField(id: "channel", label: "Channel", placeholder: "#channel", secure: false, isOptional: true)
+        ]),
+        AnopeMenuAction(id: "cs-flags", service: .chanServ, title: "Flags", commandTemplate: "/cs flags {channel} {target} {flags}", windowTypes: [.channel, .server], inputFields: [
+            AnopeInputField(id: "channel", label: "Channel", placeholder: "#channel", secure: false, isOptional: true),
+            AnopeInputField(id: "target", label: "Target", placeholder: "nickname/account", secure: false),
+            AnopeInputField(id: "flags", label: "Flags", placeholder: "+VOP -AUTOOP", secure: false)
+        ]),
+        AnopeMenuAction(id: "cs-clear-users", service: .chanServ, title: "Clear Users", commandTemplate: "/cs clear users {channel}", windowTypes: [.channel, .server], inputFields: [
+            AnopeInputField(id: "channel", label: "Channel", placeholder: "#channel", secure: false, isOptional: true)
+        ]),
+        AnopeMenuAction(id: "cs-clear-bans", service: .chanServ, title: "Clear Bans", commandTemplate: "/cs clear bans {channel}", windowTypes: [.channel, .server], inputFields: [
+            AnopeInputField(id: "channel", label: "Channel", placeholder: "#channel", secure: false, isOptional: true)
+        ]),
+        AnopeMenuAction(id: "cs-clear-modes", service: .chanServ, title: "Clear Modes", commandTemplate: "/cs clear modes {channel}", windowTypes: [.channel, .server], inputFields: [
+            AnopeInputField(id: "channel", label: "Channel", placeholder: "#channel", secure: false, isOptional: true)
+        ]),
+        AnopeMenuAction(id: "cs-clear-ops", service: .chanServ, title: "Clear Ops", commandTemplate: "/cs clear ops {channel}", windowTypes: [.channel, .server], inputFields: [
+            AnopeInputField(id: "channel", label: "Channel", placeholder: "#channel", secure: false, isOptional: true)
+        ]),
+        AnopeMenuAction(id: "cs-clear-voices", service: .chanServ, title: "Clear Voices", commandTemplate: "/cs clear voices {channel}", windowTypes: [.channel, .server], inputFields: [
+            AnopeInputField(id: "channel", label: "Channel", placeholder: "#channel", secure: false, isOptional: true)
+        ]),
+        AnopeMenuAction(id: "cs-invite", service: .chanServ, title: "Invite", commandTemplate: "/cs invite {channel}", windowTypes: [.channel, .server], inputFields: [
+            AnopeInputField(id: "channel", label: "Channel", placeholder: "#channel", secure: false, isOptional: true)
+        ]),
+        AnopeMenuAction(id: "cs-unban-self", service: .chanServ, title: "Unban Self", commandTemplate: "/cs unban {channel}", windowTypes: [.channel, .server], inputFields: [
+            AnopeInputField(id: "channel", label: "Channel", placeholder: "#channel", secure: false, isOptional: true)
+        ]),
+        AnopeMenuAction(id: "cs-status", service: .chanServ, title: "Status", commandTemplate: "/cs status {channel} {nick}", windowTypes: [.channel, .server], inputFields: [
             AnopeInputField(id: "channel", label: "Channel", placeholder: "#channel", secure: false, isOptional: true),
             AnopeInputField(id: "nick", label: "Nickname", placeholder: "nickname", secure: false, isOptional: true)
         ]),
@@ -193,6 +355,27 @@ enum AnopeCommandCatalog {
         ]),
 
         AnopeMenuAction(id: "os-help", service: .operServ, title: "Help", commandTemplate: "/os help", windowTypes: [.server], inputFields: []),
+        AnopeMenuAction(id: "os-custom", service: .operServ, title: "Custom OperServ Command", commandTemplate: "/os {command}", windowTypes: [.server], inputFields: [
+            AnopeInputField(id: "command", label: "Command", placeholder: "command args...", secure: false)
+        ]),
+
+        // Oper entitlement and services operator management.
+        AnopeMenuAction(id: "os-opertype-list", service: .operServ, title: "OperType List (Entitlements)", commandTemplate: "/os opertype list", windowTypes: [.server], inputFields: []),
+        AnopeMenuAction(id: "os-opertype-info", service: .operServ, title: "OperType Info", commandTemplate: "/os opertype info {opertype}", windowTypes: [.server], inputFields: [
+            AnopeInputField(id: "opertype", label: "OperType", placeholder: "Services-Admin", secure: false)
+        ]),
+        AnopeMenuAction(id: "os-oper-add", service: .operServ, title: "Add Oper", commandTemplate: "/os oper add {nickname} {opertype}", windowTypes: [.server], inputFields: [
+            AnopeInputField(id: "nickname", label: "Nickname/Account", placeholder: "NickOrAccount", secure: false),
+            AnopeInputField(id: "opertype", label: "OperType (Entitlement)", placeholder: "Services-Admin", secure: false)
+        ]),
+        AnopeMenuAction(id: "os-oper-del", service: .operServ, title: "Del Oper", commandTemplate: "/os oper del {nickname}", windowTypes: [.server], inputFields: [
+            AnopeInputField(id: "nickname", label: "Nickname/Account", placeholder: "NickOrAccount", secure: false)
+        ]),
+        AnopeMenuAction(id: "os-oper-list", service: .operServ, title: "Oper List", commandTemplate: "/os oper list", windowTypes: [.server], inputFields: []),
+        AnopeMenuAction(id: "os-oper-info", service: .operServ, title: "Oper Info", commandTemplate: "/os oper info {nickname}", windowTypes: [.server], inputFields: [
+            AnopeInputField(id: "nickname", label: "Nickname/Account", placeholder: "NickOrAccount", secure: false)
+        ]),
+
         AnopeMenuAction(id: "os-akill-add", service: .operServ, title: "AKILL Add", commandTemplate: "/os akill add {mask} {time} {reason}", windowTypes: [.server], inputFields: [
             AnopeInputField(id: "mask", label: "Mask", placeholder: "baduser@host", secure: false),
             AnopeInputField(id: "time", label: "Duration", placeholder: "+1d", secure: false),
@@ -200,6 +383,75 @@ enum AnopeCommandCatalog {
         ]),
         AnopeMenuAction(id: "os-akill-del", service: .operServ, title: "AKILL Del", commandTemplate: "/os akill del {mask}", windowTypes: [.server], inputFields: [
             AnopeInputField(id: "mask", label: "Mask", placeholder: "baduser@host", secure: false)
+        ]),
+        AnopeMenuAction(id: "os-akill-list", service: .operServ, title: "AKILL List", commandTemplate: "/os akill list", windowTypes: [.server], inputFields: []),
+        AnopeMenuAction(id: "os-akill-view", service: .operServ, title: "AKILL View", commandTemplate: "/os akill view {mask}", windowTypes: [.server], inputFields: [
+            AnopeInputField(id: "mask", label: "Mask", placeholder: "baduser@host", secure: false)
+        ]),
+
+        AnopeMenuAction(id: "os-ignore-add", service: .operServ, title: "Ignore Add", commandTemplate: "/os ignore add {mask} {time} {reason}", windowTypes: [.server], inputFields: [
+            AnopeInputField(id: "mask", label: "Mask", placeholder: "nick!user@host", secure: false),
+            AnopeInputField(id: "time", label: "Duration", placeholder: "+1h", secure: false),
+            AnopeInputField(id: "reason", label: "Reason", placeholder: "reason", secure: false)
+        ]),
+        AnopeMenuAction(id: "os-ignore-del", service: .operServ, title: "Ignore Del", commandTemplate: "/os ignore del {mask}", windowTypes: [.server], inputFields: [
+            AnopeInputField(id: "mask", label: "Mask", placeholder: "nick!user@host", secure: false)
+        ]),
+        AnopeMenuAction(id: "os-ignore-list", service: .operServ, title: "Ignore List", commandTemplate: "/os ignore list", windowTypes: [.server], inputFields: []),
+
+        AnopeMenuAction(id: "os-sqline-add", service: .operServ, title: "SQLINE Add", commandTemplate: "/os sqline add {mask} {time} {reason}", windowTypes: [.server], inputFields: [
+            AnopeInputField(id: "mask", label: "Mask", placeholder: "badnick*", secure: false),
+            AnopeInputField(id: "time", label: "Duration", placeholder: "+1d", secure: false),
+            AnopeInputField(id: "reason", label: "Reason", placeholder: "reason", secure: false)
+        ]),
+        AnopeMenuAction(id: "os-sqline-del", service: .operServ, title: "SQLINE Del", commandTemplate: "/os sqline del {mask}", windowTypes: [.server], inputFields: [
+            AnopeInputField(id: "mask", label: "Mask", placeholder: "badnick*", secure: false)
+        ]),
+        AnopeMenuAction(id: "os-sqline-list", service: .operServ, title: "SQLINE List", commandTemplate: "/os sqline list", windowTypes: [.server], inputFields: []),
+
+        AnopeMenuAction(id: "os-szline-add", service: .operServ, title: "SZLINE Add", commandTemplate: "/os szline add {mask} {time} {reason}", windowTypes: [.server], inputFields: [
+            AnopeInputField(id: "mask", label: "Mask", placeholder: "*@bad.host", secure: false),
+            AnopeInputField(id: "time", label: "Duration", placeholder: "+1d", secure: false),
+            AnopeInputField(id: "reason", label: "Reason", placeholder: "reason", secure: false)
+        ]),
+        AnopeMenuAction(id: "os-szline-del", service: .operServ, title: "SZLINE Del", commandTemplate: "/os szline del {mask}", windowTypes: [.server], inputFields: [
+            AnopeInputField(id: "mask", label: "Mask", placeholder: "*@bad.host", secure: false)
+        ]),
+        AnopeMenuAction(id: "os-szline-list", service: .operServ, title: "SZLINE List", commandTemplate: "/os szline list", windowTypes: [.server], inputFields: []),
+
+        AnopeMenuAction(id: "os-sgline-add", service: .operServ, title: "SGLINE Add", commandTemplate: "/os sgline add {mask} {time} {reason}", windowTypes: [.server], inputFields: [
+            AnopeInputField(id: "mask", label: "Mask", placeholder: "badgecos*", secure: false),
+            AnopeInputField(id: "time", label: "Duration", placeholder: "+1d", secure: false),
+            AnopeInputField(id: "reason", label: "Reason", placeholder: "reason", secure: false)
+        ]),
+        AnopeMenuAction(id: "os-sgline-del", service: .operServ, title: "SGLINE Del", commandTemplate: "/os sgline del {mask}", windowTypes: [.server], inputFields: [
+            AnopeInputField(id: "mask", label: "Mask", placeholder: "badgecos*", secure: false)
+        ]),
+        AnopeMenuAction(id: "os-sgline-list", service: .operServ, title: "SGLINE List", commandTemplate: "/os sgline list", windowTypes: [.server], inputFields: []),
+
+        AnopeMenuAction(id: "os-session-list", service: .operServ, title: "Session List", commandTemplate: "/os session list", windowTypes: [.server], inputFields: []),
+        AnopeMenuAction(id: "os-session-view", service: .operServ, title: "Session View", commandTemplate: "/os session view {host}", windowTypes: [.server], inputFields: [
+            AnopeInputField(id: "host", label: "Host", placeholder: "example.com", secure: false)
+        ]),
+        AnopeMenuAction(id: "os-session-reset", service: .operServ, title: "Session Reset", commandTemplate: "/os session reset {host}", windowTypes: [.server], inputFields: [
+            AnopeInputField(id: "host", label: "Host", placeholder: "example.com", secure: false)
+        ]),
+
+        AnopeMenuAction(id: "os-update", service: .operServ, title: "Update", commandTemplate: "/os update", windowTypes: [.server], inputFields: []),
+        AnopeMenuAction(id: "os-reload", service: .operServ, title: "Reload", commandTemplate: "/os reload", windowTypes: [.server], inputFields: []),
+        AnopeMenuAction(id: "os-restart", service: .operServ, title: "Restart", commandTemplate: "/os restart", windowTypes: [.server], inputFields: []),
+        AnopeMenuAction(id: "os-modlist", service: .operServ, title: "Module List", commandTemplate: "/os modlist", windowTypes: [.server], inputFields: []),
+        AnopeMenuAction(id: "os-modinfo", service: .operServ, title: "Module Info", commandTemplate: "/os modinfo {module}", windowTypes: [.server], inputFields: [
+            AnopeInputField(id: "module", label: "Module", placeholder: "os_session", secure: false)
+        ]),
+        AnopeMenuAction(id: "os-modload", service: .operServ, title: "Module Load", commandTemplate: "/os modload {module}", windowTypes: [.server], inputFields: [
+            AnopeInputField(id: "module", label: "Module", placeholder: "module_name", secure: false)
+        ]),
+        AnopeMenuAction(id: "os-modreload", service: .operServ, title: "Module Reload", commandTemplate: "/os modreload {module}", windowTypes: [.server], inputFields: [
+            AnopeInputField(id: "module", label: "Module", placeholder: "module_name", secure: false)
+        ]),
+        AnopeMenuAction(id: "os-modunload", service: .operServ, title: "Module Unload", commandTemplate: "/os modunload {module}", windowTypes: [.server], inputFields: [
+            AnopeInputField(id: "module", label: "Module", placeholder: "module_name", secure: false)
         ]),
 
         AnopeMenuAction(id: "hs-help", service: .hostServ, title: "Help", commandTemplate: "/hs help", windowTypes: [.server, .channel, .privateMessage], inputFields: []),

@@ -112,3 +112,33 @@ This is useful for quick compile validation before launching Xcode.
 
 - Reopen package with `open Package.swift`.
 - Re-enable shared scheme in Manage Schemes.
+
+## 9) Common Console Warnings (macOS)
+
+These messages can appear in Debug console during normal development:
+
+### Cannot index window tabs due to missing main bundle identifier
+
+- Usually appears when launching as a Swift Package executable rather than the app target.
+- Use the `DaystingIRC` app scheme in Xcode (`My Mac`) instead of `swift run` when validating window behavior.
+
+### Unable to obtain a task name port right for pid ... (os/kern) failure (0x5)
+
+- Common sandbox/security limitation log from system components.
+- Benign for this app unless you are explicitly implementing process introspection/debug tooling.
+
+### ViewBridge to RemoteViewService Terminated ... NSViewBridgeErrorCanceled
+
+- Benign in most cases; often emitted when transient system UI/remote views close.
+- Treat as actionable only if you can reproduce visible UI breakage tied to this line.
+
+### AFIsDeviceGreymatterEligible Missing entitlements for os_eligibility lookup
+
+- System/private-framework eligibility check log; not required for this app.
+- Safe to ignore for normal IRC client functionality.
+
+### It's not legal to call -layoutSubtreeIfNeeded on a view which is already being laid out
+
+- This one is potentially actionable if repeated with UI glitches.
+- If reproducible, break on `_NSDetectedLayoutRecursion` and capture the call stack.
+- Verify you are on the latest source where launch-time window focusing was deferred to avoid layout re-entry.

@@ -17,12 +17,21 @@ private struct ThemeMenuCommands: Commands {
 final class AppActivationDelegate: NSObject, NSApplicationDelegate {
     func applicationDidFinishLaunching(_ notification: Notification) {
         NSApp.setActivationPolicy(.regular)
+        // Defer activation until the first run loop to avoid re-entrant layout during launch.
+        DispatchQueue.main.async {
+            self.activateAndFocusWindowIfNeeded()
+        }
+    }
+
+    private func activateAndFocusWindowIfNeeded() {
         NSApp.activate(ignoringOtherApps: true)
 
-        // Ensure a key/main window is available for immediate text input.
-        DispatchQueue.main.async {
-            NSApp.windows.first?.makeKeyAndOrderFront(nil)
-        }
+        // Only force a key window if none is currently key.
+        guard NSApp.keyWindow == nil else { return }
+        guard let window = NSApp.windows.first(where: { !$0.isMiniaturized && $0.canBecomeKey }) else { return }
+
+        window.orderFront(nil)
+        window.makeKey()
     }
 }
 

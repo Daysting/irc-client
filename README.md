@@ -28,6 +28,7 @@ For Xcode launch and bug-testing workflow, see `docs/XCODE_DEBUGGING.md`.
 - Clickable user list entries with quick actions (open private chat, WHOIS, mention)
 - User list includes channel privilege status (owner/admin/op/half-op/voice/user)
 - Contextual Anope Services menus by window type with popup input forms when parameters are required
+- Expanded OperServ contextual menu coverage including OperType entitlement lookup and Add Oper provisioning
 - Operator command set that is blocked unless the session is logged in as server operator
 - Unread message badges on pane tabs
 - Close buttons for private/query tabs
