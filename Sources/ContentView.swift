@@ -98,11 +98,16 @@ private struct MiddleClickCaptureView: NSViewRepresentable {
 }
 
 struct ContentView: View {
+    private enum FocusField: Hashable {
+        case messageInput
+    }
+
     @EnvironmentObject private var vm: IRCViewModel
     @State private var showDeleteThemeConfirmation = false
     @State private var showImportStrategyConfirmation = false
     @State private var pendingImportData: Data?
     @State private var pendingImportFileName: String = ""
+    @FocusState private var focusedField: FocusField?
 
     private var useCustomAppearance: Bool {
         vm.config.enableCustomAppearance
@@ -168,6 +173,15 @@ struct ContentView: View {
             }
         } message: {
             Text("Choose how to handle imported themes that have the same name as existing themes.")
+        }
+        .onAppear {
+            focusMessageFieldSoon()
+        }
+        .onChange(of: vm.selectedWindowID) { _ in
+            focusMessageFieldSoon()
+        }
+        .onChange(of: vm.isConnected) { _ in
+            focusMessageFieldSoon()
         }
     }
 
@@ -520,6 +534,7 @@ struct ContentView: View {
             TextField("Message \(vm.activeWindowTitle) or use command (/ms HELP, /os HELP, /join #chan)", text: $vm.input)
                 .textFieldStyle(.roundedBorder)
                 .foregroundStyle(.primary)
+                .focused($focusedField, equals: .messageInput)
                 .onSubmit {
                     vm.sendCurrentInput()
                 }
@@ -638,5 +653,11 @@ struct ContentView: View {
         }
         pendingImportData = nil
         pendingImportFileName = ""
+    }
+
+    private func focusMessageFieldSoon() {
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.05) {
+            focusedField = .messageInput
+        }
     }
 }
