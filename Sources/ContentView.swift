@@ -103,6 +103,8 @@ struct ContentView: View {
 
     @EnvironmentObject private var vm: IRCViewModel
     @State private var selectedUserNick: String?
+    @State private var activeAnopeAction: AnopeMenuAction?
+    @State private var anopeInputValues: [String: String] = [:]
     @FocusState private var focusedField: FocusField?
 
     private var useCustomAppearance: Bool {
@@ -130,13 +132,15 @@ struct ContentView: View {
                     serverConfigPanel
                 }
                 paneTabsPanel
-                serviceShortcuts
                 chatContentPanel
                 inputPanel
             }
             .padding(16)
         }
         .font(effectiveBaseFont)
+        .sheet(item: $activeAnopeAction) { action in
+            anopePromptSheet(for: action)
+        }
         .onAppear {
             focusMessageFieldSoon()
         }
@@ -297,18 +301,6 @@ struct ContentView: View {
         }
     }
 
-    private var serviceShortcuts: some View {
-        GroupBox("Anope Shortcuts") {
-            HStack {
-                ForEach(ServiceShortcut.allCases) { shortcut in
-                    Button(shortcut.title) {
-                        vm.send(shortcut: shortcut)
-                    }
-                }
-            }
-        }
-    }
-
     private var paneTabsPanel: some View {
         GroupBox("Windows") {
             HStack(spacing: 10) {
@@ -362,6 +354,11 @@ struct ContentView: View {
                             vm.executeContextCommand(command)
                         }
                         .disabled(command.requiresOperator && !vm.isOperator)
+                    }
+
+                    if !anopeActionsForActiveWindow.isEmpty {
+                        Divider()
+                        anopeServicesMenu
                     }
 
                     Divider()
@@ -427,6 +424,11 @@ struct ContentView: View {
                             vm.executeContextCommand(command)
                         }
                         .disabled(command.requiresOperator && !vm.isOperator)
+                    }
+
+                    if !anopeActionsForActiveWindow.isEmpty {
+                        Divider()
+                        anopeServicesMenu
                     }
                 }
             }
@@ -527,7 +529,98 @@ struct ContentView: View {
                 }
                 .disabled(command.requiresOperator && !vm.isOperator)
             }
+
+            if !anopeActionsForActiveWindow.isEmpty {
+                Divider()
+                anopeServicesMenu
+            }
         }
+    }
+
+    @ViewBuilder
+    private var anopeServicesMenu: some View {
+        Menu("Anope Services") {
+            ForEach(AnopeService.allCases) { service in
+                let actions = anopeActionsForActiveWindow.filter { $0.service == service }
+                if !actions.isEmpty {
+                    Menu(service.title) {
+                        ForEach(actions) { action in
+                            Button(action.title) {
+                                startAnopeAction(action)
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    private var anopeActionsForActiveWindow: [AnopeMenuAction] {
+        AnopeCommandCatalog.actions.filter { $0.windowTypes.contains(vm.activeWindow.type) }
+    }
+
+    @ViewBuilder
+    private func anopePromptSheet(for action: AnopeMenuAction) -> some View {
+        VStack(alignment: .leading, spacing: 12) {
+            Text("\(action.service.title) > \(action.title)")
+                .font(.headline)
+
+            ForEach(action.inputFields) { field in
+                if field.secure {
+                    SecureField(field.label, text: Binding(
+                        get: { anopeInputValues[field.id] ?? "" },
+                        set: { anopeInputValues[field.id] = $0 }
+                    ))
+                    .textFieldStyle(.roundedBorder)
+                } else {
+                    TextField(field.label, text: Binding(
+                        get: { anopeInputValues[field.id] ?? "" },
+                        set: { anopeInputValues[field.id] = $0 }
+                    ), prompt: Text(field.placeholder))
+                    .textFieldStyle(.roundedBorder)
+                }
+            }
+
+            HStack {
+                Spacer()
+                Button("Cancel") {
+                    activeAnopeAction = nil
+                }
+                Button("Run") {
+                    runAnopeAction(action)
+                }
+                .keyboardShortcut(.defaultAction)
+                .disabled(action.inputFields.contains { (anopeInputValues[$0.id] ?? "").trimmingCharacters(in: .whitespacesAndNewlines).isEmpty })
+            }
+        }
+        .padding(16)
+        .frame(minWidth: 420)
+    }
+
+    private func startAnopeAction(_ action: AnopeMenuAction) {
+        guard !action.inputFields.isEmpty else {
+            vm.executeAnopeCommand(action.commandTemplate)
+            return
+        }
+
+        anopeInputValues = [:]
+        if action.inputFields.contains(where: { $0.id == "channel" }), vm.activeWindow.type == .channel {
+            anopeInputValues["channel"] = vm.activeWindow.target
+        }
+        if action.inputFields.contains(where: { $0.id == "nick" }), vm.activeWindow.type == .privateMessage {
+            anopeInputValues["nick"] = vm.activeWindow.target
+        }
+        activeAnopeAction = action
+    }
+
+    private func runAnopeAction(_ action: AnopeMenuAction) {
+        var command = action.commandTemplate
+        for field in action.inputFields {
+            let value = (anopeInputValues[field.id] ?? "").trimmingCharacters(in: .whitespacesAndNewlines)
+            command = command.replacingOccurrences(of: "{\(field.id)}", with: value)
+        }
+        vm.executeAnopeCommand(command)
+        activeAnopeAction = nil
     }
 
     private func themedFont(size: CGFloat, weight: Font.Weight = .regular) -> Font {

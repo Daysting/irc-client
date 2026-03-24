@@ -84,6 +84,133 @@ struct IRCContextCommand: Identifiable {
     let requiresOperator: Bool
 }
 
+enum AnopeService: String, CaseIterable, Identifiable {
+    case nickServ
+    case chanServ
+    case memoServ
+    case operServ
+    case hostServ
+    case botServ
+
+    var id: String { rawValue }
+
+    var title: String {
+        switch self {
+        case .nickServ:
+            return "NickServ"
+        case .chanServ:
+            return "ChanServ"
+        case .memoServ:
+            return "MemoServ"
+        case .operServ:
+            return "OperServ"
+        case .hostServ:
+            return "HostServ"
+        case .botServ:
+            return "BotServ"
+        }
+    }
+}
+
+struct AnopeInputField: Identifiable {
+    let id: String
+    let label: String
+    let placeholder: String
+    let secure: Bool
+}
+
+struct AnopeMenuAction: Identifiable {
+    let id: String
+    let service: AnopeService
+    let title: String
+    let commandTemplate: String
+    let windowTypes: Set<IRCWindowType>
+    let inputFields: [AnopeInputField]
+}
+
+enum AnopeCommandCatalog {
+    static let actions: [AnopeMenuAction] = [
+        AnopeMenuAction(id: "ns-help", service: .nickServ, title: "Help", commandTemplate: "/ns help", windowTypes: [.server, .channel, .privateMessage], inputFields: []),
+        AnopeMenuAction(id: "ns-register", service: .nickServ, title: "Register", commandTemplate: "/ns register {password} {email}", windowTypes: [.server, .channel], inputFields: [
+            AnopeInputField(id: "password", label: "Password", placeholder: "password", secure: true),
+            AnopeInputField(id: "email", label: "Email", placeholder: "user@example.com", secure: false)
+        ]),
+        AnopeMenuAction(id: "ns-identify", service: .nickServ, title: "Identify", commandTemplate: "/ns identify {password}", windowTypes: [.server, .channel, .privateMessage], inputFields: [
+            AnopeInputField(id: "password", label: "Password", placeholder: "password", secure: true)
+        ]),
+        AnopeMenuAction(id: "ns-ghost", service: .nickServ, title: "Ghost", commandTemplate: "/ns ghost {nick} {password}", windowTypes: [.server, .channel], inputFields: [
+            AnopeInputField(id: "nick", label: "Nickname", placeholder: "nickname", secure: false),
+            AnopeInputField(id: "password", label: "Password", placeholder: "password", secure: true)
+        ]),
+        AnopeMenuAction(id: "ns-recover", service: .nickServ, title: "Recover", commandTemplate: "/ns recover {nick} {password}", windowTypes: [.server, .channel], inputFields: [
+            AnopeInputField(id: "nick", label: "Nickname", placeholder: "nickname", secure: false),
+            AnopeInputField(id: "password", label: "Password", placeholder: "password", secure: true)
+        ]),
+        AnopeMenuAction(id: "ns-release", service: .nickServ, title: "Release", commandTemplate: "/ns release {nick} {password}", windowTypes: [.server, .channel], inputFields: [
+            AnopeInputField(id: "nick", label: "Nickname", placeholder: "nickname", secure: false),
+            AnopeInputField(id: "password", label: "Password", placeholder: "password", secure: true)
+        ]),
+
+        AnopeMenuAction(id: "cs-help", service: .chanServ, title: "Help", commandTemplate: "/cs help", windowTypes: [.server, .channel], inputFields: []),
+        AnopeMenuAction(id: "cs-register", service: .chanServ, title: "Register", commandTemplate: "/cs register {channel} {description}", windowTypes: [.server, .channel], inputFields: [
+            AnopeInputField(id: "channel", label: "Channel", placeholder: "#channel", secure: false),
+            AnopeInputField(id: "description", label: "Description", placeholder: "Channel description", secure: false)
+        ]),
+        AnopeMenuAction(id: "cs-op", service: .chanServ, title: "Op", commandTemplate: "/cs op {channel} {nick}", windowTypes: [.channel], inputFields: [
+            AnopeInputField(id: "channel", label: "Channel", placeholder: "#channel", secure: false),
+            AnopeInputField(id: "nick", label: "Nickname", placeholder: "nickname", secure: false)
+        ]),
+        AnopeMenuAction(id: "cs-deop", service: .chanServ, title: "Deop", commandTemplate: "/cs deop {channel} {nick}", windowTypes: [.channel], inputFields: [
+            AnopeInputField(id: "channel", label: "Channel", placeholder: "#channel", secure: false),
+            AnopeInputField(id: "nick", label: "Nickname", placeholder: "nickname", secure: false)
+        ]),
+        AnopeMenuAction(id: "cs-voice", service: .chanServ, title: "Voice", commandTemplate: "/cs voice {channel} {nick}", windowTypes: [.channel], inputFields: [
+            AnopeInputField(id: "channel", label: "Channel", placeholder: "#channel", secure: false),
+            AnopeInputField(id: "nick", label: "Nickname", placeholder: "nickname", secure: false)
+        ]),
+        AnopeMenuAction(id: "cs-devoice", service: .chanServ, title: "Devoice", commandTemplate: "/cs devoice {channel} {nick}", windowTypes: [.channel], inputFields: [
+            AnopeInputField(id: "channel", label: "Channel", placeholder: "#channel", secure: false),
+            AnopeInputField(id: "nick", label: "Nickname", placeholder: "nickname", secure: false)
+        ]),
+
+        AnopeMenuAction(id: "ms-help", service: .memoServ, title: "Help", commandTemplate: "/ms help", windowTypes: [.server, .channel, .privateMessage], inputFields: []),
+        AnopeMenuAction(id: "ms-send", service: .memoServ, title: "Send", commandTemplate: "/ms send {nick} {message}", windowTypes: [.server, .privateMessage], inputFields: [
+            AnopeInputField(id: "nick", label: "Nickname", placeholder: "nickname", secure: false),
+            AnopeInputField(id: "message", label: "Message", placeholder: "memo text", secure: false)
+        ]),
+        AnopeMenuAction(id: "ms-list", service: .memoServ, title: "List", commandTemplate: "/ms list", windowTypes: [.server, .channel, .privateMessage], inputFields: []),
+        AnopeMenuAction(id: "ms-read", service: .memoServ, title: "Read", commandTemplate: "/ms read {number}", windowTypes: [.server, .channel, .privateMessage], inputFields: [
+            AnopeInputField(id: "number", label: "Memo Number", placeholder: "1", secure: false)
+        ]),
+
+        AnopeMenuAction(id: "os-help", service: .operServ, title: "Help", commandTemplate: "/os help", windowTypes: [.server], inputFields: []),
+        AnopeMenuAction(id: "os-akill-add", service: .operServ, title: "AKILL Add", commandTemplate: "/os akill add {mask} {time} {reason}", windowTypes: [.server], inputFields: [
+            AnopeInputField(id: "mask", label: "Mask", placeholder: "baduser@host", secure: false),
+            AnopeInputField(id: "time", label: "Duration", placeholder: "+1d", secure: false),
+            AnopeInputField(id: "reason", label: "Reason", placeholder: "reason", secure: false)
+        ]),
+        AnopeMenuAction(id: "os-akill-del", service: .operServ, title: "AKILL Del", commandTemplate: "/os akill del {mask}", windowTypes: [.server], inputFields: [
+            AnopeInputField(id: "mask", label: "Mask", placeholder: "baduser@host", secure: false)
+        ]),
+
+        AnopeMenuAction(id: "hs-help", service: .hostServ, title: "Help", commandTemplate: "/hs help", windowTypes: [.server, .channel, .privateMessage], inputFields: []),
+        AnopeMenuAction(id: "hs-request", service: .hostServ, title: "Request", commandTemplate: "/hs request {vhost}", windowTypes: [.server, .channel, .privateMessage], inputFields: [
+            AnopeInputField(id: "vhost", label: "Requested Vhost", placeholder: "vhost.example.com", secure: false)
+        ]),
+        AnopeMenuAction(id: "hs-on", service: .hostServ, title: "On", commandTemplate: "/hs on", windowTypes: [.server, .channel, .privateMessage], inputFields: []),
+        AnopeMenuAction(id: "hs-off", service: .hostServ, title: "Off", commandTemplate: "/hs off", windowTypes: [.server, .channel, .privateMessage], inputFields: []),
+
+        AnopeMenuAction(id: "bs-help", service: .botServ, title: "Help", commandTemplate: "/bs help", windowTypes: [.server, .channel], inputFields: []),
+        AnopeMenuAction(id: "bs-assign", service: .botServ, title: "Assign", commandTemplate: "/bs assign {channel} {bot}", windowTypes: [.server, .channel], inputFields: [
+            AnopeInputField(id: "channel", label: "Channel", placeholder: "#channel", secure: false),
+            AnopeInputField(id: "bot", label: "Bot", placeholder: "BotNick", secure: false)
+        ]),
+        AnopeMenuAction(id: "bs-unassign", service: .botServ, title: "Unassign", commandTemplate: "/bs unassign {channel}", windowTypes: [.server, .channel], inputFields: [
+            AnopeInputField(id: "channel", label: "Channel", placeholder: "#channel", secure: false)
+        ])
+    ]
+}
+
 struct IRCServerConfig: Codable {
     var host: String = "irc.daysting.com"
     var port: UInt16 = 6697

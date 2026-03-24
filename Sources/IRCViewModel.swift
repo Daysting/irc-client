@@ -598,6 +598,12 @@ final class IRCViewModel: ObservableObject {
         send(command: command)
     }
 
+    func executeAnopeCommand(_ command: String) {
+        let cleaned = command.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard !cleaned.isEmpty else { return }
+        send(command: cleaned)
+    }
+
     func send(shortcut: ServiceShortcut) {
         send(command: shortcut.commandTemplate)
     }
@@ -1286,6 +1292,14 @@ final class IRCViewModel: ObservableObject {
         guard let head = parts.first?.lowercased() else { return nil }
 
         switch head {
+        case "/ns":
+            let tail = parts.dropFirst().joined(separator: " ")
+            guard !tail.isEmpty else { return "PRIVMSG NickServ :HELP" }
+            return "PRIVMSG NickServ :\(tail)"
+        case "/cs":
+            let tail = parts.dropFirst().joined(separator: " ")
+            guard !tail.isEmpty else { return "PRIVMSG ChanServ :HELP" }
+            return "PRIVMSG ChanServ :\(tail)"
         case "/ms":
             let tail = parts.dropFirst().joined(separator: " ")
             guard !tail.isEmpty else { return "PRIVMSG MemoServ :HELP" }
@@ -1294,6 +1308,14 @@ final class IRCViewModel: ObservableObject {
             let tail = parts.dropFirst().joined(separator: " ")
             guard !tail.isEmpty else { return "PRIVMSG OperServ :HELP" }
             return "PRIVMSG OperServ :\(tail)"
+        case "/hs":
+            let tail = parts.dropFirst().joined(separator: " ")
+            guard !tail.isEmpty else { return "PRIVMSG HostServ :HELP" }
+            return "PRIVMSG HostServ :\(tail)"
+        case "/bs":
+            let tail = parts.dropFirst().joined(separator: " ")
+            guard !tail.isEmpty else { return "PRIVMSG BotServ :HELP" }
+            return "PRIVMSG BotServ :\(tail)"
         default:
             return nil
         }

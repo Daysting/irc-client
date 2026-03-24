@@ -74,12 +74,22 @@ Both are required for automatic `/OPER`.
 - Action command:
   - `/me waves` sends an IRC ACTION message.
 
+All IRC commands:
+- Any slash command is sent as a command line, so advanced IRC commands can be used directly.
+
 Anope aliases:
+- `/ns HELP` sends to NickServ.
+- `/cs HELP` sends to ChanServ.
 - `/ms HELP` sends to MemoServ.
 - `/os HELP` sends to OperServ.
+- `/hs HELP` sends to HostServ.
+- `/bs HELP` sends to BotServ.
 
-Shortcut buttons:
-- Use `Anope Shortcuts` for common MemoServ and OperServ actions.
+Contextual Anope menus:
+- Open the right-click/context menu in the active window and choose `Anope Services`.
+- Service menus are filtered by the active window type.
+- If a command requires parameters, a popup input form appears and then runs the generated command.
+- Example: `NickServ > Register` asks for `Password` then `Email`, then runs `/ns register <password> <email>`.
 
 ## 5) Tabs and Windows
 

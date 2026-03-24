@@ -27,6 +27,7 @@ For Xcode launch and bug-testing workflow, see `docs/XCODE_DEBUGGING.md`.
 - Right-side user list pane for active conversation context
 - Clickable user list entries with quick actions (open private chat, WHOIS, mention)
 - User list includes channel privilege status (owner/admin/op/half-op/voice/user)
+- Contextual Anope Services menus by window type with popup input forms when parameters are required
 - Operator command set that is blocked unless the session is logged in as server operator
 - Unread message badges on pane tabs
 - Close buttons for private/query tabs
@@ -57,9 +58,12 @@ For Xcode launch and bug-testing workflow, see `docs/XCODE_DEBUGGING.md`.
 - `/me` action command support
 - Chat message rendering in readable format: `<username> message`
 - Anope aliases:
+  - `/ns <command>` -> `PRIVMSG NickServ :<command>`
+  - `/cs <command>` -> `PRIVMSG ChanServ :<command>`
   - `/ms <command>` -> `PRIVMSG MemoServ :<command>`
   - `/os <command>` -> `PRIVMSG OperServ :<command>`
-- Quick shortcut buttons for common MemoServ/OperServ tasks
+  - `/hs <command>` -> `PRIVMSG HostServ :<command>`
+  - `/bs <command>` -> `PRIVMSG BotServ :<command>`
 
 ## Build and run
 
@@ -107,38 +111,40 @@ Or use the helper script:
   - Connect is disabled for critical profile errors (for example empty host or invalid primary channel format).
 7. Send normal messages or IRC raw commands:
    - Normal text sends to your current channel.
-   - Prefix with `/` for raw command passthrough (e.g. `/join #support`).
+  - Prefix with `/` for raw command passthrough (supports full IRC command usage, e.g. `/join #support`).
   - Use `/me <action>` for action messages.
-   - Use Anope aliases like `/ms HELP` and `/os HELP`.
+  - Use Anope aliases like `/ns HELP`, `/cs HELP`, `/ms HELP`, `/os HELP`, `/hs HELP`, `/bs HELP`.
 8. Use the `Windows` tab strip to switch between server, channel, and private panes.
 9. The right-side `Users` pane shows users in the active channel.
 10. Click a user to open a private chat tab immediately.
 11. Right-click a user for quick actions: `Open Private Chat`, `WHOIS`, and `Mention`.
 12. Open `Context Commands` from the active pane for command shortcuts relevant to that pane type.
-13. Private/query tabs can be closed with the `x` button on the tab.
-14. Private/query tabs can also be closed with middle-click on the tab.
-15. Use `Close All Private Tabs` from `Context Commands` to clean up query tabs quickly.
-16. Use `Close Other Private Tabs` to keep only the current private tab.
-17. Use `Reopen Last Closed Private Tab` to restore the last query tab you closed.
-18. Use `Recently Closed Private Tabs` to reopen a specific query tab from history.
-19. Operator commands are enabled only after the server reports operator status (for example after successful `/OPER`).
-20. Recently closed private-tab history is restored when the app starts.
-21. Open pane layout, selected pane, and unread counts are restored when the app starts.
-22. Connection profile settings are restored when the app starts.
-23. Invalid fields are highlighted in red (blocking) or orange (warning) directly in the connection form.
-24. Hover the warning icon next to a highlighted field to preview remediation guidance.
-25. Click the warning icon to open a popover with the same guidance text.
-26. Each popover includes a "Fix example" value pattern for quick correction.
-27. Use the popover `Copy` button to copy the example pattern to your clipboard.
-28. Open `Theme > Theme Controls` from the menu bar to manage all appearance options.
-29. Optional: enable `Custom Theme` to personalize font family, font size, text color, and app background color.
-30. Enter a theme name and click `Save Theme` to store your current appearance settings.
-31. Saving with an existing theme name overwrites that theme.
-32. Use `Saved Themes` + `Apply Theme` to switch presets.
-33. Use `Delete Theme` to remove a preset and `Reset Theme` to restore defaults.
-34. `Delete Theme` asks for confirmation before removing the preset.
-35. Use `Export Themes` to write your presets to a JSON file.
-36. `Import Themes` lets you choose conflict handling: `Replace Existing Names` or `Keep Both`.
+13. Use `Anope Services` in contextual menus for service commands by service type.
+14. If a service command needs parameters (for example NickServ Register), a popup form collects input and runs the command.
+15. Private/query tabs can be closed with the `x` button on the tab.
+16. Private/query tabs can also be closed with middle-click on the tab.
+17. Use `Close All Private Tabs` from `Context Commands` to clean up query tabs quickly.
+18. Use `Close Other Private Tabs` to keep only the current private tab.
+19. Use `Reopen Last Closed Private Tab` to restore the last query tab you closed.
+20. Use `Recently Closed Private Tabs` to reopen a specific query tab from history.
+21. Operator commands are enabled only after the server reports operator status (for example after successful `/OPER`).
+22. Recently closed private-tab history is restored when the app starts.
+23. Open pane layout, selected pane, and unread counts are restored when the app starts.
+24. Connection profile settings are restored when the app starts.
+25. Invalid fields are highlighted in red (blocking) or orange (warning) directly in the connection form.
+26. Hover the warning icon next to a highlighted field to preview remediation guidance.
+27. Click the warning icon to open a popover with the same guidance text.
+28. Each popover includes a "Fix example" value pattern for quick correction.
+29. Use the popover `Copy` button to copy the example pattern to your clipboard.
+30. Open `Theme > Theme Controls` from the menu bar to manage all appearance options.
+31. Optional: enable `Custom Theme` to personalize font family, font size, text color, and app background color.
+32. Enter a theme name and click `Save Theme` to store your current appearance settings.
+33. Saving with an existing theme name overwrites that theme.
+34. Use `Saved Themes` + `Apply Theme` to switch presets.
+35. Use `Delete Theme` to remove a preset and `Reset Theme` to restore defaults.
+36. `Delete Theme` asks for confirmation before removing the preset.
+37. Use `Export Themes` to write your presets to a JSON file.
+38. `Import Themes` lets you choose conflict handling: `Replace Existing Names` or `Keep Both`.
 
 ## Security notes
 
