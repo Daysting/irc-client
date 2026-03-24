@@ -25,8 +25,8 @@ public sealed class MainWindowViewModel : ObservableObject, IAsyncDisposable
     private string _statusText = "Ready";
     private bool _isConnected;
     private bool _isOperator;
-    private IBrush _themeBackgroundBrush = new SolidColorBrush(Color.Parse("#FBF8F2"));
-    private IBrush _themeTextBrush = new SolidColorBrush(Color.Parse("#1B1F23"));
+    private IBrush _themeBackgroundBrush = new SolidColorBrush(Color.Parse("#000000"));
+    private IBrush _themeTextBrush = new SolidColorBrush(Color.Parse("#FFFFFF"));
 
     public MainWindowViewModel()
     {
@@ -116,17 +116,17 @@ public sealed class MainWindowViewModel : ObservableObject, IAsyncDisposable
         {
             if (!IsThemeBackgroundColorValid && !IsThemeTextColorValid)
             {
-                return "Theme background and text colors are invalid. Use hex values like #FBF8F2 and #1B1F23.";
+                return "Theme background and text colors are invalid. Use hex values like #000000 and #FFFFFF.";
             }
 
             if (!IsThemeBackgroundColorValid)
             {
-                return "Theme background color is invalid. Use a value like #FBF8F2.";
+                return "Theme background color is invalid. Use a value like #000000.";
             }
 
             if (!IsThemeTextColorValid)
             {
-                return "Theme text color is invalid. Use a value like #1B1F23.";
+                return "Theme text color is invalid. Use a value like #FFFFFF.";
             }
 
             return string.Empty;
@@ -234,8 +234,8 @@ public sealed class MainWindowViewModel : ObservableObject, IAsyncDisposable
 
     public void ResetThemeColors()
     {
-        Profile.ThemeBackgroundColor = "#FBF8F2";
-        Profile.ThemeTextColor = "#1B1F23";
+        Profile.ThemeBackgroundColor = "#000000";
+        Profile.ThemeTextColor = "#FFFFFF";
     }
 
     private void OnProfileChanged(object? sender, PropertyChangedEventArgs e)
@@ -258,8 +258,8 @@ public sealed class MainWindowViewModel : ObservableObject, IAsyncDisposable
 
     private void ApplyThemeFromProfile()
     {
-        ThemeBackgroundBrush = new SolidColorBrush(ParseColorOrDefault(Profile.ThemeBackgroundColor, "#FBF8F2"));
-        ThemeTextBrush = new SolidColorBrush(ParseColorOrDefault(Profile.ThemeTextColor, "#1B1F23"));
+        ThemeBackgroundBrush = new SolidColorBrush(ParseColorOrDefault(Profile.ThemeBackgroundColor, "#000000"));
+        ThemeTextBrush = new SolidColorBrush(ParseColorOrDefault(Profile.ThemeTextColor, "#FFFFFF"));
     }
 
     private static Color ParseColorOrDefault(string input, string fallback)

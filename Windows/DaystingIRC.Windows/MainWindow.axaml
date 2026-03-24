@@ -17,12 +17,12 @@
   </Design.DataContext>
 
   <Grid RowDefinitions="Auto,*,Auto" ColumnDefinitions="*">
-    <Border Grid.Row="0" Margin="12,12,12,8" Padding="14" Background="#ECE6D8" CornerRadius="12">
+    <Border Grid.Row="0" Margin="12,12,12,8" Padding="14" Background="#000000" BorderBrush="#222222" BorderThickness="1" CornerRadius="12">
       <StackPanel Spacing="10">
         <StackPanel Orientation="Horizontal" Spacing="12">
           <TextBlock Text="Daysting IRC" FontSize="24" FontWeight="SemiBold" />
-          <Border Background="#D39E3F" CornerRadius="999" Padding="10,4">
-            <TextBlock Text="Windows build" FontWeight="SemiBold" Foreground="#1B1F23" />
+          <Border Background="#1A1A1A" BorderBrush="#2A2A2A" BorderThickness="1" CornerRadius="999" Padding="10,4">
+            <TextBlock Text="Windows build" FontWeight="SemiBold" Foreground="#FFFFFF" />
           </Border>
           <TextBlock Text="irc.daysting.com:6697 over TLS 1.2+" VerticalAlignment="Center" />
         </StackPanel>
@@ -58,21 +58,21 @@
             <TextBlock VerticalAlignment="Center" Text="Type /ns, /cs, /ms, /os, /hs, or /bs for service shortcuts." />
           </WrapPanel>
 
-          <TextBlock IsVisible="{Binding HasThemeValidationIssues}" Foreground="#9B2C2C" Text="{Binding ThemeValidationMessage}" />
+          <TextBlock IsVisible="{Binding HasThemeValidationIssues}" Foreground="#FF7A7A" Text="{Binding ThemeValidationMessage}" />
         </StackPanel>
       </StackPanel>
     </Border>
 
     <Grid Grid.Row="1" Margin="12,0,12,8" ColumnDefinitions="3*,1*">
-      <Border Grid.Column="0" Margin="0,0,8,0" Background="#F4EFE4" CornerRadius="12" Padding="8">
+      <Border Grid.Column="0" Margin="0,0,8,0" Background="#000000" BorderBrush="#222222" BorderThickness="1" CornerRadius="12" Padding="8">
         <TabControl ItemsSource="{Binding Panes}" SelectedItem="{Binding SelectedPane}">
           <TabControl.ItemTemplate>
             <DataTemplate>
-              <Border Padding="8,4" Background="#E7DDC7" CornerRadius="8">
+              <Border Padding="8,4" Background="#111111" BorderBrush="#222222" BorderThickness="1" CornerRadius="8">
                 <StackPanel Orientation="Horizontal" Spacing="8">
                   <TextBlock Text="{Binding Title}" FontWeight="SemiBold" />
-                  <Border Background="#101820" CornerRadius="999" Padding="6,1" IsVisible="{Binding HasUnread}">
-                    <TextBlock Text="{Binding UnreadCount}" Foreground="#F7F3E9" FontSize="11" />
+                  <Border Background="#FFFFFF" CornerRadius="999" Padding="6,1" IsVisible="{Binding HasUnread}">
+                    <TextBlock Text="{Binding UnreadCount}" Foreground="#000000" FontSize="11" />
                   </Border>
                   <Button Padding="4,0" IsVisible="{Binding CanClose}" Tag="{Binding}" Click="ClosePaneClicked">x</Button>
                 </StackPanel>
@@ -83,10 +83,10 @@
           <TabControl.ContentTemplate>
             <DataTemplate>
               <Grid RowDefinitions="Auto,*">
-                <Border Background="#EAE3D2" CornerRadius="8" Padding="10" Margin="0,0,0,8" IsVisible="{Binding HasTopic}">
+                <Border Background="#0C0C0C" BorderBrush="#1D1D1D" BorderThickness="1" CornerRadius="8" Padding="10" Margin="0,0,0,8" IsVisible="{Binding HasTopic}">
                   <TextBlock Text="{Binding Topic}" TextWrapping="Wrap" FontStyle="Italic" />
                 </Border>
-                <ListBox Grid.Row="1" ItemsSource="{Binding Messages}" Background="#FBF8F2" BorderThickness="0">
+                <ListBox Grid.Row="1" ItemsSource="{Binding Messages}" Background="#000000" BorderThickness="0">
                   <ListBox.ItemTemplate>
                     <DataTemplate>
                       <TextBlock Text="{Binding}" TextWrapping="Wrap" Margin="0,0,0,4" />
@@ -99,18 +99,18 @@
         </TabControl>
       </Border>
 
-      <Border Grid.Column="1" Background="#E7EEF2" CornerRadius="12" Padding="12">
+      <Border Grid.Column="1" Background="#000000" BorderBrush="#222222" BorderThickness="1" CornerRadius="12" Padding="12">
         <StackPanel Spacing="10">
           <TextBlock Text="Channel Users" FontSize="18" FontWeight="SemiBold" />
           <TextBlock Text="{Binding SelectedPane.Topic}" TextWrapping="Wrap" FontStyle="Italic" IsVisible="{Binding SelectedPane.HasTopic}" />
-          <ListBox ItemsSource="{Binding SelectedPane.Users}" Background="#F7FAFC" BorderThickness="0">
+          <ListBox ItemsSource="{Binding SelectedPane.Users}" Background="#000000" BorderThickness="0">
             <ListBox.ItemTemplate>
               <DataTemplate>
                 <TextBlock Text="{Binding DisplayName}" />
               </DataTemplate>
             </ListBox.ItemTemplate>
           </ListBox>
-          <Border Background="#D9E4EA" CornerRadius="10" Padding="10">
+          <Border Background="#0F0F0F" BorderBrush="#1E1E1E" BorderThickness="1" CornerRadius="10" Padding="10">
             <StackPanel Spacing="4">
               <TextBlock Text="State" FontWeight="SemiBold" />
               <TextBlock Text="{Binding StatusText}" TextWrapping="Wrap" />
@@ -121,7 +121,7 @@
       </Border>
     </Grid>
 
-    <Border Grid.Row="2" Margin="12,0,12,12" Padding="10" Background="#ECE6D8" CornerRadius="12">
+    <Border Grid.Row="2" Margin="12,0,12,12" Padding="10" Background="#000000" BorderBrush="#222222" BorderThickness="1" CornerRadius="12">
       <Grid ColumnDefinitions="*,120">
         <TextBox Grid.Column="0" Watermark="Send a message or slash command" Text="{Binding InputText}" KeyDown="InputKeyDown" IsEnabled="{Binding IsConnected}" />
         <Button Grid.Column="1" Margin="10,0,0,0" Content="Send" Click="SendClicked" IsEnabled="{Binding IsConnected}" />

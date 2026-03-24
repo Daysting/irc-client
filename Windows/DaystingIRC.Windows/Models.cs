@@ -37,8 +37,8 @@ public sealed class ProfileSettings : ObservableObject
     private string _operPassword = string.Empty;
     private string _username = "daysting";
     private string _realName = "Daysting IRC";
-    private string _themeBackgroundColor = "#FBF8F2";
-    private string _themeTextColor = "#1B1F23";
+    private string _themeBackgroundColor = "#000000";
+    private string _themeTextColor = "#FFFFFF";
 
     public string Nickname
     {
