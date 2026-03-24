@@ -110,6 +110,12 @@ dotnet run
 
 For Windows-specific notes, see `docs/WINDOWS.md`.
 
+To build a Windows setup wizard from this repository:
+
+```bash
+./scripts/build_windows_installer.sh
+```
+
 ## Usage
 
 1. Launch app.

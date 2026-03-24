@@ -42,6 +42,29 @@ Run locally:
 dotnet run
 ```
 
+## Installer wizard
+
+This repository includes an NSIS-based installer definition at `Windows/Installer/DaystingIRC.Windows.nsi`.
+
+Build the Windows setup wizard from the repository root:
+
+```bash
+./scripts/build_windows_installer.sh
+```
+
+That script:
+
+- publishes the app for `win-x64`
+- produces a self-contained single-file executable
+- compiles an NSIS setup wizard
+- writes the installer to `dist/windows/DaystingIRC-Windows-Setup-<version>.exe`
+
+The installer:
+
+- installs into `Program Files\Daysting IRC`
+- creates Start Menu and desktop shortcuts
+- registers an uninstaller with Windows
+
 ## Persistence
 
 The Windows client stores its local state in:
