@@ -1,6 +1,5 @@
 import SwiftUI
 import AppKit
-import UniformTypeIdentifiers
 
 private extension View {
     func validationBorder(color: Color?) -> some View {
@@ -103,11 +102,8 @@ struct ContentView: View {
     }
 
     @EnvironmentObject private var vm: IRCViewModel
-    @State private var showDeleteThemeConfirmation = false
-    @State private var showImportStrategyConfirmation = false
-    @State private var pendingImportData: Data?
-    @State private var pendingImportFileName: String = ""
     @State private var selectedUserNick: String?
+    @State private var showServerInfo = true
     @FocusState private var focusedField: FocusField?
 
     private var useCustomAppearance: Bool {
@@ -121,20 +117,6 @@ struct ContentView: View {
     private var effectiveBaseFont: Font {
         let size = CGFloat(max(10, min(24, vm.config.appearanceFontSize)))
         return themedFont(size: size)
-    }
-
-    private var appearanceTextColorBinding: Binding<Color> {
-        Binding(
-            get: { color(from: vm.config.appearanceTextColor) },
-            set: { vm.config.appearanceTextColor = rgba(from: $0) }
-        )
-    }
-
-    private var appearanceBackgroundColorBinding: Binding<Color> {
-        Binding(
-            get: { color(from: vm.config.appearanceBackgroundColor) },
-            set: { vm.config.appearanceBackgroundColor = rgba(from: $0) }
-        )
     }
 
     var body: some View {
@@ -152,29 +134,6 @@ struct ContentView: View {
             .padding(16)
         }
         .font(effectiveBaseFont)
-        .confirmationDialog("Delete selected theme?", isPresented: $showDeleteThemeConfirmation, titleVisibility: .visible) {
-            Button("Delete", role: .destructive) {
-                vm.deleteSelectedTheme()
-            }
-            Button("Cancel", role: .cancel) {}
-        } message: {
-            Text("This removes the currently selected theme preset.")
-        }
-        .confirmationDialog("Import Themes", isPresented: $showImportStrategyConfirmation, titleVisibility: .visible) {
-            Button("Replace Existing Names") {
-                runThemeImport(strategy: .replaceExistingNames)
-            }
-            Button("Keep Both") {
-                runThemeImport(strategy: .keepBoth)
-            }
-            Button("Cancel", role: .cancel) {
-                vm.setThemeStatus("Import canceled", isError: true)
-                pendingImportData = nil
-                pendingImportFileName = ""
-            }
-        } message: {
-            Text("Choose how to handle imported themes that have the same name as existing themes.")
-        }
         .onAppear {
             focusMessageFieldSoon()
         }
@@ -183,6 +142,9 @@ struct ContentView: View {
         }
         .onChange(of: vm.isConnected) { _ in
             focusMessageFieldSoon()
+            if vm.isConnected {
+                showServerInfo = false
+            }
         }
     }
 
@@ -190,10 +152,25 @@ struct ContentView: View {
         GroupBox("Connection") {
             VStack(spacing: 10) {
                 HStack(spacing: 10) {
-                    Text("Server: \(IRCViewModel.lockedHost):\(IRCViewModel.lockedPort) (TLS)")
-                        .font(themedFont(size: 13, weight: .semibold))
-                        .foregroundStyle(.secondary)
-                        .frame(width: 320, alignment: .leading)
+                    if showServerInfo || !vm.isConnected {
+                        Text("Server: \(IRCViewModel.lockedHost):\(IRCViewModel.lockedPort) (TLS)")
+                            .font(themedFont(size: 13, weight: .semibold))
+                            .foregroundStyle(.secondary)
+                            .frame(width: 320, alignment: .leading)
+                    } else {
+                        Text("Server info hidden")
+                            .font(themedFont(size: 13, weight: .semibold))
+                            .foregroundStyle(.secondary)
+                            .frame(width: 320, alignment: .leading)
+                    }
+
+                    if vm.isConnected {
+                        Button(showServerInfo ? "Hide Server Info" : "Show Server Info") {
+                            showServerInfo.toggle()
+                        }
+                        .buttonStyle(.bordered)
+                    }
+
                     TextField("Nick", text: $vm.config.nickname)
                         .textFieldStyle(.roundedBorder)
                     TextField("Channel", text: $vm.config.channel)
@@ -285,69 +262,9 @@ struct ContentView: View {
                 }
 
                 HStack(spacing: 10) {
-                    Toggle("Custom Theme", isOn: $vm.config.enableCustomAppearance)
-                        .toggleStyle(.switch)
-                        .frame(width: 130)
-                    Picker("Font", selection: $vm.config.appearanceFontFamily) {
-                        ForEach(AppearanceFontFamily.allCases) { family in
-                            Text(family.title).tag(family)
-                        }
-                    }
-                    .frame(width: 220)
-                    Stepper(
-                        "Font Size: \(Int(vm.config.appearanceFontSize))",
-                        value: $vm.config.appearanceFontSize,
-                        in: 10...24,
-                        step: 1
-                    )
-                    .frame(width: 180)
-                    ColorPicker("Text", selection: appearanceTextColorBinding, supportsOpacity: true)
-                        .frame(width: 150)
-                    ColorPicker("Background", selection: appearanceBackgroundColorBinding, supportsOpacity: true)
-                        .frame(width: 180)
-                    Spacer()
-                }
-
-                HStack(spacing: 10) {
-                    TextField("Theme Name", text: $vm.themeDraftName)
-                        .textFieldStyle(.roundedBorder)
-                        .frame(width: 220)
-
-                    Button("Save Theme") {
-                        vm.saveCurrentTheme()
-                    }
-                    .disabled(vm.themeDraftName.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty)
-
-                    Picker("Saved Themes", selection: $vm.selectedThemeID) {
-                        Text("Select Theme").tag("")
-                        ForEach(vm.savedThemes) { theme in
-                            Text(theme.name).tag(theme.id)
-                        }
-                    }
-                    .frame(width: 240)
-
-                    Button("Apply Theme") {
-                        vm.applySelectedTheme()
-                    }
-                    .disabled(!vm.hasSelectedSavedTheme)
-
-                    Button("Delete Theme") {
-                        showDeleteThemeConfirmation = true
-                    }
-                    .disabled(!vm.hasSelectedSavedTheme)
-
-                    Button("Reset Theme") {
-                        vm.resetAppearanceToDefaults()
-                    }
-
-                    Button("Export Themes") {
-                        exportThemesToJSONFile()
-                    }
-
-                    Button("Import Themes") {
-                        importThemesFromJSONFile()
-                    }
-
+                    Text("Theme controls are available from the menu bar: Theme > Theme Controls")
+                        .font(themedFont(size: 12))
+                        .foregroundStyle(.secondary)
                     Spacer()
                 }
 
@@ -680,67 +597,6 @@ struct ContentView: View {
             blue: Double(rgbColor.blueComponent),
             alpha: Double(rgbColor.alphaComponent)
         )
-    }
-
-    private func exportThemesToJSONFile() {
-        guard let data = vm.exportThemesData() else {
-            vm.setThemeStatus("Export failed: unable to encode themes", isError: true)
-            return
-        }
-
-        let panel = NSSavePanel()
-        panel.title = "Export Theme Presets"
-        panel.nameFieldStringValue = "daysting-themes.json"
-        panel.allowedContentTypes = [UTType.json]
-        panel.canCreateDirectories = true
-
-        guard panel.runModal() == .OK, let url = panel.url else {
-            vm.setThemeStatus("Export canceled", isError: true)
-            return
-        }
-
-        do {
-            try data.write(to: url, options: .atomic)
-            vm.setThemeStatus("Exported themes to \(url.lastPathComponent)", isError: false)
-        } catch {
-            vm.setThemeStatus("Export failed: \(error.localizedDescription)", isError: true)
-        }
-    }
-
-    private func importThemesFromJSONFile() {
-        let panel = NSOpenPanel()
-        panel.title = "Import Theme Presets"
-        panel.allowedContentTypes = [UTType.json]
-        panel.canChooseFiles = true
-        panel.canChooseDirectories = false
-        panel.allowsMultipleSelection = false
-
-        guard panel.runModal() == .OK, let url = panel.url else {
-            vm.setThemeStatus("Import canceled", isError: true)
-            return
-        }
-
-        do {
-            let data = try Data(contentsOf: url)
-            pendingImportData = data
-            pendingImportFileName = url.lastPathComponent
-            showImportStrategyConfirmation = true
-        } catch {
-            vm.setThemeStatus("Import failed: \(error.localizedDescription)", isError: true)
-        }
-    }
-
-    private func runThemeImport(strategy: IRCViewModel.ThemeImportStrategy) {
-        guard let data = pendingImportData else {
-            vm.setThemeStatus("Import failed: no file data loaded", isError: true)
-            return
-        }
-        let imported = vm.importThemesData(data, strategy: strategy)
-        if imported > 0 {
-            vm.setThemeStatus("Imported \(imported) theme(s) from \(pendingImportFileName)", isError: false)
-        }
-        pendingImportData = nil
-        pendingImportFileName = ""
     }
 
     private func focusMessageFieldSoon() {

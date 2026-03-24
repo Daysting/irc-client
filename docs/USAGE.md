@@ -125,7 +125,7 @@ The app tracks actual operator login state.
 
 ## 7) Appearance Customization
 
-Use `Custom Theme` to control app look.
+Open `Theme > Theme Controls` from the menu bar to control app appearance.
 
 Controls:
 - Font family

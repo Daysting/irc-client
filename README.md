@@ -51,6 +51,7 @@ For Xcode launch and bug-testing workflow, see `docs/XCODE_DEBUGGING.md`.
 - Named theme presets: save, apply, delete, and reset appearance
 - Theme preset import/export as JSON files
 - Theme delete confirmation and import conflict strategy selection (Replace Existing Names or Keep Both)
+- Theme controls are in a separate window opened from menu bar: `Theme > Theme Controls`
 - PING/PONG keepalive handling
 - Slash command support
 - `/me` action command support
@@ -129,14 +130,15 @@ Or use the helper script:
 25. Click the warning icon to open a popover with the same guidance text.
 26. Each popover includes a "Fix example" value pattern for quick correction.
 27. Use the popover `Copy` button to copy the example pattern to your clipboard.
-28. Optional: enable `Custom Theme` to personalize font family, font size, text color, and app background color.
-29. Enter a theme name and click `Save Theme` to store your current appearance settings.
-30. Saving with an existing theme name overwrites that theme.
-31. Use `Saved Themes` + `Apply Theme` to switch presets.
-32. Use `Delete Theme` to remove a preset and `Reset Theme` to restore defaults.
-33. `Delete Theme` asks for confirmation before removing the preset.
-34. Use `Export Themes` to write your presets to a JSON file.
-35. `Import Themes` lets you choose conflict handling: `Replace Existing Names` or `Keep Both`.
+28. Open `Theme > Theme Controls` from the menu bar to manage all appearance options.
+29. Optional: enable `Custom Theme` to personalize font family, font size, text color, and app background color.
+30. Enter a theme name and click `Save Theme` to store your current appearance settings.
+31. Saving with an existing theme name overwrites that theme.
+32. Use `Saved Themes` + `Apply Theme` to switch presets.
+33. Use `Delete Theme` to remove a preset and `Reset Theme` to restore defaults.
+34. `Delete Theme` asks for confirmation before removing the preset.
+35. Use `Export Themes` to write your presets to a JSON file.
+36. `Import Themes` lets you choose conflict handling: `Replace Existing Names` or `Keep Both`.
 
 ## Security notes
 
