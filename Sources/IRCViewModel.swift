@@ -39,6 +39,53 @@ struct IRCWindowPane: Identifiable, Equatable {
     )
 }
 
+struct IRCChannelUser: Identifiable, Equatable {
+    let nick: String
+    let prefix: String
+
+    var id: String {
+        nick.lowercased()
+    }
+
+    var displayName: String {
+        prefix + nick
+    }
+
+    var statusLabel: String {
+        switch prefix {
+        case "~":
+            return "owner"
+        case "&":
+            return "admin"
+        case "@":
+            return "op"
+        case "%":
+            return "half-op"
+        case "+":
+            return "voice"
+        default:
+            return "user"
+        }
+    }
+
+    var statusRank: Int {
+        switch prefix {
+        case "~":
+            return 5
+        case "&":
+            return 4
+        case "@":
+            return 3
+        case "%":
+            return 2
+        case "+":
+            return 1
+        default:
+            return 0
+        }
+    }
+}
+
 @MainActor
 final class IRCViewModel: ObservableObject {
     static let lockedHost = "irc.daysting.com"
@@ -77,7 +124,7 @@ final class IRCViewModel: ObservableObject {
     @Published var themeDraftName: String = ""
     @Published var themeStatusMessage: String = ""
     @Published var themeStatusIsError: Bool = false
-    @Published private(set) var channelUsersByPaneID: [String: Set<String>] = [:]
+    @Published private(set) var channelUsersByPaneID: [String: [String: String]] = [:]
 
     private let client = IRCClient()
     private var isRestoringState = false
@@ -91,6 +138,7 @@ final class IRCViewModel: ObservableObject {
     private let profileStorageKey = "DaystingIRC.connectionProfile.v1"
     private let themesStorageKey = "DaystingIRC.savedThemes.v1"
     private let maxPersistedHistory = 50
+    private var pendingNamesByPaneID: [String: [String: String]] = [:]
 
     init() {
         isRestoringState = true
@@ -147,13 +195,21 @@ final class IRCViewModel: ObservableObject {
         activeWindow.logs
     }
 
-    var activeUserList: [String] {
+    var activeUserList: [IRCChannelUser] {
         switch activeWindow.type {
         case .channel:
-            let users = channelUsersByPaneID[activeWindow.id] ?? []
-            return users.sorted { $0.localizedCaseInsensitiveCompare($1) == .orderedAscending }
+            let users = channelUsersByPaneID[activeWindow.id] ?? [:]
+            return users
+                .map { IRCChannelUser(nick: $0.key, prefix: $0.value) }
+                .sorted {
+                    if $0.statusRank != $1.statusRank {
+                        return $0.statusRank > $1.statusRank
+                    }
+                    return $0.nick.localizedCaseInsensitiveCompare($1.nick) == .orderedAscending
+                }
         case .privateMessage:
-            return [activeWindow.target].filter { !$0.isEmpty }
+            guard !activeWindow.target.isEmpty else { return [] }
+            return [IRCChannelUser(nick: activeWindow.target, prefix: "")]
         case .server:
             return []
         }
@@ -405,6 +461,8 @@ final class IRCViewModel: ObservableObject {
         let nickServState = config.nickServPassword.isEmpty ? "off" : "on"
         let delayedJoinState = (config.delayJoinUntilNickServIdentify && !config.nickServPassword.isEmpty) ? "on(\(config.nickServIdentifyTimeoutSeconds)s)" : "off"
         appendLog("[action] Connecting to \(config.host):\(config.port) TLS=\(config.useTLS) SASL=\(saslState) NickServ=\(nickServState) DelayJoin=\(delayedJoinState)", to: IRCWindowPane.serverID)
+        pendingNamesByPaneID.removeAll()
+        channelUsersByPaneID.removeAll()
         client.connect(config: config)
     }
 
@@ -412,6 +470,8 @@ final class IRCViewModel: ObservableObject {
         client.disconnect()
         isConnected = false
         isOperator = false
+        pendingNamesByPaneID.removeAll()
+        channelUsersByPaneID.removeAll()
         appendLog("[action] Disconnected", to: IRCWindowPane.serverID)
     }
 
@@ -754,7 +814,12 @@ final class IRCViewModel: ObservableObject {
 
     private func processUserListEvent(_ line: String) {
         if let names = parseNamesReply(line) {
-            setUsers(names.users, forChannel: names.channel)
+            mergePendingNames(names.users, forChannel: names.channel)
+            return
+        }
+
+        if let endNames = parseEndOfNames(line) {
+            commitPendingNames(forChannel: endNames)
             return
         }
 
@@ -768,6 +833,11 @@ final class IRCViewModel: ObservableObject {
             return
         }
 
+        if let mode = parseChannelModeEvent(line) {
+            applyChannelModeEvent(mode)
+            return
+        }
+
         if let nick = parseNickChangeEvent(line) {
             renameUser(oldNick: nick.oldNick, newNick: nick.newNick)
             return
@@ -778,7 +848,7 @@ final class IRCViewModel: ObservableObject {
         }
     }
 
-    private func parseNamesReply(_ line: String) -> (channel: String, users: [String])? {
+    private func parseNamesReply(_ line: String) -> (channel: String, users: [String: String])? {
         guard line.hasPrefix(":"), line.contains(" 353 ") else { return nil }
         guard let trailing = line.range(of: " :") else { return nil }
 
@@ -792,10 +862,20 @@ final class IRCViewModel: ObservableObject {
         let nickListRaw = String(line[trailing.upperBound...])
         let users = nickListRaw
             .split(separator: " ", omittingEmptySubsequences: true)
-            .map { normalizeNickToken(String($0)) }
-            .filter { !$0.isEmpty }
+            .compactMap { parseNickWithPrefix(String($0)) }
+            .reduce(into: [String: String]()) { result, entry in
+                result[entry.nick] = strongerPrefix(result[entry.nick] ?? "", entry.prefix)
+            }
 
         return (channel: channel, users: users)
+    }
+
+    private func parseEndOfNames(_ line: String) -> String? {
+        guard line.hasPrefix(":"), line.contains(" 366 ") else { return nil }
+        let tokens = line.split(separator: " ", omittingEmptySubsequences: true).map(String.init)
+        guard tokens.count >= 4 else { return nil }
+        let channel = tokens[3].trimmingCharacters(in: CharacterSet(charactersIn: ":"))
+        return channel.hasPrefix("#") ? channel : nil
     }
 
     private func parseJoinEvent(_ line: String) -> (nick: String, channel: String)? {
@@ -842,12 +922,117 @@ final class IRCViewModel: ObservableObject {
         return (oldNick: oldNick, newNick: newNick)
     }
 
-    private func normalizeNickToken(_ token: String) -> String {
-        token.trimmingCharacters(in: CharacterSet(charactersIn: "@+%~&!"))
+    private func parseChannelModeEvent(_ line: String) -> (channel: String, modeString: String, args: [String])? {
+        guard line.hasPrefix(":"), line.contains(" MODE ") else { return nil }
+        let tokens = line.split(separator: " ", omittingEmptySubsequences: true).map(String.init)
+        guard tokens.count >= 4 else { return nil }
+        guard tokens[1] == "MODE" else { return nil }
+
+        let channel = tokens[2].trimmingCharacters(in: CharacterSet(charactersIn: ":"))
+        guard channel.hasPrefix("#") else { return nil }
+
+        let modeString = tokens[3].trimmingCharacters(in: CharacterSet(charactersIn: ":"))
+        let args = tokens.count > 4 ? Array(tokens.dropFirst(4)) : []
+        return (channel: channel, modeString: modeString, args: args)
     }
 
-    private func setUsers(_ users: [String], forChannel channel: String) {
-        channelUsersByPaneID[paneID(for: channel)] = Set(users)
+    private func parseNickWithPrefix(_ token: String) -> (nick: String, prefix: String)? {
+        guard !token.isEmpty else { return nil }
+
+        let validPrefixes = "~&@%+"
+        var prefix = ""
+        var nickStart = token.startIndex
+        while nickStart < token.endIndex, validPrefixes.contains(token[nickStart]) {
+            let current = String(token[nickStart])
+            prefix = strongerPrefix(prefix, current)
+            nickStart = token.index(after: nickStart)
+        }
+
+        let nick = String(token[nickStart...]).trimmingCharacters(in: .whitespacesAndNewlines)
+        guard !nick.isEmpty else { return nil }
+        return (nick: nick, prefix: prefix)
+    }
+
+    private func strongerPrefix(_ lhs: String, _ rhs: String) -> String {
+        let order = ["": 0, "+": 1, "%": 2, "@": 3, "&": 4, "~": 5]
+        let leftRank = order[lhs] ?? 0
+        let rightRank = order[rhs] ?? 0
+        return rightRank > leftRank ? rhs : lhs
+    }
+
+    private func prefix(for mode: Character) -> String {
+        switch mode {
+        case "q":
+            return "~"
+        case "a":
+            return "&"
+        case "o":
+            return "@"
+        case "h":
+            return "%"
+        case "v":
+            return "+"
+        default:
+            return ""
+        }
+    }
+
+    private func applyChannelModeEvent(_ event: (channel: String, modeString: String, args: [String])) {
+        let trackedModes: Set<Character> = ["q", "a", "o", "h", "v"]
+        var addMode = true
+        var argIndex = 0
+        let key = paneID(for: event.channel)
+
+        for mode in event.modeString {
+            if mode == "+" {
+                addMode = true
+                continue
+            }
+            if mode == "-" {
+                addMode = false
+                continue
+            }
+            guard trackedModes.contains(mode) else { continue }
+            guard event.args.indices.contains(argIndex) else { break }
+
+            let nick = normalizeNickToken(event.args[argIndex])
+            argIndex += 1
+            guard !nick.isEmpty else { continue }
+
+            var users = channelUsersByPaneID[key] ?? [:]
+            if addMode {
+                let granted = prefix(for: mode)
+                users[nick] = strongerPrefix(users[nick] ?? "", granted)
+            } else {
+                // On removal we conservatively keep known lower modes when available,
+                // otherwise fall back to regular user status.
+                let removed = prefix(for: mode)
+                if users[nick] == removed {
+                    users[nick] = ""
+                }
+            }
+            channelUsersByPaneID[key] = users
+        }
+    }
+
+    private func normalizeNickToken(_ token: String) -> String {
+        parseNickWithPrefix(token)?.nick ?? token.trimmingCharacters(in: .whitespacesAndNewlines)
+    }
+
+    private func mergePendingNames(_ users: [String: String], forChannel channel: String) {
+        let key = paneID(for: channel)
+        var pending = pendingNamesByPaneID[key] ?? [:]
+        for (nick, prefix) in users {
+            pending[nick] = strongerPrefix(pending[nick] ?? "", prefix)
+        }
+        pendingNamesByPaneID[key] = pending
+    }
+
+    private func commitPendingNames(forChannel channel: String) {
+        let key = paneID(for: channel)
+        guard let pending = pendingNamesByPaneID[key] else { return }
+        channelUsersByPaneID[key] = pending
+        pendingNamesByPaneID.removeValue(forKey: key)
     }
 
     private func upsertUser(_ nick: String, inChannel channel: String) {
@@ -855,8 +1040,8 @@ final class IRCViewModel: ObservableObject {
         guard !normalizedNick.isEmpty else { return }
 
         let key = paneID(for: channel)
-        var users = channelUsersByPaneID[key] ?? []
-        users.insert(normalizedNick)
+        var users = channelUsersByPaneID[key] ?? [:]
+        users[normalizedNick] = strongerPrefix(users[normalizedNick] ?? "", "")
         channelUsersByPaneID[key] = users
     }
 
@@ -866,7 +1051,7 @@ final class IRCViewModel: ObservableObject {
 
         let key = paneID(for: channel)
         guard var users = channelUsersByPaneID[key] else { return }
-        users.remove(normalizedNick)
+        users.removeValue(forKey: normalizedNick)
         channelUsersByPaneID[key] = users
     }
 
@@ -874,7 +1059,7 @@ final class IRCViewModel: ObservableObject {
         let normalizedNick = normalizeNickToken(nick)
         guard !normalizedNick.isEmpty else { return }
         for key in channelUsersByPaneID.keys {
-            channelUsersByPaneID[key]?.remove(normalizedNick)
+            channelUsersByPaneID[key]?.removeValue(forKey: normalizedNick)
         }
     }
 
@@ -884,9 +1069,9 @@ final class IRCViewModel: ObservableObject {
         guard !oldNormalized.isEmpty, !newNormalized.isEmpty else { return }
 
         for key in channelUsersByPaneID.keys {
-            if channelUsersByPaneID[key]?.contains(oldNormalized) == true {
-                channelUsersByPaneID[key]?.remove(oldNormalized)
-                channelUsersByPaneID[key]?.insert(newNormalized)
+            if let oldPrefix = channelUsersByPaneID[key]?[oldNormalized] {
+                channelUsersByPaneID[key]?.removeValue(forKey: oldNormalized)
+                channelUsersByPaneID[key]?[newNormalized] = oldPrefix
             }
         }
     }

@@ -105,6 +105,7 @@ Context menu actions include:
 User list pane:
 - The right-side `Users` pane shows users for the active channel.
 - In private windows, it shows the peer nickname.
+- Channel users include privilege status from IRC prefixes (owner/admin/op/half-op/voice/user).
 - Click a user to open/select a private conversation tab with that user.
 - Right-click a user for quick actions:
   - `Open Private Chat`

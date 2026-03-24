@@ -128,10 +128,8 @@ final class IRCClient {
 
         sendRaw("NICK \(candidateNicks.first ?? config.nickname)")
         sendRaw("USER \(config.username) 0 * :\(config.realName)")
-
-        if !shouldUseSASL {
-            completeRegistrationPostAuth()
-        }
+        // Registration-dependent actions are triggered after welcome (001),
+        // or after SASL success when CAP is in use.
     }
 
     private func shouldUseSASL(_ config: IRCServerConfig) -> Bool {

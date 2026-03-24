@@ -526,36 +526,46 @@ struct ContentView: View {
                     Text("No users to display")
                         .foregroundStyle(.secondary)
                 } else {
-                    ForEach(vm.activeUserList, id: \.self) { user in
-                        Text(user)
-                            .font(.system(size: 12, weight: .regular, design: .monospaced))
-                            .frame(maxWidth: .infinity, alignment: .leading)
-                            .padding(.vertical, 2)
-                            .padding(.horizontal, 4)
-                            .background(
-                                RoundedRectangle(cornerRadius: 4)
-                                    .fill(selectedUserNick == user ? Color.accentColor.opacity(0.22) : .clear)
-                            )
-                            .contentShape(Rectangle())
-                            .onTapGesture {
-                                selectedUserNick = user
-                            }
-                            .onTapGesture(count: 2) {
-                                selectedUserNick = user
-                                vm.openPrivateConversation(with: user)
-                            }
+                    ForEach(vm.activeUserList, id: \.id) { user in
+                        HStack(spacing: 8) {
+                            Text(user.displayName)
+                                .font(.system(size: 12, weight: .regular, design: .monospaced))
+                                .frame(maxWidth: .infinity, alignment: .leading)
+
+                            Text(user.statusLabel)
+                                .font(.system(size: 10, weight: .semibold))
+                                .padding(.horizontal, 6)
+                                .padding(.vertical, 2)
+                                .foregroundStyle(statusForegroundColor(for: user.prefix))
+                                .background(statusBackgroundColor(for: user.prefix))
+                                .clipShape(Capsule())
+                        }
+                        .padding(.vertical, 2)
+                        .padding(.horizontal, 4)
+                        .background(
+                            RoundedRectangle(cornerRadius: 4)
+                                .fill(selectedUserNick == user.nick ? Color.accentColor.opacity(0.22) : .clear)
+                        )
+                        .contentShape(Rectangle())
+                        .onTapGesture {
+                            selectedUserNick = user.nick
+                        }
+                        .onTapGesture(count: 2) {
+                            selectedUserNick = user.nick
+                            vm.openPrivateConversation(with: user.nick)
+                        }
                         .contextMenu {
                             Button("Open Private Chat") {
-                                selectedUserNick = user
-                                vm.openPrivateConversation(with: user)
+                                selectedUserNick = user.nick
+                                vm.openPrivateConversation(with: user.nick)
                             }
                             Button("WHOIS") {
-                                selectedUserNick = user
-                                vm.prefillWhois(for: user)
+                                selectedUserNick = user.nick
+                                vm.prefillWhois(for: user.nick)
                             }
                             Button("Mention") {
-                                selectedUserNick = user
-                                vm.prefillMention(for: user)
+                                selectedUserNick = user.nick
+                                vm.prefillMention(for: user.nick)
                             }
                         }
                     }
@@ -575,7 +585,9 @@ struct ContentView: View {
         HStack(spacing: 10) {
             logPanel
                 .frame(maxWidth: .infinity)
-            userListPanel
+            if vm.activeWindow.type == .channel {
+                userListPanel
+            }
         }
     }
 
@@ -627,6 +639,32 @@ struct ContentView: View {
             return .system(size: max(11, min(32, size)), weight: .regular, design: .monospaced)
         }
         return themedFont(size: size)
+    }
+
+    private func statusBackgroundColor(for prefix: String) -> Color {
+        switch prefix {
+        case "~":
+            return Color.red.opacity(0.24)
+        case "&":
+            return Color.orange.opacity(0.24)
+        case "@":
+            return Color.blue.opacity(0.24)
+        case "%":
+            return Color.green.opacity(0.24)
+        case "+":
+            return Color.cyan.opacity(0.24)
+        default:
+            return Color.secondary.opacity(0.18)
+        }
+    }
+
+    private func statusForegroundColor(for prefix: String) -> Color {
+        switch prefix {
+        case "~", "&", "@", "%", "+":
+            return .primary
+        default:
+            return .secondary
+        }
     }
 
     private func color(from rgba: RGBAColor) -> Color {

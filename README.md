@@ -26,6 +26,7 @@ For Xcode launch and bug-testing workflow, see `docs/XCODE_DEBUGGING.md`.
 - Contextual IRC command menus tied to the active pane type
 - Right-side user list pane for active conversation context
 - Clickable user list entries with quick actions (open private chat, WHOIS, mention)
+- User list includes channel privilege status (owner/admin/op/half-op/voice/user)
 - Operator command set that is blocked unless the session is logged in as server operator
 - Unread message badges on pane tabs
 - Close buttons for private/query tabs
@@ -39,7 +40,7 @@ For Xcode launch and bug-testing workflow, see `docs/XCODE_DEBUGGING.md`.
 - Connection profile persists across app restarts (host, nick, channel, TLS/SASL/auth settings)
 - Alternate nickname fallback when preferred nick is in use
 - Automatic `/OPER` login from saved profile credentials
-- Automatic `/NS IDENTIFY <password>` at login when NickServ password is provided
+- Automatic `/NS IDENTIFY <password>` at connect when NickServ password is provided
 - Automatic channel auto-join from saved channel list
 - Inline profile validation hints for common configuration mistakes
 - Field-level visual highlighting for invalid/incomplete profile inputs
