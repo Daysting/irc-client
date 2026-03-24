@@ -10,7 +10,13 @@ Option A:
 open Package.swift
 ```
 
-Option B:
+Option B (generated Xcode project):
+
+```bash
+open DaystingIRC.xcodeproj
+```
+
+Option C:
 
 ```bash
 ./scripts/open_in_xcode.sh

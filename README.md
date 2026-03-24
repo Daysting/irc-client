@@ -68,6 +68,12 @@ If you want to open this as an Xcode project:
 open Package.swift
 ```
 
+An explicit Xcode project is also included:
+
+```bash
+open DaystingIRC.xcodeproj
+```
+
 Or use the helper script:
 
 ```bash
