@@ -103,7 +103,6 @@ struct ContentView: View {
 
     @EnvironmentObject private var vm: IRCViewModel
     @State private var selectedUserNick: String?
-    @State private var showServerInfo = true
     @FocusState private var focusedField: FocusField?
 
     private var useCustomAppearance: Bool {
@@ -125,7 +124,11 @@ struct ContentView: View {
                 .ignoresSafeArea()
 
             VStack(spacing: 12) {
-                serverConfigPanel
+                if vm.isConnected {
+                    connectedTopBar
+                } else {
+                    serverConfigPanel
+                }
                 paneTabsPanel
                 serviceShortcuts
                 chatContentPanel
@@ -142,9 +145,6 @@ struct ContentView: View {
         }
         .onChange(of: vm.isConnected) { _ in
             focusMessageFieldSoon()
-            if vm.isConnected {
-                showServerInfo = false
-            }
         }
     }
 
@@ -152,24 +152,10 @@ struct ContentView: View {
         GroupBox("Connection") {
             VStack(spacing: 10) {
                 HStack(spacing: 10) {
-                    if showServerInfo || !vm.isConnected {
-                        Text("Server: \(IRCViewModel.lockedHost):\(IRCViewModel.lockedPort) (TLS)")
-                            .font(themedFont(size: 13, weight: .semibold))
-                            .foregroundStyle(.secondary)
-                            .frame(width: 320, alignment: .leading)
-                    } else {
-                        Text("Server info hidden")
-                            .font(themedFont(size: 13, weight: .semibold))
-                            .foregroundStyle(.secondary)
-                            .frame(width: 320, alignment: .leading)
-                    }
-
-                    if vm.isConnected {
-                        Button(showServerInfo ? "Hide Server Info" : "Show Server Info") {
-                            showServerInfo.toggle()
-                        }
-                        .buttonStyle(.bordered)
-                    }
+                    Text("Server: \(IRCViewModel.lockedHost):\(IRCViewModel.lockedPort) (TLS)")
+                        .font(themedFont(size: 13, weight: .semibold))
+                        .foregroundStyle(.secondary)
+                        .frame(width: 320, alignment: .leading)
 
                     TextField("Nick", text: $vm.config.nickname)
                         .textFieldStyle(.roundedBorder)
@@ -183,11 +169,11 @@ struct ContentView: View {
                             example: "#lobby"
                         )
                     }
-                    Button(vm.isConnected ? "Disconnect" : "Connect") {
-                        vm.isConnected ? vm.disconnect() : vm.connect()
+                    Button("Connect") {
+                        vm.connect()
                     }
                     .keyboardShortcut("k", modifiers: [.command])
-                    .disabled(!vm.isConnected && !vm.canConnectWithCurrentProfile)
+                    .disabled(!vm.canConnectWithCurrentProfile)
                 }
 
                 HStack(spacing: 10) {
@@ -297,6 +283,17 @@ struct ContentView: View {
                     .frame(maxWidth: .infinity, alignment: .leading)
                 }
             }
+        }
+    }
+
+    private var connectedTopBar: some View {
+        HStack {
+            Spacer()
+            Button("Disconnect") {
+                vm.disconnect()
+            }
+            .buttonStyle(.borderedProminent)
+            .keyboardShortcut("k", modifiers: [.command])
         }
     }
 
