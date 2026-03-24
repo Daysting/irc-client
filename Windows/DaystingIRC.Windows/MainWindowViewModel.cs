@@ -1,6 +1,7 @@
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Text.Json;
+using Avalonia.Media;
 using Avalonia.Threading;
 
 namespace DaystingIRC.Windows;
@@ -24,6 +25,8 @@ public sealed class MainWindowViewModel : ObservableObject, IAsyncDisposable
     private string _statusText = "Ready";
     private bool _isConnected;
     private bool _isOperator;
+    private IBrush _themeBackgroundBrush = new SolidColorBrush(Color.Parse("#FBF8F2"));
+    private IBrush _themeTextBrush = new SolidColorBrush(Color.Parse("#1B1F23"));
 
     public MainWindowViewModel()
     {
@@ -32,6 +35,7 @@ public sealed class MainWindowViewModel : ObservableObject, IAsyncDisposable
         _sessionPath = Path.Combine(_storageDirectory, "session.json");
 
         Profile = LoadProfile();
+        ApplyThemeFromProfile();
         _currentNickname = Profile.Nickname;
         SaslMechanisms = Enum.GetValues<SaslMechanism>();
 
@@ -85,9 +89,12 @@ public sealed class MainWindowViewModel : ObservableObject, IAsyncDisposable
             if (SetProperty(ref _isConnected, value))
             {
                 RaisePropertyChanged(nameof(CanConnect));
+                RaisePropertyChanged(nameof(IsDisconnected));
             }
         }
     }
+
+    public bool IsDisconnected => !IsConnected;
 
     public bool IsOperator
     {
@@ -96,6 +103,47 @@ public sealed class MainWindowViewModel : ObservableObject, IAsyncDisposable
     }
 
     public bool CanConnect => !IsConnected && !string.IsNullOrWhiteSpace(Profile.Nickname) && Profile.PrimaryChannel.StartsWith('#');
+
+    public bool IsThemeBackgroundColorValid => Color.TryParse(Profile.ThemeBackgroundColor, out _);
+
+    public bool IsThemeTextColorValid => Color.TryParse(Profile.ThemeTextColor, out _);
+
+    public bool HasThemeValidationIssues => !IsThemeBackgroundColorValid || !IsThemeTextColorValid;
+
+    public string ThemeValidationMessage
+    {
+        get
+        {
+            if (!IsThemeBackgroundColorValid && !IsThemeTextColorValid)
+            {
+                return "Theme background and text colors are invalid. Use hex values like #FBF8F2 and #1B1F23.";
+            }
+
+            if (!IsThemeBackgroundColorValid)
+            {
+                return "Theme background color is invalid. Use a value like #FBF8F2.";
+            }
+
+            if (!IsThemeTextColorValid)
+            {
+                return "Theme text color is invalid. Use a value like #1B1F23.";
+            }
+
+            return string.Empty;
+        }
+    }
+
+    public IBrush ThemeBackgroundBrush
+    {
+        get => _themeBackgroundBrush;
+        private set => SetProperty(ref _themeBackgroundBrush, value);
+    }
+
+    public IBrush ThemeTextBrush
+    {
+        get => _themeTextBrush;
+        private set => SetProperty(ref _themeTextBrush, value);
+    }
 
     public PaneViewModel SelectedPane
     {
@@ -184,6 +232,12 @@ public sealed class MainWindowViewModel : ObservableObject, IAsyncDisposable
         return _client.DisposeAsync();
     }
 
+    public void ResetThemeColors()
+    {
+        Profile.ThemeBackgroundColor = "#FBF8F2";
+        Profile.ThemeTextColor = "#1B1F23";
+    }
+
     private void OnProfileChanged(object? sender, PropertyChangedEventArgs e)
     {
         SaveProfile();
@@ -191,6 +245,26 @@ public sealed class MainWindowViewModel : ObservableObject, IAsyncDisposable
         {
             RaisePropertyChanged(nameof(CanConnect));
         }
+
+        if (e.PropertyName == nameof(ProfileSettings.ThemeBackgroundColor) || e.PropertyName == nameof(ProfileSettings.ThemeTextColor))
+        {
+            ApplyThemeFromProfile();
+            RaisePropertyChanged(nameof(IsThemeBackgroundColorValid));
+            RaisePropertyChanged(nameof(IsThemeTextColorValid));
+            RaisePropertyChanged(nameof(HasThemeValidationIssues));
+            RaisePropertyChanged(nameof(ThemeValidationMessage));
+        }
+    }
+
+    private void ApplyThemeFromProfile()
+    {
+        ThemeBackgroundBrush = new SolidColorBrush(ParseColorOrDefault(Profile.ThemeBackgroundColor, "#FBF8F2"));
+        ThemeTextBrush = new SolidColorBrush(ParseColorOrDefault(Profile.ThemeTextColor, "#1B1F23"));
+    }
+
+    private static Color ParseColorOrDefault(string input, string fallback)
+    {
+        return Color.TryParse(input, out var parsed) ? parsed : Color.Parse(fallback);
     }
 
     private async Task HandleSlashCommandAsync(string input)

@@ -47,6 +47,11 @@ public partial class MainWindow : Window
         }
     }
 
+    private void ResetThemeClicked(object? sender, RoutedEventArgs e)
+    {
+        ViewModel.ResetThemeColors();
+    }
+
     private async void OnClosed(object? sender, EventArgs e)
     {
         Closed -= OnClosed;

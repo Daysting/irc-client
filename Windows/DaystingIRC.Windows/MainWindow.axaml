@@ -9,23 +9,25 @@
         MinWidth="1160"
         MinHeight="760"
         Title="Daysting IRC for Windows"
+        Background="{Binding ThemeBackgroundBrush}"
+        Foreground="{Binding ThemeTextBrush}"
         mc:Ignorable="d">
   <Design.DataContext>
     <local:MainWindowViewModel />
   </Design.DataContext>
 
   <Grid RowDefinitions="Auto,*,Auto" ColumnDefinitions="*">
-    <Border Grid.Row="0" Margin="12,12,12,8" Padding="14" Background="#101820" CornerRadius="12">
+    <Border Grid.Row="0" Margin="12,12,12,8" Padding="14" Background="#ECE6D8" CornerRadius="12">
       <StackPanel Spacing="10">
         <StackPanel Orientation="Horizontal" Spacing="12">
-          <TextBlock Text="Daysting IRC" FontSize="24" FontWeight="SemiBold" Foreground="#F7F3E9" />
+          <TextBlock Text="Daysting IRC" FontSize="24" FontWeight="SemiBold" />
           <Border Background="#D39E3F" CornerRadius="999" Padding="10,4">
             <TextBlock Text="Windows build" FontWeight="SemiBold" Foreground="#1B1F23" />
           </Border>
-          <TextBlock Text="irc.daysting.com:6697 over TLS 1.2+" VerticalAlignment="Center" Foreground="#D8E0E8" />
+          <TextBlock Text="irc.daysting.com:6697 over TLS 1.2+" VerticalAlignment="Center" />
         </StackPanel>
 
-        <StackPanel Spacing="8">
+        <StackPanel Spacing="8" IsVisible="{Binding IsDisconnected}">
           <WrapPanel ItemHeight="36" Orientation="Horizontal">
             <TextBox Width="180" Margin="0,0,8,0" Watermark="Nick" Text="{Binding Profile.Nickname}" />
             <TextBox Width="180" Margin="0,0,8,0" Watermark="Primary channel" Text="{Binding Profile.PrimaryChannel}" />
@@ -50,8 +52,13 @@
             <TextBox Width="190" Margin="0,0,8,0" Watermark="Real name" Text="{Binding Profile.RealName}" />
             <TextBox Width="170" Margin="0,0,8,0" Watermark="OPER name" Text="{Binding Profile.OperName}" />
             <TextBox Width="170" Margin="0,0,8,0" Watermark="OPER password" Text="{Binding Profile.OperPassword}" />
-            <TextBlock VerticalAlignment="Center" Foreground="#D8E0E8" Text="Type /ns, /cs, /ms, /os, /hs, or /bs for service shortcuts." />
+            <TextBox Width="170" Margin="0,0,8,0" Watermark="Theme background (#RRGGBB)" Text="{Binding Profile.ThemeBackgroundColor}" />
+            <TextBox Width="170" Margin="0,0,8,0" Watermark="Theme text (#RRGGBB)" Text="{Binding Profile.ThemeTextColor}" />
+            <Button Width="120" Margin="0,0,8,0" Content="Reset Theme" Click="ResetThemeClicked" />
+            <TextBlock VerticalAlignment="Center" Text="Type /ns, /cs, /ms, /os, /hs, or /bs for service shortcuts." />
           </WrapPanel>
+
+          <TextBlock IsVisible="{Binding HasThemeValidationIssues}" Foreground="#9B2C2C" Text="{Binding ThemeValidationMessage}" />
         </StackPanel>
       </StackPanel>
     </Border>
@@ -114,7 +121,7 @@
       </Border>
     </Grid>
 
-    <Border Grid.Row="2" Margin="12,0,12,12" Padding="10" Background="#101820" CornerRadius="12">
+    <Border Grid.Row="2" Margin="12,0,12,12" Padding="10" Background="#ECE6D8" CornerRadius="12">
       <Grid ColumnDefinitions="*,120">
         <TextBox Grid.Column="0" Watermark="Send a message or slash command" Text="{Binding InputText}" KeyDown="InputKeyDown" IsEnabled="{Binding IsConnected}" />
         <Button Grid.Column="1" Margin="10,0,0,0" Content="Send" Click="SendClicked" IsEnabled="{Binding IsConnected}" />

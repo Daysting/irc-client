@@ -37,6 +37,8 @@ public sealed class ProfileSettings : ObservableObject
     private string _operPassword = string.Empty;
     private string _username = "daysting";
     private string _realName = "Daysting IRC";
+    private string _themeBackgroundColor = "#FBF8F2";
+    private string _themeTextColor = "#1B1F23";
 
     public string Nickname
     {
@@ -128,6 +130,18 @@ public sealed class ProfileSettings : ObservableObject
         set => SetProperty(ref _realName, value);
     }
 
+    public string ThemeBackgroundColor
+    {
+        get => _themeBackgroundColor;
+        set => SetProperty(ref _themeBackgroundColor, value);
+    }
+
+    public string ThemeTextColor
+    {
+        get => _themeTextColor;
+        set => SetProperty(ref _themeTextColor, value);
+    }
+
     public ProfileSettings Clone()
     {
         return new ProfileSettings
@@ -147,6 +161,8 @@ public sealed class ProfileSettings : ObservableObject
             OperPassword = OperPassword,
             Username = Username,
             RealName = RealName,
+            ThemeBackgroundColor = ThemeBackgroundColor,
+            ThemeTextColor = ThemeTextColor,
         };
     }
 
