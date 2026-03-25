@@ -106,7 +106,22 @@
           <ListBox ItemsSource="{Binding SelectedPane.Users}" Background="#000000" BorderThickness="0">
             <ListBox.ItemTemplate>
               <DataTemplate>
-                <TextBlock Text="{Binding DisplayName}" />
+                <Border Padding="4,2">
+                  <TextBlock Text="{Binding DisplayName}">
+                    <TextBlock.ContextMenu>
+                      <ContextMenu>
+                        <MenuItem Header="Open Private Chat" Click="OpenPrivateChatClicked" />
+                        <MenuItem Header="WHOIS" Click="WhoisUserClicked" />
+                        <MenuItem Header="Mention" Click="MentionUserClicked" />
+                        <Separator />
+                        <MenuItem Header="Op" Click="OpUserClicked" />
+                        <MenuItem Header="Deop" Click="DeopUserClicked" />
+                        <MenuItem Header="Voice" Click="VoiceUserClicked" />
+                        <MenuItem Header="Devoice" Click="DevoiceUserClicked" />
+                      </ContextMenu>
+                    </TextBlock.ContextMenu>
+                  </TextBlock>
+                </Border>
               </DataTemplate>
             </ListBox.ItemTemplate>
           </ListBox>

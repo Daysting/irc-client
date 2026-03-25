@@ -672,6 +672,24 @@ final class IRCViewModel: ObservableObject {
         }
     }
 
+    func performChannelUserMode(_ action: ChannelUserModeAction, for nick: String) {
+        let cleanedNick = nick.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard !cleanedNick.isEmpty else { return }
+
+        guard activeWindow.type == .channel else {
+            appendLog("[hint] \(action.title) is only available in channel windows", to: activeWindow.id)
+            return
+        }
+
+        let channel = activeWindow.target.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard channel.hasPrefix("#") else {
+            appendLog("[hint] No active channel available for \(action.title.lowercased())", to: activeWindow.id)
+            return
+        }
+
+        send(command: "/MODE \(channel) \(action.modeChange) \(cleanedNick)")
+    }
+
     private func send(command: String) {
         if let expanded = expandedAnopeAlias(command) {
             client.sendRaw(expanded)

@@ -143,7 +143,7 @@ To build a Windows setup wizard from this repository:
 8. Use the `Windows` tab strip to switch between server, channel, and private panes.
 9. The right-side `Users` pane shows users in the active channel.
 10. Click a user to open a private chat tab immediately.
-11. Right-click a user for quick actions: `Open Private Chat`, `WHOIS`, and `Mention`.
+11. Right-click a user for quick actions: `Open Private Chat`, `WHOIS`, `Mention`, `Op`, `Deop`, `Voice`, and `Devoice`.
 12. Open `Context Commands` from the active pane for command shortcuts relevant to that pane type.
 13. Use `Anope Services` in contextual menus for service commands by service type.
 14. If a service command needs parameters (for example NickServ Register), a popup form collects input and runs the command.

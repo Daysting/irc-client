@@ -484,6 +484,28 @@ struct ContentView: View {
                                 selectedUserNick = user.nick
                                 vm.prefillMention(for: user.nick)
                             }
+
+                            Divider()
+
+                            Button("Op") {
+                                selectedUserNick = user.nick
+                                vm.performChannelUserMode(.op, for: user.nick)
+                            }
+
+                            Button("Deop") {
+                                selectedUserNick = user.nick
+                                vm.performChannelUserMode(.deop, for: user.nick)
+                            }
+
+                            Button("Voice") {
+                                selectedUserNick = user.nick
+                                vm.performChannelUserMode(.voice, for: user.nick)
+                            }
+
+                            Button("Devoice") {
+                                selectedUserNick = user.nick
+                                vm.performChannelUserMode(.devoice, for: user.nick)
+                            }
                         }
                     }
                 }

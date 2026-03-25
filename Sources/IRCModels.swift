@@ -84,6 +84,41 @@ struct IRCContextCommand: Identifiable {
     let requiresOperator: Bool
 }
 
+enum ChannelUserModeAction: String, CaseIterable, Identifiable {
+    case op
+    case deop
+    case voice
+    case devoice
+
+    var id: String { rawValue }
+
+    var title: String {
+        switch self {
+        case .op:
+            return "Op"
+        case .deop:
+            return "Deop"
+        case .voice:
+            return "Voice"
+        case .devoice:
+            return "Devoice"
+        }
+    }
+
+    var modeChange: String {
+        switch self {
+        case .op:
+            return "+o"
+        case .deop:
+            return "-o"
+        case .voice:
+            return "+v"
+        case .devoice:
+            return "-v"
+        }
+    }
+}
+
 enum AnopeService: String, CaseIterable, Identifiable {
     case nickServ
     case chanServ

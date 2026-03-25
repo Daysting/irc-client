@@ -238,6 +238,67 @@ public sealed class MainWindowViewModel : ObservableObject, IAsyncDisposable
         Profile.ThemeTextColor = "#FFFFFF";
     }
 
+    public Task OpenPrivateConversationAsync(string nick)
+    {
+        var cleaned = nick.Trim();
+        if (string.IsNullOrWhiteSpace(cleaned))
+        {
+            return Task.CompletedTask;
+        }
+
+        SelectedPane = EnsurePrivatePane(cleaned);
+        return Task.CompletedTask;
+    }
+
+    public void PrefillWhois(string nick)
+    {
+        var cleaned = nick.Trim();
+        if (string.IsNullOrWhiteSpace(cleaned))
+        {
+            return;
+        }
+
+        InputText = $"/WHOIS {cleaned}";
+    }
+
+    public void PrefillMention(string nick)
+    {
+        var cleaned = nick.Trim();
+        if (string.IsNullOrWhiteSpace(cleaned))
+        {
+            return;
+        }
+
+        var mention = $"{cleaned}: ";
+        if (string.IsNullOrWhiteSpace(InputText))
+        {
+            InputText = mention;
+            return;
+        }
+
+        if (!InputText.Contains(cleaned, StringComparison.OrdinalIgnoreCase))
+        {
+            InputText = mention + InputText;
+        }
+    }
+
+    public async Task PerformChannelUserModeAsync(string modeChange, string nick)
+    {
+        var cleanedNick = nick.Trim();
+        if (string.IsNullOrWhiteSpace(cleanedNick))
+        {
+            return;
+        }
+
+        if (SelectedPane.Type != PaneType.Channel || string.IsNullOrWhiteSpace(SelectedPane.Target) || !SelectedPane.Target.StartsWith('#'))
+        {
+            AppendMessage(ServerPaneId, "[status] User mode actions are only available in channel panes.", false);
+            return;
+        }
+
+        await _client.SendRawAsync($"MODE {SelectedPane.Target} {modeChange} {cleanedNick}");
+    }
+
     private void OnProfileChanged(object? sender, PropertyChangedEventArgs e)
     {
         SaveProfile();

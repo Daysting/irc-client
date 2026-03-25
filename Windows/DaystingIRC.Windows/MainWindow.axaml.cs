@@ -52,6 +52,62 @@ public partial class MainWindow : Window
         ViewModel.ResetThemeColors();
     }
 
+    private async void OpenPrivateChatClicked(object? sender, RoutedEventArgs e)
+    {
+        if (sender is MenuItem { DataContext: ChannelUser user })
+        {
+            await ViewModel.OpenPrivateConversationAsync(user.Nick);
+        }
+    }
+
+    private void WhoisUserClicked(object? sender, RoutedEventArgs e)
+    {
+        if (sender is MenuItem { DataContext: ChannelUser user })
+        {
+            ViewModel.PrefillWhois(user.Nick);
+        }
+    }
+
+    private void MentionUserClicked(object? sender, RoutedEventArgs e)
+    {
+        if (sender is MenuItem { DataContext: ChannelUser user })
+        {
+            ViewModel.PrefillMention(user.Nick);
+        }
+    }
+
+    private async void OpUserClicked(object? sender, RoutedEventArgs e)
+    {
+        if (sender is MenuItem { DataContext: ChannelUser user })
+        {
+            await ViewModel.PerformChannelUserModeAsync("+o", user.Nick);
+        }
+    }
+
+    private async void DeopUserClicked(object? sender, RoutedEventArgs e)
+    {
+        if (sender is MenuItem { DataContext: ChannelUser user })
+        {
+            await ViewModel.PerformChannelUserModeAsync("-o", user.Nick);
+        }
+    }
+
+    private async void VoiceUserClicked(object? sender, RoutedEventArgs e)
+    {
+        if (sender is MenuItem { DataContext: ChannelUser user })
+        {
+            await ViewModel.PerformChannelUserModeAsync("+v", user.Nick);
+        }
+    }
+
+    private async void DevoiceUserClicked(object? sender, RoutedEventArgs e)
+    {
+        if (sender is MenuItem { DataContext: ChannelUser user })
+        {
+            await ViewModel.PerformChannelUserModeAsync("-v", user.Nick);
+        }
+    }
+
     private async void OnClosed(object? sender, EventArgs e)
     {
         Closed -= OnClosed;
