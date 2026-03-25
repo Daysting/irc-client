@@ -13,6 +13,7 @@
 		28B3FE2EC58B1F02668778DF /* ThemeControlsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 425634645A8FEF9CB49F2921 /* ThemeControlsView.swift */; };
 		2B2F2D4FC912D28F77956BB2 /* IRCViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 38322E51D0B8B2B040B5F18E /* IRCViewModel.swift */; };
 		74334AC5783BC01C6D71E4D2 /* IRCClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = 06930B8E0D22F3699D1A09BE /* IRCClient.swift */; };
+		7AA071F7DC755006DCCB8015 /* AppIcon.icns in Resources */ = {isa = PBXBuildFile; fileRef = CE33C7136369CF67F568FA6C /* AppIcon.icns */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -22,10 +23,19 @@
 		425634645A8FEF9CB49F2921 /* ThemeControlsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ThemeControlsView.swift; sourceTree = "<group>"; };
 		894BC0651D8928F4E02DF301 /* DaystingIRC.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = DaystingIRC.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		B88CA96DD1A287D147E949D7 /* DaystingIRCApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DaystingIRCApp.swift; sourceTree = "<group>"; };
+		CE33C7136369CF67F568FA6C /* AppIcon.icns */ = {isa = PBXFileReference; lastKnownFileType = image.icns; path = AppIcon.icns; sourceTree = "<group>"; };
 		D76C1ACE001C51E03E5ED235 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXGroup section */
+		3E51F1D9A7A6B77131950B74 /* Resources */ = {
+			isa = PBXGroup;
+			children = (
+				CE33C7136369CF67F568FA6C /* AppIcon.icns */,
+			);
+			path = Resources;
+			sourceTree = "<group>";
+		};
 		522AA61F34862ED24B0AD57B /* Sources */ = {
 			isa = PBXGroup;
 			children = (
@@ -42,6 +52,7 @@
 		68956188A26C3DCB0377A21B = {
 			isa = PBXGroup;
 			children = (
+				3E51F1D9A7A6B77131950B74 /* Resources */,
 				522AA61F34862ED24B0AD57B /* Sources */,
 				E28127C02382EDB43563BB94 /* Products */,
 			);
@@ -63,6 +74,7 @@
 			buildConfigurationList = 11F9871B8A4807DAD35F0BC5 /* Build configuration list for PBXNativeTarget "DaystingIRC" */;
 			buildPhases = (
 				DBBED908B4A4D73C29016C84 /* Sources */,
+				549F6834703F2747A6794851 /* Resources */,
 			);
 			buildRules = (
 			);
@@ -107,6 +119,17 @@
 			);
 		};
 /* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		549F6834703F2747A6794851 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				7AA071F7DC755006DCCB8015 /* AppIcon.icns in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
 		DBBED908B4A4D73C29016C84 /* Sources */ = {
@@ -259,6 +282,7 @@
 				COMBINE_HIDPI_IMAGES = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_KEY_CFBundleDisplayName = DaystingIRC;
+				INFOPLIST_KEY_CFBundleIconFile = AppIcon.icns;
 				INFOPLIST_KEY_NSHumanReadableCopyright = "Copyright © 2026 Erick Hofer. All rights reserved.";
 				INFOPLIST_KEY_NSPrincipalClass = NSApplication;
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -278,6 +302,7 @@
 				COMBINE_HIDPI_IMAGES = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_KEY_CFBundleDisplayName = DaystingIRC;
+				INFOPLIST_KEY_CFBundleIconFile = AppIcon.icns;
 				INFOPLIST_KEY_NSHumanReadableCopyright = "Copyright © 2026 Erick Hofer. All rights reserved.";
 				INFOPLIST_KEY_NSPrincipalClass = NSApplication;
 				LD_RUNPATH_SEARCH_PATHS = (

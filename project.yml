@@ -16,11 +16,14 @@ targets:
     deploymentTarget: "13.0"
     sources:
       - path: Sources
+      - path: Resources/AppIcon.icns
+        buildPhase: resources
     settings:
       base:
         PRODUCT_NAME: DaystingIRC
         GENERATE_INFOPLIST_FILE: YES
         INFOPLIST_KEY_CFBundleDisplayName: DaystingIRC
+        INFOPLIST_KEY_CFBundleIconFile: AppIcon.icns
         INFOPLIST_KEY_NSPrincipalClass: NSApplication
         INFOPLIST_KEY_NSHumanReadableCopyright: "Copyright © 2026 Erick Hofer. All rights reserved."
 schemes:

@@ -1,0 +1,41 @@
+{
+  "" : {
+    "const-values" : "/Users/erickhofer/irc-client/build/DerivedData/Build/Intermediates.noindex/DaystingIRC.build/Release/DaystingIRC.build/Objects-normal/arm64/DaystingIRC-primary.swiftconstvalues",
+    "dependencies" : "/Users/erickhofer/irc-client/build/DerivedData/Build/Intermediates.noindex/DaystingIRC.build/Release/DaystingIRC.build/Objects-normal/arm64/DaystingIRC-primary.d",
+    "diagnostics" : "/Users/erickhofer/irc-client/build/DerivedData/Build/Intermediates.noindex/DaystingIRC.build/Release/DaystingIRC.build/Objects-normal/arm64/DaystingIRC-primary.dia",
+    "emit-module-dependencies" : "/Users/erickhofer/irc-client/build/DerivedData/Build/Intermediates.noindex/DaystingIRC.build/Release/DaystingIRC.build/Objects-normal/arm64/DaystingIRC-primary-emit-module.d",
+    "emit-module-diagnostics" : "/Users/erickhofer/irc-client/build/DerivedData/Build/Intermediates.noindex/DaystingIRC.build/Release/DaystingIRC.build/Objects-normal/arm64/DaystingIRC-primary-emit-module.dia",
+    "pch" : "/Users/erickhofer/irc-client/build/DerivedData/Build/Intermediates.noindex/DaystingIRC.build/Release/DaystingIRC.build/Objects-normal/arm64/DaystingIRC-primary-Bridging-header.pch",
+    "swift-dependencies" : "/Users/erickhofer/irc-client/build/DerivedData/Build/Intermediates.noindex/DaystingIRC.build/Release/DaystingIRC.build/Objects-normal/arm64/DaystingIRC-primary.swiftdeps"
+  },
+  "/Users/erickhofer/irc-client/Sources/ContentView.swift" : {
+    "index-unit-output-path" : "/DaystingIRC.build/Release/DaystingIRC.build/Objects-normal/arm64/ContentView.o",
+    "llvm-bc" : "/Users/erickhofer/irc-client/build/DerivedData/Build/Intermediates.noindex/DaystingIRC.build/Release/DaystingIRC.build/Objects-normal/arm64/ContentView.bc",
+    "object" : "/Users/erickhofer/irc-client/build/DerivedData/Build/Intermediates.noindex/DaystingIRC.build/Release/DaystingIRC.build/Objects-normal/arm64/ContentView.o"
+  },
+  "/Users/erickhofer/irc-client/Sources/DaystingIRCApp.swift" : {
+    "index-unit-output-path" : "/DaystingIRC.build/Release/DaystingIRC.build/Objects-normal/arm64/DaystingIRCApp.o",
+    "llvm-bc" : "/Users/erickhofer/irc-client/build/DerivedData/Build/Intermediates.noindex/DaystingIRC.build/Release/DaystingIRC.build/Objects-normal/arm64/DaystingIRCApp.bc",
+    "object" : "/Users/erickhofer/irc-client/build/DerivedData/Build/Intermediates.noindex/DaystingIRC.build/Release/DaystingIRC.build/Objects-normal/arm64/DaystingIRCApp.o"
+  },
+  "/Users/erickhofer/irc-client/Sources/IRCClient.swift" : {
+    "index-unit-output-path" : "/DaystingIRC.build/Release/DaystingIRC.build/Objects-normal/arm64/IRCClient.o",
+    "llvm-bc" : "/Users/erickhofer/irc-client/build/DerivedData/Build/Intermediates.noindex/DaystingIRC.build/Release/DaystingIRC.build/Objects-normal/arm64/IRCClient.bc",
+    "object" : "/Users/erickhofer/irc-client/build/DerivedData/Build/Intermediates.noindex/DaystingIRC.build/Release/DaystingIRC.build/Objects-normal/arm64/IRCClient.o"
+  },
+  "/Users/erickhofer/irc-client/Sources/IRCModels.swift" : {
+    "index-unit-output-path" : "/DaystingIRC.build/Release/DaystingIRC.build/Objects-normal/arm64/IRCModels.o",
+    "llvm-bc" : "/Users/erickhofer/irc-client/build/DerivedData/Build/Intermediates.noindex/DaystingIRC.build/Release/DaystingIRC.build/Objects-normal/arm64/IRCModels.bc",
+    "object" : "/Users/erickhofer/irc-client/build/DerivedData/Build/Intermediates.noindex/DaystingIRC.build/Release/DaystingIRC.build/Objects-normal/arm64/IRCModels.o"
+  },
+  "/Users/erickhofer/irc-client/Sources/IRCViewModel.swift" : {
+    "index-unit-output-path" : "/DaystingIRC.build/Release/DaystingIRC.build/Objects-normal/arm64/IRCViewModel.o",
+    "llvm-bc" : "/Users/erickhofer/irc-client/build/DerivedData/Build/Intermediates.noindex/DaystingIRC.build/Release/DaystingIRC.build/Objects-normal/arm64/IRCViewModel.bc",
+    "object" : "/Users/erickhofer/irc-client/build/DerivedData/Build/Intermediates.noindex/DaystingIRC.build/Release/DaystingIRC.build/Objects-normal/arm64/IRCViewModel.o"
+  },
+  "/Users/erickhofer/irc-client/Sources/ThemeControlsView.swift" : {
+    "index-unit-output-path" : "/DaystingIRC.build/Release/DaystingIRC.build/Objects-normal/arm64/ThemeControlsView.o",
+    "llvm-bc" : "/Users/erickhofer/irc-client/build/DerivedData/Build/Intermediates.noindex/DaystingIRC.build/Release/DaystingIRC.build/Objects-normal/arm64/ThemeControlsView.bc",
+    "object" : "/Users/erickhofer/irc-client/build/DerivedData/Build/Intermediates.noindex/DaystingIRC.build/Release/DaystingIRC.build/Objects-normal/arm64/ThemeControlsView.o"
+  }
+}

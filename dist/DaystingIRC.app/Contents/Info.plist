@@ -10,6 +10,10 @@
 	<string>DaystingIRC</string>
 	<key>CFBundleExecutable</key>
 	<string>DaystingIRC</string>
+	<key>CFBundleIconFile</key>
+	<string>AppIcon.icns</string>
+	<key>CFBundleIconName</key>
+	<string>AppIcon</string>
 	<key>CFBundleIdentifier</key>
 	<string>com.daysting.ircclient</string>
 	<key>CFBundleInfoDictionaryVersion</key>
