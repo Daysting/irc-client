@@ -107,6 +107,11 @@ struct ContentView: View {
     @State private var anopeInputValues: [String: String] = [:]
     @State private var anopeAdvancedMode = false
     @FocusState private var focusedField: FocusField?
+    @State private var isCustomConnectSheetPresented = false
+    @State private var customServerHost = ""
+    @State private var customServerPort = "6697"
+    @State private var customServerUseTLS = true
+    @State private var customServerErrorMessage = ""
     // DCC
     @State private var dccSendTargetNick: String = ""
 
@@ -147,6 +152,9 @@ struct ContentView: View {
         .sheet(item: $activeAnopeAction) { action in
             anopePromptSheet(for: action)
         }
+        .sheet(isPresented: $isCustomConnectSheetPresented) {
+            customConnectSheet
+        }
         .onAppear {
             focusMessageFieldSoon()
         }
@@ -162,11 +170,28 @@ struct ContentView: View {
         GroupBox("Connection") {
             VStack(spacing: 10) {
                 HStack(spacing: 10) {
-                    Text("Server: \(IRCViewModel.lockedHost):\(IRCViewModel.lockedPort) (TLS)")
+                    Text("Quick Connect")
                         .font(themedFont(size: 13, weight: .semibold))
                         .foregroundStyle(.secondary)
-                        .frame(width: 320, alignment: .leading)
+                        .frame(width: 120, alignment: .leading)
 
+                    Button("Daysting Server") {
+                        vm.connectToDaysting()
+                    }
+                    .buttonStyle(.borderedProminent)
+                    .keyboardShortcut("k", modifiers: [.command])
+                    .disabled(!vm.canConnectWithCurrentProfile)
+
+                    Button("Custom Server...") {
+                        openCustomConnectSheet()
+                    }
+                    .buttonStyle(.bordered)
+                    .disabled(!vm.canConnectWithCurrentProfile)
+
+                    Spacer()
+                }
+
+                HStack(spacing: 10) {
                     TextField("Nick", text: $vm.config.nickname)
                         .textFieldStyle(.roundedBorder)
                     TextField("Channel", text: $vm.config.channel)
@@ -179,11 +204,6 @@ struct ContentView: View {
                             example: "#lobby"
                         )
                     }
-                    Button("Connect") {
-                        vm.connect()
-                    }
-                    .keyboardShortcut("k", modifiers: [.command])
-                    .disabled(!vm.canConnectWithCurrentProfile)
                 }
 
                 HStack(spacing: 10) {
@@ -294,6 +314,94 @@ struct ContentView: View {
                 }
             }
         }
+    }
+
+    private var customConnectSheet: some View {
+        VStack(alignment: .leading, spacing: 12) {
+            Text("Connect to IRC Server")
+                .font(.headline)
+
+            HStack(spacing: 8) {
+                Menu("Presets") {
+                    ForEach(vm.serverPresets) { endpoint in
+                        Button(endpoint.displayName) {
+                            applyServerEndpoint(endpoint)
+                        }
+                    }
+                }
+
+                Menu("Favorites") {
+                    if vm.favoriteCustomServers.isEmpty {
+                        Text("No favorite servers")
+                    } else {
+                        ForEach(vm.favoriteCustomServers) { endpoint in
+                            Button(endpoint.displayName) {
+                                applyServerEndpoint(endpoint)
+                            }
+                        }
+                        Divider()
+                        Button("Clear Favorites") {
+                            vm.clearFavoriteCustomServers()
+                        }
+                    }
+                }
+
+                Menu("Recent") {
+                    if vm.recentCustomServers.isEmpty {
+                        Text("No recent servers")
+                    } else {
+                        ForEach(vm.recentCustomServers) { endpoint in
+                            Button(recentEndpointTitle(endpoint)) {
+                                applyServerEndpoint(endpoint)
+                            }
+                        }
+                        Divider()
+                        Button("Clear Recent") {
+                            vm.clearRecentCustomServers()
+                        }
+                    }
+                }
+            }
+
+            TextField("Server Address", text: $customServerHost)
+                .textFieldStyle(.roundedBorder)
+
+            TextField("Port", text: $customServerPort)
+                .textFieldStyle(.roundedBorder)
+
+            Toggle("Use TLS", isOn: $customServerUseTLS)
+                .toggleStyle(.switch)
+
+            HStack(spacing: 8) {
+                Button(isCurrentCustomServerFavorite ? "Remove Favorite" : "Save as Favorite") {
+                    toggleCurrentServerFavorite()
+                }
+                .buttonStyle(.bordered)
+                .disabled(currentSheetPort == nil || customServerHost.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty)
+
+                Spacer()
+            }
+
+            if !customServerErrorMessage.isEmpty {
+                Text(customServerErrorMessage)
+                    .font(themedFont(size: 12))
+                    .foregroundStyle(.red)
+            }
+
+            HStack {
+                Spacer()
+                Button("Cancel") {
+                    isCustomConnectSheetPresented = false
+                    customServerErrorMessage = ""
+                }
+                Button("Connect") {
+                    connectCustomServerFromSheet()
+                }
+                .keyboardShortcut(.defaultAction)
+            }
+        }
+        .padding(16)
+        .frame(width: 420)
     }
 
     private var connectedTopBar: some View {
@@ -833,6 +941,66 @@ struct ContentView: View {
                 vm.sendFile(url, to: nick)
             }
         }
+    }
+
+    private func openCustomConnectSheet() {
+        customServerHost = vm.config.host
+        customServerPort = String(vm.config.port)
+        customServerUseTLS = vm.config.useTLS
+        customServerErrorMessage = ""
+        isCustomConnectSheetPresented = true
+    }
+
+    private func applyServerEndpoint(_ endpoint: IRCServerEndpoint) {
+        customServerHost = endpoint.host
+        customServerPort = String(endpoint.port)
+        customServerUseTLS = endpoint.useTLS
+        customServerErrorMessage = ""
+    }
+
+    private func connectCustomServerFromSheet() {
+        let host = customServerHost.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard !host.isEmpty else {
+            customServerErrorMessage = "Server address is required."
+            return
+        }
+
+        guard let port = UInt16(customServerPort.trimmingCharacters(in: .whitespacesAndNewlines)) else {
+            customServerErrorMessage = "Port must be a number between 0 and 65535."
+            return
+        }
+
+        customServerErrorMessage = ""
+        isCustomConnectSheetPresented = false
+        vm.connectToServer(host: host, port: port, useTLS: customServerUseTLS)
+    }
+
+    private var currentSheetPort: UInt16? {
+        UInt16(customServerPort.trimmingCharacters(in: .whitespacesAndNewlines))
+    }
+
+    private var isCurrentCustomServerFavorite: Bool {
+        let host = customServerHost.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard !host.isEmpty, let port = currentSheetPort else { return false }
+        return vm.isFavoriteCustomServer(host: host, port: port, useTLS: customServerUseTLS)
+    }
+
+    private func toggleCurrentServerFavorite() {
+        let host = customServerHost.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard !host.isEmpty, let port = currentSheetPort else { return }
+
+        if vm.isFavoriteCustomServer(host: host, port: port, useTLS: customServerUseTLS) {
+            vm.removeFavoriteCustomServer(host: host, port: port, useTLS: customServerUseTLS)
+        } else {
+            vm.saveFavoriteCustomServer(host: host, port: port, useTLS: customServerUseTLS)
+        }
+    }
+
+    private func recentEndpointTitle(_ endpoint: IRCServerEndpoint) -> String {
+        if vm.isFavoriteCustomServer(host: endpoint.host, port: endpoint.port, useTLS: endpoint.useTLS) {
+            return "★ \(endpoint.displayName)"
+        }
+        return endpoint.displayName
     }
 
     private func themedFont(size: CGFloat, weight: Font.Weight = .regular) -> Font {

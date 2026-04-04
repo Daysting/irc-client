@@ -88,11 +88,29 @@ struct IRCChannelUser: Identifiable, Equatable {
     }
 }
 
+struct IRCServerEndpoint: Identifiable, Codable, Equatable {
+    let host: String
+    let port: UInt16
+    let useTLS: Bool
+    let label: String?
+
+    var id: String {
+        "\(host.lowercased()):\(port):\(useTLS ? "tls" : "plain")"
+    }
+
+    var displayName: String {
+        if let label, !label.isEmpty {
+            return "\(label) (\(host):\(port)\(useTLS ? " TLS" : ""))"
+        }
+        return "\(host):\(port)\(useTLS ? " TLS" : "")"
+    }
+}
+
 @MainActor
 final class IRCViewModel: ObservableObject {
-    static let lockedHost = "irc.daysting.com"
-    static let lockedPort: UInt16 = 6697
-    static let lockedTLS = true
+    static let daystingHost = "irc.daysting.com"
+    static let daystingPort: UInt16 = 6697
+    static let daystingTLS = true
 
     enum ThemeImportStrategy {
         case replaceExistingNames
@@ -126,6 +144,16 @@ final class IRCViewModel: ObservableObject {
     @Published var themeDraftName: String = ""
     @Published var themeStatusMessage: String = ""
     @Published var themeStatusIsError: Bool = false
+    @Published private(set) var favoriteCustomServers: [IRCServerEndpoint] = [] {
+        didSet {
+            persistFavoriteCustomServersIfNeeded()
+        }
+    }
+    @Published private(set) var recentCustomServers: [IRCServerEndpoint] = [] {
+        didSet {
+            persistRecentCustomServersIfNeeded()
+        }
+    }
     @Published private(set) var channelUsersByPaneID: [String: [String: String]] = [:]
     @Published private(set) var channelTopicsByPaneID: [String: String] = [:]
 
@@ -140,18 +168,29 @@ final class IRCViewModel: ObservableObject {
     private let paneSessionStorageKey = "DaystingIRC.paneSession.v1"
     private let profileStorageKey = "DaystingIRC.connectionProfile.v1"
     private let themesStorageKey = "DaystingIRC.savedThemes.v1"
+    private let favoriteCustomServersStorageKey = "DaystingIRC.favoriteCustomServers.v1"
+    private let recentCustomServersStorageKey = "DaystingIRC.recentCustomServers.v1"
     private let maxPersistedHistory = 50
+    private let maxFavoriteCustomServers = 20
+    private let maxRecentCustomServers = 8
     private var pendingNamesByPaneID: [String: [String: String]] = [:]
+
+    var serverPresets: [IRCServerEndpoint] {
+        [
+            IRCServerEndpoint(host: Self.daystingHost, port: Self.daystingPort, useTLS: Self.daystingTLS, label: "Daysting"),
+            IRCServerEndpoint(host: "irc.libera.chat", port: 6697, useTLS: true, label: "Libera"),
+            IRCServerEndpoint(host: "irc.oftc.net", port: 6697, useTLS: true, label: "OFTC"),
+            IRCServerEndpoint(host: "irc.efnet.org", port: 6667, useTLS: false, label: "EFnet")
+        ]
+    }
 
     init() {
         isRestoringState = true
         config = loadConnectionProfile()
-        // The client is intentionally locked to the production Daysting endpoint.
-        config.host = Self.lockedHost
-        config.port = Self.lockedPort
-        config.useTLS = Self.lockedTLS
         closedPrivateHistory = loadClosedPrivateHistory()
         savedThemes = loadSavedThemes()
+        favoriteCustomServers = loadFavoriteCustomServers()
+        recentCustomServers = loadRecentCustomServers()
         selectedThemeID = savedThemes.first?.id ?? ""
         restorePaneSession()
         isRestoringState = false
@@ -455,9 +494,58 @@ final class IRCViewModel: ObservableObject {
     }
 
     func connect() {
-        config.host = Self.lockedHost
-        config.port = Self.lockedPort
-        config.useTLS = Self.lockedTLS
+        connectToDaysting()
+    }
+
+    func connectToDaysting() {
+        config.host = Self.daystingHost
+        config.port = Self.daystingPort
+        config.useTLS = Self.daystingTLS
+        connectCurrentConfig()
+    }
+
+    func connectToServer(host: String, port: UInt16, useTLS: Bool) {
+        let trimmedHost = host.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard !trimmedHost.isEmpty else {
+            appendLog("[hint] Server address cannot be empty", to: IRCWindowPane.serverID)
+            return
+        }
+
+        config.host = trimmedHost
+        config.port = port
+        config.useTLS = useTLS
+        rememberCustomServer(host: trimmedHost, port: port, useTLS: useTLS)
+        connectCurrentConfig()
+    }
+
+    func clearRecentCustomServers() {
+        recentCustomServers.removeAll()
+    }
+
+    func clearFavoriteCustomServers() {
+        favoriteCustomServers.removeAll()
+    }
+
+    func isFavoriteCustomServer(host: String, port: UInt16, useTLS: Bool) -> Bool {
+        let endpoint = IRCServerEndpoint(host: host, port: port, useTLS: useTLS, label: nil)
+        return favoriteCustomServers.contains(where: { $0.id == endpoint.id })
+    }
+
+    func saveFavoriteCustomServer(host: String, port: UInt16, useTLS: Bool) {
+        let endpoint = IRCServerEndpoint(host: host, port: port, useTLS: useTLS, label: nil)
+        favoriteCustomServers.removeAll { $0.id == endpoint.id }
+        favoriteCustomServers.insert(endpoint, at: 0)
+        if favoriteCustomServers.count > maxFavoriteCustomServers {
+            favoriteCustomServers = Array(favoriteCustomServers.prefix(maxFavoriteCustomServers))
+        }
+    }
+
+    func removeFavoriteCustomServer(host: String, port: UInt16, useTLS: Bool) {
+        let endpoint = IRCServerEndpoint(host: host, port: port, useTLS: useTLS, label: nil)
+        favoriteCustomServers.removeAll { $0.id == endpoint.id }
+    }
+
+    private func connectCurrentConfig() {
 
         for channel in autoJoinChannels(from: config) {
             ensureChannelPane(channel)
@@ -1269,6 +1357,16 @@ final class IRCViewModel: ObservableObject {
         persistSavedThemes()
     }
 
+    private func persistFavoriteCustomServersIfNeeded() {
+        guard !isRestoringState else { return }
+        persistFavoriteCustomServers()
+    }
+
+    private func persistRecentCustomServersIfNeeded() {
+        guard !isRestoringState else { return }
+        persistRecentCustomServers()
+    }
+
     private func persistConnectionProfile() {
         let encoder = JSONEncoder()
         guard let data = try? encoder.encode(config) else { return }
@@ -1293,6 +1391,39 @@ final class IRCViewModel: ObservableObject {
         guard let data = UserDefaults.standard.data(forKey: themesStorageKey) else { return [] }
         let decoder = JSONDecoder()
         return (try? decoder.decode([AppearanceThemePreset].self, from: data)) ?? []
+    }
+
+    private func persistRecentCustomServers() {
+        let encoder = JSONEncoder()
+        guard let data = try? encoder.encode(recentCustomServers) else { return }
+        UserDefaults.standard.set(data, forKey: recentCustomServersStorageKey)
+    }
+
+    private func persistFavoriteCustomServers() {
+        let encoder = JSONEncoder()
+        guard let data = try? encoder.encode(favoriteCustomServers) else { return }
+        UserDefaults.standard.set(data, forKey: favoriteCustomServersStorageKey)
+    }
+
+    private func loadFavoriteCustomServers() -> [IRCServerEndpoint] {
+        guard let data = UserDefaults.standard.data(forKey: favoriteCustomServersStorageKey) else { return [] }
+        let decoder = JSONDecoder()
+        return (try? decoder.decode([IRCServerEndpoint].self, from: data)) ?? []
+    }
+
+    private func loadRecentCustomServers() -> [IRCServerEndpoint] {
+        guard let data = UserDefaults.standard.data(forKey: recentCustomServersStorageKey) else { return [] }
+        let decoder = JSONDecoder()
+        return (try? decoder.decode([IRCServerEndpoint].self, from: data)) ?? []
+    }
+
+    private func rememberCustomServer(host: String, port: UInt16, useTLS: Bool) {
+        let endpoint = IRCServerEndpoint(host: host, port: port, useTLS: useTLS, label: nil)
+        recentCustomServers.removeAll { $0.id == endpoint.id }
+        recentCustomServers.insert(endpoint, at: 0)
+        if recentCustomServers.count > maxRecentCustomServers {
+            recentCustomServers = Array(recentCustomServers.prefix(maxRecentCustomServers))
+        }
     }
 
     private func persistPaneSession() {
