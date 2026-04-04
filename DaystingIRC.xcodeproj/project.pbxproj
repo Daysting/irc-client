@@ -13,11 +13,13 @@
 		28B3FE2EC58B1F02668778DF /* ThemeControlsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 425634645A8FEF9CB49F2921 /* ThemeControlsView.swift */; };
 		2B2F2D4FC912D28F77956BB2 /* IRCViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 38322E51D0B8B2B040B5F18E /* IRCViewModel.swift */; };
 		74334AC5783BC01C6D71E4D2 /* IRCClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = 06930B8E0D22F3699D1A09BE /* IRCClient.swift */; };
+		A1B2C3D4E5F6A7B8C9D0E1F2 /* DCCTransfer.swift in Sources */ = {isa = PBXBuildFile; fileRef = F2E1D0C9B8A7F6E5D4C3B2A1 /* DCCTransfer.swift */; };
 		7AA071F7DC755006DCCB8015 /* AppIcon.icns in Resources */ = {isa = PBXBuildFile; fileRef = CE33C7136369CF67F568FA6C /* AppIcon.icns */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
 		06930B8E0D22F3699D1A09BE /* IRCClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IRCClient.swift; sourceTree = "<group>"; };
+		F2E1D0C9B8A7F6E5D4C3B2A1 /* DCCTransfer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DCCTransfer.swift; sourceTree = "<group>"; };
 		0D759E7BB4B807CBAA8E40A9 /* IRCModels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IRCModels.swift; sourceTree = "<group>"; };
 		38322E51D0B8B2B040B5F18E /* IRCViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IRCViewModel.swift; sourceTree = "<group>"; };
 		425634645A8FEF9CB49F2921 /* ThemeControlsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ThemeControlsView.swift; sourceTree = "<group>"; };
@@ -41,6 +43,7 @@
 			children = (
 				D76C1ACE001C51E03E5ED235 /* ContentView.swift */,
 				B88CA96DD1A287D147E949D7 /* DaystingIRCApp.swift */,
+				F2E1D0C9B8A7F6E5D4C3B2A1 /* DCCTransfer.swift */,
 				06930B8E0D22F3699D1A09BE /* IRCClient.swift */,
 				0D759E7BB4B807CBAA8E40A9 /* IRCModels.swift */,
 				38322E51D0B8B2B040B5F18E /* IRCViewModel.swift */,
@@ -138,6 +141,7 @@
 			files = (
 				09083E267450DF7F9B5EBD70 /* ContentView.swift in Sources */,
 				00DF5F3B25AA1F24C1020DF7 /* DaystingIRCApp.swift in Sources */,
+				A1B2C3D4E5F6A7B8C9D0E1F2 /* DCCTransfer.swift in Sources */,
 				74334AC5783BC01C6D71E4D2 /* IRCClient.swift in Sources */,
 				17A872FF28F58B760D987F1F /* IRCModels.swift in Sources */,
 				2B2F2D4FC912D28F77956BB2 /* IRCViewModel.swift in Sources */,
@@ -182,7 +186,7 @@
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				COPY_PHASE_STRIP = NO;
-				CURRENT_PROJECT_VERSION = 1.3;
+				CURRENT_PROJECT_VERSION = 1.4;
 				DEBUG_INFORMATION_FORMAT = dwarf;
 				DEVELOPMENT_TEAM = "";
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
@@ -202,7 +206,7 @@
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				MACOSX_DEPLOYMENT_TARGET = 13.0;
-				MARKETING_VERSION = 1.3;
+				MARKETING_VERSION = 1.4;
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
 				ONLY_ACTIVE_ARCH = YES;
@@ -249,7 +253,7 @@
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				COPY_PHASE_STRIP = NO;
-				CURRENT_PROJECT_VERSION = 1.3;
+				CURRENT_PROJECT_VERSION = 1.4;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				DEVELOPMENT_TEAM = "";
 				ENABLE_NS_ASSERTIONS = NO;
@@ -263,7 +267,7 @@
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				MACOSX_DEPLOYMENT_TARGET = 13.0;
-				MARKETING_VERSION = 1.3;
+				MARKETING_VERSION = 1.4;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				MTL_FAST_MATH = YES;
 				PRODUCT_BUNDLE_IDENTIFIER = com.daysting.ircclient;

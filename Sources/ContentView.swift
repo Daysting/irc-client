@@ -107,6 +107,8 @@ struct ContentView: View {
     @State private var anopeInputValues: [String: String] = [:]
     @State private var anopeAdvancedMode = false
     @FocusState private var focusedField: FocusField?
+    // DCC
+    @State private var dccSendTargetNick: String = ""
 
     private var useCustomAppearance: Bool {
         vm.config.enableCustomAppearance
@@ -134,6 +136,9 @@ struct ContentView: View {
                 }
                 paneTabsPanel
                 chatContentPanel
+                if !vm.dccTransfers.isEmpty {
+                    dccTransfersPanel
+                }
                 inputPanel
             }
             .padding(16)
@@ -484,6 +489,10 @@ struct ContentView: View {
                                 selectedUserNick = user.nick
                                 vm.prefillMention(for: user.nick)
                             }
+                            Button("Send File via DCC...") {
+                                selectedUserNick = user.nick
+                                promptDCCSend(to: user.nick)
+                            }
 
                             Divider()
 
@@ -717,6 +726,113 @@ struct ContentView: View {
         return command
             .replacingOccurrences(of: "\\s+", with: " ", options: .regularExpression)
             .trimmingCharacters(in: .whitespacesAndNewlines)
+    }
+
+    // MARK: - DCC Panel
+
+    private var dccTransfersPanel: some View {
+        GroupBox {
+            VStack(alignment: .leading, spacing: 6) {
+                HStack {
+                    Text("DCC File Transfers")
+                        .font(themedFont(size: 12, weight: .semibold))
+                    Spacer()
+                    Button("Clear Finished") {
+                        vm.clearCompletedDCCTransfers()
+                    }
+                    .controlSize(.small)
+                }
+
+                ForEach(vm.dccTransfers) { transfer in
+                    dccTransferRow(transfer)
+                }
+            }
+        }
+    }
+
+    @ViewBuilder
+    private func dccTransferRow(_ transfer: DCCTransfer) -> some View {
+        HStack(spacing: 10) {
+            Image(systemName: transfer.direction == .sending ? "arrow.up.circle" : "arrow.down.circle")
+                .foregroundStyle(dccDirectionColor(transfer.direction))
+
+            VStack(alignment: .leading, spacing: 2) {
+                Text(transfer.fileName)
+                    .font(themedFont(size: 12, weight: .medium))
+                    .lineLimit(1)
+                Text("\(transfer.direction == .sending ? "→" : "←") \(transfer.peerNick)  \(dccStateLabel(transfer))")
+                    .font(themedFont(size: 11))
+                    .foregroundStyle(.secondary)
+            }
+            .frame(maxWidth: .infinity, alignment: .leading)
+
+            if case .active = transfer.state, transfer.fileSize > 0 {
+                ProgressView(value: transfer.progress)
+                    .frame(width: 80)
+                Text("\(transfer.progressPercent)%")
+                    .font(themedFont(size: 11))
+                    .foregroundStyle(.secondary)
+                    .frame(width: 32, alignment: .trailing)
+            }
+
+            if case .pending = transfer.state, transfer.direction == .receiving {
+                Button("Accept") {
+                    vm.acceptDCCTransfer(id: transfer.id)
+                }
+                .controlSize(.small)
+                .buttonStyle(.borderedProminent)
+
+                Button("Decline") {
+                    vm.cancelDCCTransfer(id: transfer.id)
+                }
+                .controlSize(.small)
+            } else if case .active = transfer.state {
+                Button("Cancel") {
+                    vm.cancelDCCTransfer(id: transfer.id)
+                }
+                .controlSize(.small)
+            } else if case .connecting = transfer.state {
+                ProgressView()
+                    .controlSize(.small)
+                Button("Cancel") {
+                    vm.cancelDCCTransfer(id: transfer.id)
+                }
+                .controlSize(.small)
+            }
+        }
+        .padding(.vertical, 4)
+        .padding(.horizontal, 8)
+        .background(Color.secondary.opacity(0.06))
+        .clipShape(RoundedRectangle(cornerRadius: 6))
+    }
+
+    private func dccStateLabel(_ transfer: DCCTransfer) -> String {
+        switch transfer.state {
+        case .pending:       return "Pending offer"
+        case .connecting:    return "Connecting…"
+        case .active:        return "\(transfer.displayTransferred) / \(transfer.displaySize)"
+        case .completed:     return "Completed (\(transfer.displaySize))"
+        case .cancelled:     return "Cancelled"
+        case .failed(let r): return "Failed: \(r)"
+        }
+    }
+
+    private func dccDirectionColor(_ direction: DCCTransferDirection) -> Color {
+        direction == .sending ? .blue : .green
+    }
+
+    private func promptDCCSend(to nick: String) {
+        let panel = NSOpenPanel()
+        panel.canChooseFiles = true
+        panel.canChooseDirectories = false
+        panel.allowsMultipleSelection = false
+        panel.message = "Choose a file to send to \(nick) via DCC"
+        panel.begin { response in
+            guard response == .OK, let url = panel.url else { return }
+            Task { @MainActor in
+                vm.sendFile(url, to: nick)
+            }
+        }
     }
 
     private func themedFont(size: CGFloat, weight: Font.Weight = .regular) -> Font {

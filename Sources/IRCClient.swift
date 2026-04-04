@@ -5,6 +5,9 @@ final class IRCClient {
     var onMessage: ((String) -> Void)?
     var onStatus: ((String) -> Void)?
     var onOperatorStatusChanged: ((Bool) -> Void)?
+    /// Called when a DCC SEND offer CTCP is received. The raw IRC line is passed so
+    /// the ViewModel can extract the offer details with parseDCCSendOffer().
+    var onDCCSendOffer: ((String) -> Void)?
 
     private var connection: NWConnection?
     private let queue = DispatchQueue(label: "DaystingIRC.Connection")
@@ -173,6 +176,9 @@ final class IRCClient {
             if line.hasPrefix("PING ") {
                 let payload = line.replacingOccurrences(of: "PING", with: "PONG")
                 sendRaw(payload)
+            }
+            if line.contains("\u{1}DCC SEND ") {
+                onDCCSendOffer?(line)
             }
             handleProtocolLine(line)
             onMessage?(line)

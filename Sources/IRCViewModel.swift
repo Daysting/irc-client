@@ -1,4 +1,6 @@
 import Foundation
+import AppKit
+import Darwin
 
 struct ClosedPrivateTabEntry: Identifiable, Codable, Equatable {
     let id: String
@@ -176,6 +178,12 @@ final class IRCViewModel: ObservableObject {
         client.onOperatorStatusChanged = { [weak self] state in
             Task { @MainActor in
                 self?.isOperator = state
+            }
+        }
+
+        client.onDCCSendOffer = { [weak self] line in
+            Task { @MainActor in
+                self?.handleIncomingDCCOffer(line)
             }
         }
     }
@@ -1406,5 +1414,145 @@ final class IRCViewModel: ObservableObject {
         default:
             return nil
         }
+    }
+
+    // MARK: - DCC file transfer
+
+    @Published private(set) var dccTransfers: [DCCTransfer] = []
+
+    /// Send a file to `nick` via DCC.  Caller supplies the file URL.
+    func sendFile(_ url: URL, to nick: String) {
+        guard isConnected else {
+            appendLog("[dcc] Cannot initiate DCC: not connected", to: IRCWindowPane.serverID)
+            return
+        }
+
+        let fileName = url.lastPathComponent
+        let fileSize: Int64
+        if let attrs = try? FileManager.default.attributesOfItem(atPath: url.path),
+           let size = attrs[.size] as? Int64 {
+            fileSize = size
+        } else {
+            appendLog("[dcc] Cannot read file size for \(fileName)", to: IRCWindowPane.serverID)
+            return
+        }
+
+        let transfer = DCCTransfer(
+            direction: .sending,
+            peerNick: nick,
+            fileName: fileName,
+            fileSize: fileSize,
+            localURL: url
+        )
+
+        transfer.onSendOffer = { [weak self] ctcp in
+            guard let self else { return }
+            // Send the CTCP offer via PRIVMSG
+            self.client.sendRaw("PRIVMSG \(nick) :\(ctcp)")
+            self.appendLog("[dcc] Sent DCC SEND offer to \(nick) for \(fileName)", to: IRCWindowPane.serverID)
+        }
+
+        transfer.onStateChanged = { [weak self] state in
+            Task { @MainActor in
+                self?.handleDCCStateChange(transfer: transfer, state: state)
+            }
+        }
+
+        dccTransfers.append(transfer)
+        appendLog("[dcc] Starting DCC SEND to \(nick): \(fileName) (\(fileSize) bytes)", to: IRCWindowPane.serverID)
+
+        let localIP = resolveLocalIP()
+        transfer.startSend(localIP: localIP)
+    }
+
+    /// Accept a pending incoming DCC transfer by ID.
+    func acceptDCCTransfer(id: UUID) {
+        guard let transfer = dccTransfers.first(where: { $0.id == id }),
+              transfer.direction == .receiving,
+              case .pending = transfer.state else { return }
+
+        let panel = NSSavePanel()
+        panel.nameFieldStringValue = transfer.fileName
+        panel.canCreateDirectories = true
+        panel.begin { [weak self] response in
+            guard let self, response == .OK, let url = panel.url else { return }
+            transfer.onStateChanged = { [weak self] state in
+                Task { @MainActor in
+                    self?.handleDCCStateChange(transfer: transfer, state: state)
+                }
+            }
+            Task { @MainActor in
+                transfer.acceptReceive(saveTo: url)
+                self.appendLog("[dcc] Accepting DCC SEND from \(transfer.peerNick): \(transfer.fileName)", to: IRCWindowPane.serverID)
+            }
+        }
+    }
+
+    /// Decline / cancel a DCC transfer by ID.
+    func cancelDCCTransfer(id: UUID) {
+        guard let transfer = dccTransfers.first(where: { $0.id == id }) else { return }
+        transfer.cancel()
+        appendLog("[dcc] Cancelled DCC transfer: \(transfer.fileName)", to: IRCWindowPane.serverID)
+    }
+
+    func clearCompletedDCCTransfers() {
+        dccTransfers.removeAll {
+            switch $0.state {
+            case .completed, .cancelled, .failed: return true
+            default: return false
+            }
+        }
+    }
+
+    private func handleDCCStateChange(transfer: DCCTransfer, state: DCCTransferState) {
+        switch state {
+        case .completed:
+            appendLog("[dcc] Transfer complete: \(transfer.fileName) with \(transfer.peerNick)", to: IRCWindowPane.serverID)
+        case .failed(let reason):
+            appendLog("[dcc] Transfer failed (\(transfer.fileName)): \(reason)", to: IRCWindowPane.serverID)
+        case .cancelled:
+            appendLog("[dcc] Transfer cancelled: \(transfer.fileName)", to: IRCWindowPane.serverID)
+        default:
+            break
+        }
+    }
+
+    private func handleIncomingDCCOffer(_ line: String) {
+        guard let offer = parseDCCSendOffer(from: line) else { return }
+        let transfer = DCCTransfer(
+            direction: .receiving,
+            peerNick: offer.senderNick,
+            fileName: offer.fileName,
+            fileSize: offer.fileSize,
+            localURL: nil,
+            offerHost: offer.host,
+            offerPort: offer.port
+        )
+        dccTransfers.append(transfer)
+        appendLog("[dcc] Incoming DCC SEND from \(offer.senderNick): \(offer.fileName) (\(offer.fileSize == 0 ? "unknown size" : "\(offer.fileSize) bytes"))", to: IRCWindowPane.serverID)
+    }
+
+    private func resolveLocalIP() -> String {
+        // Walk network interfaces to find a non-loopback IPv4 address
+        var ifaddr: UnsafeMutablePointer<ifaddrs>?
+        guard getifaddrs(&ifaddr) == 0, let first = ifaddr else { return "127.0.0.1" }
+        defer { freeifaddrs(first) }
+
+        var cursor: UnsafeMutablePointer<ifaddrs>? = first
+        while let current = cursor {
+            let flags = Int32(current.pointee.ifa_flags)
+            if flags & IFF_LOOPBACK == 0,
+               flags & IFF_UP != 0,
+               current.pointee.ifa_addr.pointee.sa_family == UInt8(AF_INET)
+            {
+                var addr = current.pointee.ifa_addr.pointee
+                var buffer = [CChar](repeating: 0, count: Int(INET_ADDRSTRLEN))
+                if inet_ntop(AF_INET, &addr, &buffer, socklen_t(INET_ADDRSTRLEN)) != nil {
+                    return String(cString: buffer)
+                }
+            }
+            cursor = current.pointee.ifa_next
+        }
+        return "127.0.0.1"
     }
 }
