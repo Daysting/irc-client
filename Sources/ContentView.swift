@@ -1,5 +1,6 @@
 import SwiftUI
 import AppKit
+import UniformTypeIdentifiers
 
 private extension View {
     func validationBorder(color: Color?) -> some View {
@@ -511,38 +512,69 @@ struct ContentView: View {
     }
 
     private var logPanel: some View {
-        GroupBox("\(vm.activeWindowTitle) Log") {
-            ScrollViewReader { proxy in
-                List {
-                    ForEach(Array(vm.activeLogs.enumerated()), id: \.offset) { idx, line in
-                        Text(line)
-                            .font(windowLogFont(for: vm.activeWindow.type, size: max(11, CGFloat(vm.config.appearanceFontSize))))
-                            .foregroundStyle(useCustomAppearance ? color(from: vm.config.appearanceTextColor) : .primary)
-                            .textSelection(.enabled)
-                            .id(idx)
+        GroupBox {
+            VStack(spacing: 8) {
+                HStack {
+                    Text("\(vm.activeWindowTitle) Log")
+                        .font(themedFont(size: 14, weight: .semibold))
+                    Spacer()
+                    Button("Save Log") {
+                        saveActiveLog()
                     }
-                }
-                .scrollContentBackground(.hidden)
-                .background(
-                    useCustomAppearance
-                        ? color(from: vm.config.appearanceBackgroundColor).opacity(0.82)
-                        : Color.clear
-                )
-                .onChange(of: vm.activeLogs.count) { _ in
-                    guard !vm.activeLogs.isEmpty else { return }
-                    proxy.scrollTo(vm.activeLogs.count - 1, anchor: .bottom)
-                }
-                .contextMenu {
-                    ForEach(vm.contextualCommands) { command in
-                        Button(command.title) {
-                            vm.executeContextCommand(command)
-                        }
-                        .disabled(command.requiresOperator && !vm.isOperator)
-                    }
+                    .buttonStyle(.bordered)
+                    .disabled(vm.activeLogs.isEmpty)
 
-                    if !anopeActionsForActiveWindow.isEmpty {
+                    Button("Print Log") {
+                        printActiveLog()
+                    }
+                    .buttonStyle(.bordered)
+                    .disabled(vm.activeLogs.isEmpty)
+                }
+
+                ScrollViewReader { proxy in
+                    List {
+                        ForEach(Array(vm.activeLogs.enumerated()), id: \.offset) { idx, line in
+                            Text(line)
+                                .font(windowLogFont(for: vm.activeWindow.type, size: max(11, CGFloat(vm.config.appearanceFontSize))))
+                                .foregroundStyle(useCustomAppearance ? color(from: vm.config.appearanceTextColor) : .primary)
+                                .textSelection(.enabled)
+                                .id(idx)
+                        }
+                    }
+                    .scrollContentBackground(.hidden)
+                    .background(
+                        useCustomAppearance
+                            ? color(from: vm.config.appearanceBackgroundColor).opacity(0.82)
+                            : Color.clear
+                    )
+                    .onChange(of: vm.activeLogs.count) { _ in
+                        guard !vm.activeLogs.isEmpty else { return }
+                        proxy.scrollTo(vm.activeLogs.count - 1, anchor: .bottom)
+                    }
+                    .contextMenu {
+                        ForEach(vm.contextualCommands) { command in
+                            Button(command.title) {
+                                vm.executeContextCommand(command)
+                            }
+                            .disabled(command.requiresOperator && !vm.isOperator)
+                        }
+
+                        if !anopeActionsForActiveWindow.isEmpty {
+                            Divider()
+                            anopeServicesMenu
+                        }
+
                         Divider()
-                        anopeServicesMenu
+
+                        Button("Save Log") {
+                            saveActiveLog()
+                        }
+                        .disabled(vm.activeLogs.isEmpty)
+
+                        Button("Print Log") {
+                            printActiveLog()
+                        }
+                        .disabled(vm.activeLogs.isEmpty)
                     }
                 }
             }
@@ -651,6 +683,57 @@ struct ContentView: View {
                 }
             }
         }
+    }
+
+    private func saveActiveLog() {
+        let panel = NSSavePanel()
+        panel.title = "Save \(vm.activeWindowTitle) Log"
+        panel.nameFieldStringValue = "\(vm.activeWindowTitle.replacingOccurrences(of: " ", with: "-")).txt"
+        panel.allowedContentTypes = [UTType.plainText]
+        panel.canCreateDirectories = true
+
+        guard panel.runModal() == .OK, let url = panel.url else {
+            return
+        }
+
+        do {
+            try vm.activeLogsText.write(to: url, atomically: true, encoding: .utf8)
+        } catch {
+            presentAlert(title: "Save Failed", message: error.localizedDescription)
+        }
+    }
+
+    private func printActiveLog() {
+        let logText = vm.activeLogsText
+        let textView = NSTextView(frame: NSRect(x: 0, y: 0, width: 640, height: 960))
+        textView.isEditable = false
+        textView.isSelectable = true
+        textView.string = logText
+        textView.font = NSFont.monospacedSystemFont(ofSize: 11, weight: .regular)
+        textView.textContainerInset = NSSize(width: 12, height: 12)
+        textView.textContainer?.widthTracksTextView = true
+
+        let printInfo = NSPrintInfo.shared.copy() as! NSPrintInfo
+        printInfo.horizontalPagination = .automatic
+        printInfo.verticalPagination = .automatic
+        printInfo.topMargin = 24
+        printInfo.bottomMargin = 24
+        printInfo.leftMargin = 24
+        printInfo.rightMargin = 24
+
+        let operation = NSPrintOperation(view: textView, printInfo: printInfo)
+        operation.showsPrintPanel = true
+        operation.showsProgressPanel = true
+        operation.run()
+    }
+
+    private func presentAlert(title: String, message: String) {
+        let alert = NSAlert()
+        alert.messageText = title
+        alert.informativeText = message
+        alert.alertStyle = .warning
+        alert.addButton(withTitle: "OK")
+        alert.runModal()
     }
 
     private var channelTopicPanel: some View {

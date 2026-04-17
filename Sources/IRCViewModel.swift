@@ -243,6 +243,10 @@ final class IRCViewModel: ObservableObject {
         activeWindow.logs
     }
 
+    var activeLogsText: String {
+        activeLogs.joined(separator: "\n")
+    }
+
     var activeUserList: [IRCChannelUser] {
         switch activeWindow.type {
         case .channel:
