@@ -88,6 +88,7 @@
 			buildPhases = (
 				348188C4063F1C2A658C0A2C /* Sources */,
 				B14337E87D59889539A9114F /* Resources */,
+				C32E8C2C360BFD16EF77E4F5 /* Clean up icon configuration */,
 			);
 			buildRules = (
 			);
@@ -173,6 +174,27 @@
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXResourcesBuildPhase section */
+
+/* Begin PBXShellScriptBuildPhase section */
+		C32E8C2C360BFD16EF77E4F5 /* Clean up icon configuration */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+			);
+			name = "Clean up icon configuration";
+			outputFileListPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "# Remove the generated .icns file and CFBundleIconFile from plist\nrm -f \"${BUILT_PRODUCTS_DIR}/${EXECUTABLE_FOLDER_PATH}/Contents/Resources/AppIcon.icns\"\n/usr/libexec/PlistBuddy -c \"Delete :CFBundleIconFile\" \"${BUILT_PRODUCTS_DIR}/${EXECUTABLE_FOLDER_PATH}/Contents/Info.plist\" 2>/dev/null || true\n";
+		};
+/* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
 		348188C4063F1C2A658C0A2C /* Sources */ = {
