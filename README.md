@@ -1,6 +1,6 @@
 # Daysting IRC
 
-A native SwiftUI macOS IRC client starter, plus a Windows desktop port, configured for:
+A native SwiftUI IRC client for macOS, iOS, and iPadOS, configured for:
 
 - Server: `irc.daysting.com`
 - Port: `6697`
@@ -13,7 +13,6 @@ Default quick-connect is `irc.daysting.com:6697`, and custom servers are support
 
 - macOS app: SwiftUI project in `Sources/` and `DaystingIRC.xcodeproj`
 - iOS/iPadOS app target config: generated from `project.yml` via XcodeGen (`DaystingIRC-iOS`)
-- Windows app: Avalonia desktop project in `Windows/DaystingIRC.Windows`
 
 ## Full Usage Guide
 
@@ -30,12 +29,12 @@ For Apple App Store deployment steps, see `docs/APP_STORE_DEPLOYMENT.md`.
 - IRCv3 CAP + SASL authentication (`PLAIN` and `EXTERNAL`)
 - Optional NickServ fallback identify (`PRIVMSG NickServ :IDENTIFY ...`)
 - Optional delayed channel join until NickServ identify confirmation
-- Tabbed pane windows for `Server`, `Channel`, and `Private` conversations
+- Tabbed panes for `Server`, `Channel`, and `Private` conversations
 - Contextual IRC command menus tied to the active pane type
 - Right-side user list pane for active conversation context
 - Clickable user list entries with quick actions (open private chat, WHOIS, mention)
 - User list includes channel privilege status (owner/admin/op/half-op/voice/user)
-- Contextual Anope Services menus by window type with popup input forms when parameters are required
+- Contextual Anope Services menus by pane type with popup input forms when parameters are required
 - Expanded OperServ contextual menu coverage including OperType entitlement lookup and Add Oper provisioning
 - Operator command set that is blocked unless the session is logged in as server operator
 - Unread message badges on pane tabs
@@ -119,24 +118,6 @@ If terminal-driven Xcode builds fail with a Command Line Tools error, switch the
 sudo xcode-select -s /Applications/Xcode.app/Contents/Developer
 ```
 
-### Windows
-
-The Windows client lives in `Windows/DaystingIRC.Windows`.
-
-```bash
-cd Windows/DaystingIRC.Windows
-dotnet build
-dotnet run
-```
-
-For Windows-specific notes, see `docs/WINDOWS.md`.
-
-To build a Windows setup wizard from this repository:
-
-```bash
-./scripts/build_windows_installer.sh
-```
-
 ## Usage
 
 1. Launch app.
@@ -162,9 +143,9 @@ To build a Windows setup wizard from this repository:
   - Prefix with `/` for raw command passthrough (supports full IRC command usage, e.g. `/join #support`).
   - Use `/me <action>` for action messages.
   - Use Anope aliases like `/ns HELP`, `/cs HELP`, `/ms HELP`, `/os HELP`, `/hs HELP`, `/bs HELP`.
-9. Use the `Windows` tab strip to switch between server, channel, and private panes.
-9. The right-side `Users` pane shows users in the active channel.
-10. Click a user to open a private chat tab immediately.
+9. Use the tab strip to switch between server, channel, and private panes.
+10. The right-side `Users` pane shows users in the active channel.
+11. Click a user to open a private chat tab immediately.
 11. Right-click a user for quick actions: `Open Private Chat`, `WHOIS`, `Mention`, `Op`, `Deop`, `Voice`, and `Devoice`.
 12. Open `Context Commands` from the active pane for command shortcuts relevant to that pane type.
 13. Use `Anope Services` in contextual menus for service commands by service type.

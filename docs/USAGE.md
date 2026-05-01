@@ -88,15 +88,15 @@ Anope aliases:
 - `/bs HELP` sends to BotServ.
 
 Contextual Anope menus:
-- Open the right-click/context menu in the active window and choose `Anope Services`.
-- Service menus are filtered by the active window type.
+- Open the right-click/context menu in the active pane and choose `Anope Services`.
+- Service menus are filtered by the active pane type.
 - If a command requires parameters, a popup input form appears and then runs the generated command.
 - In the popup, turn on `Advanced` to see a live command preview and include optional parameters only when provided.
 - OperServ now includes extended tools (AKILL/SQLINE/SZLINE/SGLINE/IGNORE/SESSION/module commands), plus `OperType List/Info` and `Add Oper` for entitlement-based operator provisioning.
 - Use `OperServ > Custom OperServ Command` to run any additional OperServ subcommand not listed as a shortcut.
 - Example: `NickServ > Register` asks for `Password` then `Email`, then runs `/ns register <password> <email>`.
 
-## 5) Tabs and Windows
+## 5) Tabs and Panes
 
 Pane types:
 - `Server`
@@ -119,7 +119,7 @@ Context menu actions include:
 
 User list pane:
 - The right-side `Users` pane shows users for the active channel.
-- In private windows, it shows the peer nickname.
+- In private panes, it shows the peer nickname.
 - Channel users include privilege status from IRC prefixes (owner/admin/op/half-op/voice/user).
 - Click a user to open/select a private conversation tab with that user.
 - Right-click a user for quick actions:
