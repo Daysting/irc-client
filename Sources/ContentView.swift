@@ -565,6 +565,7 @@ struct ContentView: View {
             .buttonStyle(.borderedProminent)
             .keyboardShortcut("k", modifiers: [.command])
         }
+        .frame(maxWidth: .infinity, alignment: .leading)
     }
 
     private var paneTabsPanel: some View {
@@ -618,6 +619,7 @@ struct ContentView: View {
                     .foregroundStyle(vm.isOperator ? .green : .secondary)
             }
         }
+        .frame(maxWidth: .infinity, alignment: .leading)
     }
 
     @ViewBuilder
@@ -647,6 +649,7 @@ struct ContentView: View {
             }
         }
         .fixedSize(horizontal: false, vertical: true)
+        .frame(maxWidth: .infinity, alignment: .leading)
 #else
         fullPaneTabsStrip
 #endif
@@ -794,6 +797,7 @@ struct ContentView: View {
                 }
             }
         }
+        .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
     }
 
     private var userListPanel: some View {
@@ -924,6 +928,7 @@ struct ContentView: View {
 #endif
             }
         }
+        .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
     }
 
     private func saveActiveLog() {
@@ -1004,6 +1009,7 @@ struct ContentView: View {
                 anopeServicesMenu
             }
         }
+        .frame(maxWidth: .infinity, alignment: .leading)
     }
 
     @ViewBuilder
