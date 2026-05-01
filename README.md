@@ -90,6 +90,11 @@ If you want to open this as an Xcode project:
 open Package.swift
 ```
 
+Then in Xcode:
+- Select scheme `DaystingIRC-macOS`
+- Select destination `My Mac`
+- Build/Run with `Cmd+R`
+
 An explicit Xcode project is also included:
 
 ```bash
@@ -106,6 +111,12 @@ To generate/update the macOS + iOS/iPadOS Xcode project from `project.yml`:
 
 ```bash
 xcodegen generate
+```
+
+If terminal-driven Xcode builds fail with a Command Line Tools error, switch the developer directory to full Xcode:
+
+```bash
+sudo xcode-select -s /Applications/Xcode.app/Contents/Developer
 ```
 
 ### Windows

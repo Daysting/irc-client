@@ -24,13 +24,20 @@ Option C:
 
 ## 2) Select the Correct Run Target
 
-1. In Xcode, choose the scheme `DaystingIRC`.
+1. In Xcode, choose the scheme `DaystingIRC-macOS`.
 2. Choose destination `My Mac`.
 3. Build and run with `Cmd+R`.
 
 If the scheme is missing:
 1. Product > Scheme > Manage Schemes...
-2. Confirm `DaystingIRC` exists and is checked.
+2. Confirm `DaystingIRC-macOS` exists and is checked.
+
+If you still do not see the scheme, regenerate the project and reopen it:
+
+```bash
+xcodegen generate
+open DaystingIRC.xcodeproj
+```
 
 ## 3) Debug Workflow (for bug testing)
 
@@ -99,8 +106,8 @@ This is useful for quick compile validation before launching Xcode.
 ### App does not launch
 
 - Confirm destination is `My Mac`.
-- Confirm scheme is `DaystingIRC`.
-- Reopen package with `open Package.swift`.
+- Confirm scheme is `DaystingIRC-macOS`.
+- Reopen project with `open DaystingIRC.xcodeproj`.
 
 ### Breakpoints not hit
 
@@ -110,8 +117,23 @@ This is useful for quick compile validation before launching Xcode.
 
 ### Scheme disappeared after reopening
 
-- Reopen package with `open Package.swift`.
+- Reopen project with `open DaystingIRC.xcodeproj`.
 - Re-enable shared scheme in Manage Schemes.
+
+### xcodebuild says Command Line Tools is active
+
+If you see an error like:
+
+```text
+xcode-select: error: tool 'xcodebuild' requires Xcode, but active developer directory '/Library/Developer/CommandLineTools' is a command line tools instance
+```
+
+Switch to full Xcode:
+
+```bash
+sudo xcode-select -s /Applications/Xcode.app/Contents/Developer
+xcodebuild -version
+```
 
 ## 9) Common Console Warnings (macOS)
 
@@ -120,7 +142,7 @@ These messages can appear in Debug console during normal development:
 ### Cannot index window tabs due to missing main bundle identifier
 
 - Usually appears when launching as a Swift Package executable rather than the app target.
-- Use the `DaystingIRC` app scheme in Xcode (`My Mac`) instead of `swift run` when validating window behavior.
+- Use the `DaystingIRC-macOS` app scheme in Xcode (`My Mac`) instead of `swift run` when validating window behavior.
 
 ### Unable to obtain a task name port right for pid ... (os/kern) failure (0x5)
 
