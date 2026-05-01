@@ -16,14 +16,14 @@ targets:
     deploymentTarget: "13.0"
     sources:
       - path: Sources
-      - path: Resources/AppIcon.icns
+      - path: Resources/Assets.xcassets
         buildPhase: resources
     settings:
       base:
         PRODUCT_NAME: DaystingIRC
+        ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
         GENERATE_INFOPLIST_FILE: YES
         INFOPLIST_KEY_CFBundleDisplayName: DaystingIRC
-        INFOPLIST_KEY_CFBundleIconFile: AppIcon.icns
         INFOPLIST_KEY_NSPrincipalClass: NSApplication
         INFOPLIST_KEY_NSAppTransportSecurity_NSAllowsArbitraryLoads: NO
         INFOPLIST_KEY_NSHumanReadableCopyright: "Copyright © 2026 Erick Hofer. All rights reserved."
@@ -33,11 +33,14 @@ targets:
     deploymentTarget: "16.0"
     sources:
       - path: Sources
+      - path: Resources/Assets.xcassets
+        buildPhase: resources
     settings:
       base:
         PRODUCT_NAME: DaystingIRC
         PRODUCT_BUNDLE_IDENTIFIER: com.daysting.ircclient.ios
         TARGETED_DEVICE_FAMILY: "1,2"
+        ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
         GENERATE_INFOPLIST_FILE: YES
         INFOPLIST_KEY_CFBundleDisplayName: DaystingIRC
         INFOPLIST_KEY_UIRequiresFullScreen: NO
