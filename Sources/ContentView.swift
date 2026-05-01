@@ -210,6 +210,7 @@ struct ContentView: View {
             }
             .padding(contentPadding)
             .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
+            .ignoresSafeArea(.keyboard, edges: .bottom)
         }
         .font(effectiveBaseFont)
         .sheet(item: $activeAnopeAction) { action in
@@ -279,11 +280,13 @@ struct ContentView: View {
             }
             paneTabsPanel
             chatContentPanel
+                .frame(maxWidth: .infinity, maxHeight: .infinity)
             if !vm.dccTransfers.isEmpty {
                 dccTransfersPanel
             }
             inputPanel
         }
+        .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
     }
 
 #if os(iOS)
