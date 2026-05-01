@@ -28,6 +28,12 @@ final class IRCClient {
 
     func connect(config: IRCServerConfig) {
         disconnect()
+
+        guard config.useTLS else {
+            onStatus?("Blocked: TLS is required for all IRC connections")
+            return
+        }
+
         activeConfig = config
 
         awaitingCAP = false

@@ -1,6 +1,13 @@
 import SwiftUI
-import AppKit
 import UniformTypeIdentifiers
+
+#if canImport(UIKit)
+import UIKit
+#endif
+
+#if canImport(AppKit)
+import AppKit
+#endif
 
 private extension View {
     func validationBorder(color: Color?) -> some View {
@@ -55,9 +62,13 @@ private struct ValidationHintIcon: View {
     }
 
     private func copyExampleToClipboard() {
+#if canImport(UIKit)
+        UIPasteboard.general.string = example
+#elseif canImport(AppKit)
         let pasteboard = NSPasteboard.general
         pasteboard.clearContents()
         pasteboard.setString(example, forType: .string)
+#endif
         didCopyExample = true
 
         DispatchQueue.main.asyncAfter(deadline: .now() + 1.4) {
@@ -66,6 +77,7 @@ private struct ValidationHintIcon: View {
     }
 }
 
+#if os(macOS)
 private struct MiddleClickCaptureView: NSViewRepresentable {
     let onMiddleClick: () -> Void
 
@@ -96,6 +108,42 @@ private struct MiddleClickCaptureView: NSViewRepresentable {
 
     func updateNSView(_: NSView, context _: Context) {}
 }
+#endif
+
+private extension View {
+    @ViewBuilder
+    func withMiddleClickCapture(_ onMiddleClick: @escaping () -> Void) -> some View {
+#if os(macOS)
+        background(MiddleClickCaptureView(onMiddleClick: onMiddleClick))
+#else
+        self
+#endif
+    }
+}
+
+private struct TextFileDocument: FileDocument {
+    static var readableContentTypes: [UTType] { [.plainText] }
+
+    var text: String
+
+    init(text: String) {
+        self.text = text
+    }
+
+    init(configuration: ReadConfiguration) throws {
+        if let data = configuration.file.regularFileContents,
+           let decoded = String(data: data, encoding: .utf8)
+        {
+            text = decoded
+        } else {
+            text = ""
+        }
+    }
+
+    func fileWrapper(configuration _: WriteConfiguration) throws -> FileWrapper {
+        FileWrapper(regularFileWithContents: Data(text.utf8))
+    }
+}
 
 struct ContentView: View {
     private enum FocusField: Hashable {
@@ -111,17 +159,28 @@ struct ContentView: View {
     @State private var isCustomConnectSheetPresented = false
     @State private var customServerHost = ""
     @State private var customServerPort = "6697"
-    @State private var customServerUseTLS = true
     @State private var customServerErrorMessage = ""
-    // DCC
-    @State private var dccSendTargetNick: String = ""
+    @State private var isThemeControlsPresented = false
+    @State private var showLogExporter = false
+    @State private var logExportDocument: TextFileDocument?
+    @State private var showDCCFileImporter = false
+    @State private var dccSendTargetNick: String?
 
     private var useCustomAppearance: Bool {
         vm.config.enableCustomAppearance
     }
 
     private var effectiveBackgroundColor: Color {
-        useCustomAppearance ? color(from: vm.config.appearanceBackgroundColor) : Color(nsColor: .windowBackgroundColor)
+        if useCustomAppearance {
+            return color(from: vm.config.appearanceBackgroundColor)
+        }
+    #if canImport(UIKit)
+        return Color(uiColor: .systemBackground)
+    #elseif canImport(AppKit)
+        return Color(nsColor: .windowBackgroundColor)
+    #else
+        return Color(.systemBackground)
+    #endif
     }
 
     private var effectiveBaseFont: Font {
@@ -155,6 +214,36 @@ struct ContentView: View {
         }
         .sheet(isPresented: $isCustomConnectSheetPresented) {
             customConnectSheet
+        }
+        .sheet(isPresented: $isThemeControlsPresented) {
+            ThemeControlsView()
+                .environmentObject(vm)
+        }
+        .fileExporter(
+            isPresented: $showLogExporter,
+            document: logExportDocument,
+            contentType: .plainText,
+            defaultFilename: "\(vm.activeWindowTitle.replacingOccurrences(of: " ", with: "-")).txt"
+        ) { result in
+            switch result {
+            case .success:
+                vm.setThemeStatus("Log exported", isError: false)
+            case .failure(let error):
+                vm.setThemeStatus("Log export failed: \(error.localizedDescription)", isError: true)
+            }
+            logExportDocument = nil
+        }
+        .fileImporter(isPresented: $showDCCFileImporter, allowedContentTypes: [.data], allowsMultipleSelection: false) { result in
+            guard let nick = dccSendTargetNick else { return }
+            defer { dccSendTargetNick = nil }
+
+            switch result {
+            case .success(let urls):
+                guard let url = urls.first else { return }
+                vm.sendFile(url, to: nick)
+            case .failure(let error):
+                vm.setThemeStatus("DCC file selection failed: \(error.localizedDescription)", isError: true)
+            }
         }
         .onAppear {
             focusMessageFieldSoon()
@@ -282,6 +371,10 @@ struct ContentView: View {
                     Text("Theme controls are available from the menu bar: Theme > Theme Controls")
                         .font(themedFont(size: 12))
                         .foregroundStyle(.secondary)
+                    Button("Theme Controls") {
+                        isThemeControlsPresented = true
+                    }
+                    .buttonStyle(.bordered)
                     Spacer()
                 }
 
@@ -370,8 +463,9 @@ struct ContentView: View {
             TextField("Port", text: $customServerPort)
                 .textFieldStyle(.roundedBorder)
 
-            Toggle("Use TLS", isOn: $customServerUseTLS)
-                .toggleStyle(.switch)
+            Text("TLS is required. Non-TLS server connections are blocked.")
+                .font(themedFont(size: 12))
+                .foregroundStyle(.secondary)
 
             HStack(spacing: 8) {
                 Button(isCurrentCustomServerFavorite ? "Remove Favorite" : "Save as Favorite") {
@@ -440,13 +534,11 @@ struct ContentView: View {
                                 }
                                 .buttonStyle(.borderedProminent)
                                 .tint(vm.selectedWindowID == pane.id ? .accentColor : .gray)
-                                .background(
-                                    MiddleClickCaptureView {
-                                        if vm.canCloseWindow(pane.id) {
-                                            vm.closeWindow(pane.id)
-                                        }
+                                .withMiddleClickCapture {
+                                    if vm.canCloseWindow(pane.id) {
+                                        vm.closeWindow(pane.id)
                                     }
-                                )
+                                }
 
                                 if vm.canCloseWindow(pane.id) {
                                     Button {
@@ -524,11 +616,13 @@ struct ContentView: View {
                     .buttonStyle(.bordered)
                     .disabled(vm.activeLogs.isEmpty)
 
+#if os(macOS)
                     Button("Print Log") {
                         printActiveLog()
                     }
                     .buttonStyle(.bordered)
                     .disabled(vm.activeLogs.isEmpty)
+#endif
                 }
 
                 ScrollViewReader { proxy in
@@ -571,10 +665,12 @@ struct ContentView: View {
                         }
                         .disabled(vm.activeLogs.isEmpty)
 
+#if os(macOS)
                         Button("Print Log") {
                             printActiveLog()
                         }
                         .disabled(vm.activeLogs.isEmpty)
+#endif
                     }
                 }
             }
@@ -686,23 +782,11 @@ struct ContentView: View {
     }
 
     private func saveActiveLog() {
-        let panel = NSSavePanel()
-        panel.title = "Save \(vm.activeWindowTitle) Log"
-        panel.nameFieldStringValue = "\(vm.activeWindowTitle.replacingOccurrences(of: " ", with: "-")).txt"
-        panel.allowedContentTypes = [UTType.plainText]
-        panel.canCreateDirectories = true
-
-        guard panel.runModal() == .OK, let url = panel.url else {
-            return
-        }
-
-        do {
-            try vm.activeLogsText.write(to: url, atomically: true, encoding: .utf8)
-        } catch {
-            presentAlert(title: "Save Failed", message: error.localizedDescription)
-        }
+        logExportDocument = TextFileDocument(text: vm.activeLogsText)
+        showLogExporter = true
     }
 
+#if os(macOS)
     private func printActiveLog() {
         let logText = vm.activeLogsText
         let textView = NSTextView(frame: NSRect(x: 0, y: 0, width: 640, height: 960))
@@ -726,15 +810,7 @@ struct ContentView: View {
         operation.showsProgressPanel = true
         operation.run()
     }
-
-    private func presentAlert(title: String, message: String) {
-        let alert = NSAlert()
-        alert.messageText = title
-        alert.informativeText = message
-        alert.alertStyle = .warning
-        alert.addButton(withTitle: "OK")
-        alert.runModal()
-    }
+#endif
 
     private var channelTopicPanel: some View {
         HStack(alignment: .top, spacing: 8) {
@@ -1013,23 +1089,13 @@ struct ContentView: View {
     }
 
     private func promptDCCSend(to nick: String) {
-        let panel = NSOpenPanel()
-        panel.canChooseFiles = true
-        panel.canChooseDirectories = false
-        panel.allowsMultipleSelection = false
-        panel.message = "Choose a file to send to \(nick) via DCC"
-        panel.begin { response in
-            guard response == .OK, let url = panel.url else { return }
-            Task { @MainActor in
-                vm.sendFile(url, to: nick)
-            }
-        }
+        dccSendTargetNick = nick
+        showDCCFileImporter = true
     }
 
     private func openCustomConnectSheet() {
         customServerHost = vm.config.host
         customServerPort = String(vm.config.port)
-        customServerUseTLS = vm.config.useTLS
         customServerErrorMessage = ""
         isCustomConnectSheetPresented = true
     }
@@ -1037,7 +1103,6 @@ struct ContentView: View {
     private func applyServerEndpoint(_ endpoint: IRCServerEndpoint) {
         customServerHost = endpoint.host
         customServerPort = String(endpoint.port)
-        customServerUseTLS = endpoint.useTLS
         customServerErrorMessage = ""
     }
 
@@ -1055,7 +1120,7 @@ struct ContentView: View {
 
         customServerErrorMessage = ""
         isCustomConnectSheetPresented = false
-        vm.connectToServer(host: host, port: port, useTLS: customServerUseTLS)
+        vm.connectToServer(host: host, port: port, useTLS: true)
     }
 
     private var currentSheetPort: UInt16? {
@@ -1065,17 +1130,17 @@ struct ContentView: View {
     private var isCurrentCustomServerFavorite: Bool {
         let host = customServerHost.trimmingCharacters(in: .whitespacesAndNewlines)
         guard !host.isEmpty, let port = currentSheetPort else { return false }
-        return vm.isFavoriteCustomServer(host: host, port: port, useTLS: customServerUseTLS)
+        return vm.isFavoriteCustomServer(host: host, port: port, useTLS: true)
     }
 
     private func toggleCurrentServerFavorite() {
         let host = customServerHost.trimmingCharacters(in: .whitespacesAndNewlines)
         guard !host.isEmpty, let port = currentSheetPort else { return }
 
-        if vm.isFavoriteCustomServer(host: host, port: port, useTLS: customServerUseTLS) {
-            vm.removeFavoriteCustomServer(host: host, port: port, useTLS: customServerUseTLS)
+        if vm.isFavoriteCustomServer(host: host, port: port, useTLS: true) {
+            vm.removeFavoriteCustomServer(host: host, port: port, useTLS: true)
         } else {
-            vm.saveFavoriteCustomServer(host: host, port: port, useTLS: customServerUseTLS)
+            vm.saveFavoriteCustomServer(host: host, port: port, useTLS: true)
         }
     }
 
@@ -1090,6 +1155,10 @@ struct ContentView: View {
         let clamped = max(10, min(32, size))
         guard useCustomAppearance else {
             return .system(size: clamped, weight: weight)
+        }
+
+        if let configuredName = vm.config.appearanceFontName?.trimmingCharacters(in: .whitespacesAndNewlines), !configuredName.isEmpty {
+            return .custom(configuredName, size: clamped)
         }
 
         switch vm.config.appearanceFontFamily {
@@ -1142,6 +1211,20 @@ struct ContentView: View {
     }
 
     private func rgba(from color: Color) -> RGBAColor {
+#if canImport(UIKit)
+        let uiColor = UIColor(color)
+        var red: CGFloat = 0
+        var green: CGFloat = 0
+        var blue: CGFloat = 0
+        var alpha: CGFloat = 0
+        uiColor.getRed(&red, green: &green, blue: &blue, alpha: &alpha)
+        return RGBAColor(
+            red: Double(red),
+            green: Double(green),
+            blue: Double(blue),
+            alpha: Double(alpha)
+        )
+#elseif canImport(AppKit)
         let nsColor = NSColor(color)
         let rgbColor = nsColor.usingColorSpace(.deviceRGB) ?? NSColor.white
         return RGBAColor(
@@ -1150,6 +1233,9 @@ struct ContentView: View {
             blue: Double(rgbColor.blueComponent),
             alpha: Double(rgbColor.alphaComponent)
         )
+#else
+        return RGBAColor.defaultText
+#endif
     }
 
     private func focusMessageFieldSoon() {

@@ -4,14 +4,15 @@ A native SwiftUI macOS IRC client starter, plus a Windows desktop port, configur
 
 - Server: `irc.daysting.com`
 - Port: `6697`
-- TLS: enabled by default (minimum TLS 1.2)
+- TLS: required (minimum TLS 1.2)
 - Anope shortcuts: MemoServ and OperServ commands
 
-Both clients are locked to `irc.daysting.com:6697` with TLS enabled.
+Default quick-connect is `irc.daysting.com:6697`, and custom servers are supported when TLS is enabled.
 
 ## Platform builds
 
 - macOS app: SwiftUI project in `Sources/` and `DaystingIRC.xcodeproj`
+- iOS/iPadOS app target config: generated from `project.yml` via XcodeGen (`DaystingIRC-iOS`)
 - Windows app: Avalonia desktop project in `Windows/DaystingIRC.Windows`
 
 ## Full Usage Guide
@@ -19,6 +20,8 @@ Both clients are locked to `irc.daysting.com:6697` with TLS enabled.
 For complete step-by-step instructions, see `docs/USAGE.md`.
 
 For Xcode launch and bug-testing workflow, see `docs/XCODE_DEBUGGING.md`.
+
+For Apple App Store deployment steps, see `docs/APP_STORE_DEPLOYMENT.md`.
 
 ## Features
 
@@ -54,6 +57,7 @@ For Xcode launch and bug-testing workflow, see `docs/XCODE_DEBUGGING.md`.
 - Inline hover tooltips and click popovers next to highlighted fields with field-specific fix guidance and fix examples
 - One-click copy button in each validation popover example
 - Customizable app appearance: global font family, font size, text color, and background color
+- Installed-font theming: optional direct font-name entry and quick pick from installed fonts
 - Server pane uses a terminal-style monospaced log font suitable for ASCII art
 - Named theme presets: save, apply, delete, and reset appearance
 - Theme preset import/export as JSON files
@@ -98,6 +102,12 @@ Or use the helper script:
 ./scripts/open_in_xcode.sh
 ```
 
+To generate/update the macOS + iOS/iPadOS Xcode project from `project.yml`:
+
+```bash
+xcodegen generate
+```
+
 ### Windows
 
 The Windows client lives in `Windows/DaystingIRC.Windows`.
@@ -119,28 +129,29 @@ To build a Windows setup wizard from this repository:
 ## Usage
 
 1. Launch app.
-2. Server is fixed to `irc.daysting.com:6697` with TLS enabled (not editable).
-3. Set nickname and channel.
-4. Optional profile automation:
+2. Quick connect defaults to `irc.daysting.com:6697` with TLS enabled.
+3. Custom server connect supports other IRC servers with TLS enabled.
+4. Set nickname and channel.
+5. Optional profile automation:
   - `Alt Nicks`: comma-separated fallbacks used when nickname is already in use.
   - `Auto Join Channels`: comma-separated channels to join/open after login.
   - `NickServ Password`: runs `/NS IDENTIFY <password>` at login.
   - `OPER Name` + `OPER Password`: runs `/OPER` at login.
-5. Optional secure auth:
+6. Optional secure auth:
   - Enable `SASL` and choose mechanism:
     - `PLAIN`: fill `SASL Password` (plus optional `SASL User`).
     - `EXTERNAL`: uses your TLS client identity (if configured on your system/network).
   - Add `NickServ Password` if you want fallback identify behavior.
   - Optional: enable `Delay Join` to wait for NickServ identify success before joining channels.
   - If SASL is enabled but unavailable, the app continues and can still use NickServ.
-6. Press Connect (`Cmd+K`).
+7. Press Connect (`Cmd+K`).
   - Connect is disabled for critical profile errors (for example empty host or invalid primary channel format).
-7. Send normal messages or IRC raw commands:
+8. Send normal messages or IRC raw commands:
    - Normal text sends to your current channel.
   - Prefix with `/` for raw command passthrough (supports full IRC command usage, e.g. `/join #support`).
   - Use `/me <action>` for action messages.
   - Use Anope aliases like `/ns HELP`, `/cs HELP`, `/ms HELP`, `/os HELP`, `/hs HELP`, `/bs HELP`.
-8. Use the `Windows` tab strip to switch between server, channel, and private panes.
+9. Use the `Windows` tab strip to switch between server, channel, and private panes.
 9. The right-side `Users` pane shows users in the active channel.
 10. Click a user to open a private chat tab immediately.
 11. Right-click a user for quick actions: `Open Private Chat`, `WHOIS`, `Mention`, `Op`, `Deop`, `Voice`, and `Devoice`.
@@ -163,8 +174,8 @@ To build a Windows setup wizard from this repository:
 27. Click the warning icon to open a popover with the same guidance text.
 28. Each popover includes a "Fix example" value pattern for quick correction.
 29. Use the popover `Copy` button to copy the example pattern to your clipboard.
-30. Open `Theme > Theme Controls` from the menu bar to manage all appearance options.
-31. Optional: enable `Custom Theme` to personalize font family, font size, text color, and app background color.
+30. Open `Theme > Theme Controls` (or the in-view Theme Controls button) to manage appearance.
+31. Optional: enable `Custom Theme` to personalize font family, installed font name, font size, text color, and app background color.
 32. Enter a theme name and click `Save Theme` to store your current appearance settings.
 33. Saving with an existing theme name overwrites that theme.
 34. Use `Saved Themes` + `Apply Theme` to switch presets.
@@ -175,10 +186,10 @@ To build a Windows setup wizard from this repository:
 
 ## Security notes
 
-- TLS transport is enabled by default and uses platform certificate validation.
+- TLS transport is required and uses platform certificate validation.
 - Minimum TLS version is set to TLS 1.2.
 - For stricter policy (for example TLS 1.3 only or certificate pinning), extend `makeParameters` in `Sources/IRCClient.swift`.
-- SASL PLAIN requires TLS, and this client defaults to TLS on port 6697.
+- SASL PLAIN requires TLS, and this client enforces TLS for all connections.
 - If `Delay Join` is enabled and NickServ confirmation is not seen, the app falls back to join after timeout.
 - Saved profile values are stored locally in UserDefaults on your Mac.
 

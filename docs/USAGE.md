@@ -11,10 +11,12 @@ swift build
 swift run
 ```
 
-2. The server endpoint is fixed and not editable:
+2. Quick connect defaults to:
 - Host: `irc.daysting.com`
 - Port: `6697`
-- TLS: enabled
+- TLS: required
+
+3. Custom server connections are supported for any IRC server with TLS enabled.
 
 3. Enter your nickname and primary channel (must start with `#`).
 
@@ -140,8 +142,11 @@ The app tracks actual operator login state.
 
 Open `Theme > Theme Controls` from the menu bar to control app appearance.
 
+You can also open Theme Controls from the main connection screen button.
+
 Controls:
 - Font family
+- Installed font name (optional override, from any installed system font)
 - Font size
 - Text color
 - Background color

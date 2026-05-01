@@ -1,6 +1,9 @@
 import Foundation
-import AppKit
 import Darwin
+
+#if os(macOS)
+import AppKit
+#endif
 
 struct ClosedPrivateTabEntry: Identifiable, Codable, Equatable {
     let id: String
@@ -179,8 +182,7 @@ final class IRCViewModel: ObservableObject {
         [
             IRCServerEndpoint(host: Self.daystingHost, port: Self.daystingPort, useTLS: Self.daystingTLS, label: "Daysting"),
             IRCServerEndpoint(host: "irc.libera.chat", port: 6697, useTLS: true, label: "Libera"),
-            IRCServerEndpoint(host: "irc.oftc.net", port: 6697, useTLS: true, label: "OFTC"),
-            IRCServerEndpoint(host: "irc.efnet.org", port: 6667, useTLS: false, label: "EFnet")
+            IRCServerEndpoint(host: "irc.oftc.net", port: 6697, useTLS: true, label: "OFTC")
         ]
     }
 
@@ -348,6 +350,7 @@ final class IRCViewModel: ObservableObject {
                 id: existingID,
                 name: trimmed,
                 fontFamily: config.appearanceFontFamily,
+                fontName: config.appearanceFontName?.trimmingCharacters(in: .whitespacesAndNewlines),
                 fontSize: clampedSize,
                 textColor: config.appearanceTextColor,
                 backgroundColor: config.appearanceBackgroundColor
@@ -362,6 +365,7 @@ final class IRCViewModel: ObservableObject {
             id: UUID().uuidString,
             name: trimmed,
             fontFamily: config.appearanceFontFamily,
+            fontName: config.appearanceFontName?.trimmingCharacters(in: .whitespacesAndNewlines),
             fontSize: clampedSize,
             textColor: config.appearanceTextColor,
             backgroundColor: config.appearanceBackgroundColor
@@ -376,6 +380,7 @@ final class IRCViewModel: ObservableObject {
         guard let theme = savedThemes.first(where: { $0.id == selectedThemeID }) else { return }
         config.enableCustomAppearance = true
         config.appearanceFontFamily = theme.fontFamily
+        config.appearanceFontName = theme.fontName
         config.appearanceFontSize = max(10, min(24, theme.fontSize))
         config.appearanceTextColor = theme.textColor
         config.appearanceBackgroundColor = theme.backgroundColor
@@ -395,6 +400,7 @@ final class IRCViewModel: ObservableObject {
     func resetAppearanceToDefaults() {
         config.enableCustomAppearance = false
         config.appearanceFontFamily = .system
+        config.appearanceFontName = nil
         config.appearanceFontSize = 13
         config.appearanceTextColor = .defaultText
         config.appearanceBackgroundColor = .defaultBackground
@@ -425,6 +431,7 @@ final class IRCViewModel: ObservableObject {
                 id: theme.id.isEmpty ? UUID().uuidString : theme.id,
                 name: normalizedName,
                 fontFamily: theme.fontFamily,
+                fontName: theme.fontName?.trimmingCharacters(in: .whitespacesAndNewlines),
                 fontSize: max(10, min(24, theme.fontSize)),
                 textColor: theme.textColor,
                 backgroundColor: theme.backgroundColor
@@ -438,6 +445,7 @@ final class IRCViewModel: ObservableObject {
                         id: preservedID,
                         name: normalized.name,
                         fontFamily: normalized.fontFamily,
+                        fontName: normalized.fontName,
                         fontSize: normalized.fontSize,
                         textColor: normalized.textColor,
                         backgroundColor: normalized.backgroundColor
@@ -455,6 +463,7 @@ final class IRCViewModel: ObservableObject {
                     id: UUID().uuidString,
                     name: uniqueName,
                     fontFamily: normalized.fontFamily,
+                    fontName: normalized.fontName,
                     fontSize: normalized.fontSize,
                     textColor: normalized.textColor,
                     backgroundColor: normalized.backgroundColor
@@ -515,10 +524,15 @@ final class IRCViewModel: ObservableObject {
             return
         }
 
+        guard useTLS else {
+            appendLog("[blocked] TLS is required. Non-TLS IRC connections are not allowed.", to: IRCWindowPane.serverID)
+            return
+        }
+
         config.host = trimmedHost
         config.port = port
-        config.useTLS = useTLS
-        rememberCustomServer(host: trimmedHost, port: port, useTLS: useTLS)
+        config.useTLS = true
+        rememberCustomServer(host: trimmedHost, port: port, useTLS: true)
         connectCurrentConfig()
     }
 
@@ -550,6 +564,10 @@ final class IRCViewModel: ObservableObject {
     }
 
     private func connectCurrentConfig() {
+        if !config.useTLS {
+            config.useTLS = true
+            appendLog("[security] TLS enforced for this connection", to: IRCWindowPane.serverID)
+        }
 
         for channel in autoJoinChannels(from: config) {
             ensureChannelPane(channel)
@@ -1412,16 +1430,19 @@ final class IRCViewModel: ObservableObject {
     private func loadFavoriteCustomServers() -> [IRCServerEndpoint] {
         guard let data = UserDefaults.standard.data(forKey: favoriteCustomServersStorageKey) else { return [] }
         let decoder = JSONDecoder()
-        return (try? decoder.decode([IRCServerEndpoint].self, from: data)) ?? []
+        let decoded = (try? decoder.decode([IRCServerEndpoint].self, from: data)) ?? []
+        return decoded.filter(\.useTLS)
     }
 
     private func loadRecentCustomServers() -> [IRCServerEndpoint] {
         guard let data = UserDefaults.standard.data(forKey: recentCustomServersStorageKey) else { return [] }
         let decoder = JSONDecoder()
-        return (try? decoder.decode([IRCServerEndpoint].self, from: data)) ?? []
+        let decoded = (try? decoder.decode([IRCServerEndpoint].self, from: data)) ?? []
+        return decoded.filter(\.useTLS)
     }
 
     private func rememberCustomServer(host: String, port: UInt16, useTLS: Bool) {
+        guard useTLS else { return }
         let endpoint = IRCServerEndpoint(host: host, port: port, useTLS: useTLS, label: nil)
         recentCustomServers.removeAll { $0.id == endpoint.id }
         recentCustomServers.insert(endpoint, at: 0)
@@ -1606,6 +1627,7 @@ final class IRCViewModel: ObservableObject {
               transfer.direction == .receiving,
               case .pending = transfer.state else { return }
 
+#if os(macOS)
         let panel = NSSavePanel()
         panel.nameFieldStringValue = transfer.fileName
         panel.canCreateDirectories = true
@@ -1621,6 +1643,9 @@ final class IRCViewModel: ObservableObject {
                 self.appendLog("[dcc] Accepting DCC SEND from \(transfer.peerNick): \(transfer.fileName)", to: IRCWindowPane.serverID)
             }
         }
+#else
+        appendLog("[dcc] Accepting incoming DCC transfer is currently available on macOS", to: IRCWindowPane.serverID)
+#endif
     }
 
     /// Decline / cancel a DCC transfer by ID.

@@ -1,6 +1,10 @@
 import SwiftUI
-import AppKit
 
+#if os(macOS)
+import AppKit
+#endif
+
+#if os(macOS)
 private struct ThemeMenuCommands: Commands {
     @Environment(\.openWindow) private var openWindow
 
@@ -34,13 +38,19 @@ final class AppActivationDelegate: NSObject, NSApplicationDelegate {
         window.makeKey()
     }
 }
+#endif
 
 @main
 struct DaystingIRCApp: App {
     @StateObject private var viewModel = IRCViewModel()
-    @NSApplicationDelegateAdaptor(AppActivationDelegate.self) private var appDelegate
 
+#if os(macOS)
+    @NSApplicationDelegateAdaptor(AppActivationDelegate.self) private var appDelegate
+#endif
+
+    @SceneBuilder
     var body: some Scene {
+#if os(macOS)
         WindowGroup {
             ContentView()
                 .environmentObject(viewModel)
@@ -57,5 +67,11 @@ struct DaystingIRCApp: App {
                 .frame(minWidth: 760, minHeight: 360)
         }
         .windowResizability(.contentSize)
+#else
+        WindowGroup {
+            ContentView()
+                .environmentObject(viewModel)
+        }
+#endif
     }
 }

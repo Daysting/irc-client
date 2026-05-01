@@ -15,9 +15,9 @@
             buildForAnalyzing = "YES">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "36EB5D2713DEE3287DB04D0C"
-               BuildableName = "DaystingIRC.app"
-               BlueprintName = "DaystingIRC"
+               BlueprintIdentifier = "75177BBA374F7C08A6794DBC"
+               BuildableName = "DaystingIRC-iOS.app"
+               BlueprintName = "DaystingIRC-iOS"
                ReferencedContainer = "container:DaystingIRC.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
@@ -32,9 +32,9 @@
       <MacroExpansion>
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "36EB5D2713DEE3287DB04D0C"
-            BuildableName = "DaystingIRC.app"
-            BlueprintName = "DaystingIRC"
+            BlueprintIdentifier = "75177BBA374F7C08A6794DBC"
+            BuildableName = "DaystingIRC-iOS.app"
+            BlueprintName = "DaystingIRC-iOS"
             ReferencedContainer = "container:DaystingIRC.xcodeproj">
          </BuildableReference>
       </MacroExpansion>
@@ -57,9 +57,9 @@
          runnableDebuggingMode = "0">
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "36EB5D2713DEE3287DB04D0C"
-            BuildableName = "DaystingIRC.app"
-            BlueprintName = "DaystingIRC"
+            BlueprintIdentifier = "75177BBA374F7C08A6794DBC"
+            BuildableName = "DaystingIRC-iOS.app"
+            BlueprintName = "DaystingIRC-iOS"
             ReferencedContainer = "container:DaystingIRC.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
@@ -76,9 +76,9 @@
          runnableDebuggingMode = "0">
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "36EB5D2713DEE3287DB04D0C"
-            BuildableName = "DaystingIRC.app"
-            BlueprintName = "DaystingIRC"
+            BlueprintIdentifier = "75177BBA374F7C08A6794DBC"
+            BuildableName = "DaystingIRC-iOS.app"
+            BlueprintName = "DaystingIRC-iOS"
             ReferencedContainer = "container:DaystingIRC.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>

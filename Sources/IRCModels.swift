@@ -36,6 +36,7 @@ struct AppearanceThemePreset: Identifiable, Codable, Equatable {
     var id: String
     var name: String
     var fontFamily: AppearanceFontFamily
+    var fontName: String?
     var fontSize: Double
     var textColor: RGBAColor
     var backgroundColor: RGBAColor
@@ -529,6 +530,7 @@ struct IRCServerConfig: Codable {
     var nickServIdentifyTimeoutSeconds: Int = 10
     var enableCustomAppearance: Bool = false
     var appearanceFontFamily: AppearanceFontFamily = .system
+    var appearanceFontName: String? = nil
     var appearanceFontSize: Double = 13
     var appearanceTextColor: RGBAColor = .defaultText
     var appearanceBackgroundColor: RGBAColor = .defaultBackground

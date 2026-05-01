@@ -1,6 +1,45 @@
 import SwiftUI
-import AppKit
 import UniformTypeIdentifiers
+
+#if canImport(UIKit)
+import UIKit
+#endif
+
+#if canImport(AppKit)
+import AppKit
+#endif
+
+private struct ThemeJSONDocument: FileDocument {
+    static var readableContentTypes: [UTType] { [.json] }
+
+    var data: Data
+
+    init(data: Data = Data()) {
+        self.data = data
+    }
+
+    init(configuration: ReadConfiguration) throws {
+        data = configuration.file.regularFileContents ?? Data()
+    }
+
+    func fileWrapper(configuration _: WriteConfiguration) throws -> FileWrapper {
+        FileWrapper(regularFileWithContents: data)
+    }
+}
+
+private enum InstalledFonts {
+    static var allNames: [String] {
+#if canImport(UIKit)
+        return UIFont.familyNames
+            .flatMap { UIFont.fontNames(forFamilyName: $0) }
+            .sorted()
+#elseif canImport(AppKit)
+        return NSFontManager.shared.availableFonts.sorted()
+#else
+        return []
+#endif
+    }
+}
 
 struct ThemeControlsView: View {
     @EnvironmentObject private var vm: IRCViewModel
@@ -9,6 +48,9 @@ struct ThemeControlsView: View {
     @State private var showImportStrategyConfirmation = false
     @State private var pendingImportData: Data?
     @State private var pendingImportFileName: String = ""
+    @State private var isExportingThemes = false
+    @State private var exportDocument: ThemeJSONDocument?
+    @State private var isImportingThemes = false
 
     private var appearanceTextColorBinding: Binding<Color> {
         Binding(
@@ -22,6 +64,20 @@ struct ThemeControlsView: View {
             get: { color(from: vm.config.appearanceBackgroundColor) },
             set: { vm.config.appearanceBackgroundColor = rgba(from: $0) }
         )
+    }
+
+    private var appearanceFontNameBinding: Binding<String> {
+        Binding(
+            get: { vm.config.appearanceFontName ?? "" },
+            set: {
+                let trimmed = $0.trimmingCharacters(in: .whitespacesAndNewlines)
+                vm.config.appearanceFontName = trimmed.isEmpty ? nil : trimmed
+            }
+        )
+    }
+
+    private var installedFontNames: [String] {
+        InstalledFonts.allNames
     }
 
     var body: some View {
@@ -53,6 +109,29 @@ struct ThemeControlsView: View {
                     .frame(width: 150)
                 ColorPicker("Background", selection: appearanceBackgroundColorBinding, supportsOpacity: true)
                     .frame(width: 180)
+
+                Spacer()
+            }
+
+            HStack(spacing: 10) {
+                TextField("Installed Font Name (optional)", text: appearanceFontNameBinding)
+                    .textFieldStyle(.roundedBorder)
+
+                Menu("Installed Fonts") {
+                    if installedFontNames.isEmpty {
+                        Text("No fonts available")
+                    } else {
+                        Button("Use Family Picker Only") {
+                            vm.config.appearanceFontName = nil
+                        }
+                        Divider()
+                        ForEach(installedFontNames, id: \.self) { fontName in
+                            Button(fontName) {
+                                vm.config.appearanceFontName = fontName
+                            }
+                        }
+                    }
+                }
 
                 Spacer()
             }
@@ -132,6 +211,40 @@ struct ThemeControlsView: View {
         } message: {
             Text("Choose how to handle imported themes that have the same name as existing themes.")
         }
+        .fileExporter(
+            isPresented: $isExportingThemes,
+            document: exportDocument,
+            contentType: .json,
+            defaultFilename: "daysting-themes"
+        ) { result in
+            switch result {
+            case .success:
+                vm.setThemeStatus("Exported themes", isError: false)
+            case .failure(let error):
+                vm.setThemeStatus("Export failed: \(error.localizedDescription)", isError: true)
+            }
+            exportDocument = nil
+        }
+        .fileImporter(isPresented: $isImportingThemes, allowedContentTypes: [.json], allowsMultipleSelection: false) { result in
+            switch result {
+            case .success(let urls):
+                guard let url = urls.first else {
+                    vm.setThemeStatus("Import failed: no file selected", isError: true)
+                    return
+                }
+
+                do {
+                    let data = try Data(contentsOf: url)
+                    pendingImportData = data
+                    pendingImportFileName = url.lastPathComponent
+                    showImportStrategyConfirmation = true
+                } catch {
+                    vm.setThemeStatus("Import failed: \(error.localizedDescription)", isError: true)
+                }
+            case .failure(let error):
+                vm.setThemeStatus("Import failed: \(error.localizedDescription)", isError: true)
+            }
+        }
     }
 
     private func color(from rgba: RGBAColor) -> Color {
@@ -139,6 +252,20 @@ struct ThemeControlsView: View {
     }
 
     private func rgba(from color: Color) -> RGBAColor {
+#if canImport(UIKit)
+        let uiColor = UIColor(color)
+        var red: CGFloat = 0
+        var green: CGFloat = 0
+        var blue: CGFloat = 0
+        var alpha: CGFloat = 0
+        uiColor.getRed(&red, green: &green, blue: &blue, alpha: &alpha)
+        return RGBAColor(
+            red: Double(red),
+            green: Double(green),
+            blue: Double(blue),
+            alpha: Double(alpha)
+        )
+#elseif canImport(AppKit)
         let nsColor = NSColor(color)
         let rgbColor = nsColor.usingColorSpace(.deviceRGB) ?? NSColor.white
         return RGBAColor(
@@ -147,6 +274,9 @@ struct ThemeControlsView: View {
             blue: Double(rgbColor.blueComponent),
             alpha: Double(rgbColor.alphaComponent)
         )
+#else
+        return RGBAColor.defaultText
+#endif
     }
 
     private func exportThemesToJSONFile() {
@@ -155,46 +285,12 @@ struct ThemeControlsView: View {
             return
         }
 
-        let panel = NSSavePanel()
-        panel.title = "Export Theme Presets"
-        panel.nameFieldStringValue = "daysting-themes.json"
-        panel.allowedContentTypes = [UTType.json]
-        panel.canCreateDirectories = true
-
-        guard panel.runModal() == .OK, let url = panel.url else {
-            vm.setThemeStatus("Export canceled", isError: true)
-            return
-        }
-
-        do {
-            try data.write(to: url, options: .atomic)
-            vm.setThemeStatus("Exported themes to \(url.lastPathComponent)", isError: false)
-        } catch {
-            vm.setThemeStatus("Export failed: \(error.localizedDescription)", isError: true)
-        }
+        exportDocument = ThemeJSONDocument(data: data)
+        isExportingThemes = true
     }
 
     private func importThemesFromJSONFile() {
-        let panel = NSOpenPanel()
-        panel.title = "Import Theme Presets"
-        panel.allowedContentTypes = [UTType.json]
-        panel.canChooseFiles = true
-        panel.canChooseDirectories = false
-        panel.allowsMultipleSelection = false
-
-        guard panel.runModal() == .OK, let url = panel.url else {
-            vm.setThemeStatus("Import canceled", isError: true)
-            return
-        }
-
-        do {
-            let data = try Data(contentsOf: url)
-            pendingImportData = data
-            pendingImportFileName = url.lastPathComponent
-            showImportStrategyConfirmation = true
-        } catch {
-            vm.setThemeStatus("Import failed: \(error.localizedDescription)", isError: true)
-        }
+        isImportingThemes = true
     }
 
     private func runThemeImport(strategy: IRCViewModel.ThemeImportStrategy) {
