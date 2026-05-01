@@ -151,6 +151,9 @@ struct ContentView: View {
     }
 
     @EnvironmentObject private var vm: IRCViewModel
+#if canImport(UIKit)
+    @Environment(\.horizontalSizeClass) private var horizontalSizeClass
+#endif
     @State private var selectedUserNick: String?
     @State private var activeAnopeAction: AnopeMenuAction?
     @State private var anopeInputValues: [String: String] = [:]
@@ -161,6 +164,7 @@ struct ContentView: View {
     @State private var customServerPort = "6697"
     @State private var customServerErrorMessage = ""
     @State private var isThemeControlsPresented = false
+    @State private var isUsersSheetPresented = false
     @State private var showLogExporter = false
     @State private var logExportDocument: TextFileDocument?
     @State private var showDCCFileImporter = false
@@ -193,20 +197,19 @@ struct ContentView: View {
             effectiveBackgroundColor
                 .ignoresSafeArea()
 
-            VStack(spacing: 12) {
+            Group {
+                #if os(iOS)
                 if vm.isConnected {
-                    connectedTopBar
+                    connectedContent
                 } else {
-                    serverConfigPanel
+                    disconnectedIOSContent
                 }
-                paneTabsPanel
-                chatContentPanel
-                if !vm.dccTransfers.isEmpty {
-                    dccTransfersPanel
-                }
-                inputPanel
+                #else
+                connectedContent
+                #endif
             }
-            .padding(16)
+            .padding(contentPadding)
+            .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
         }
         .font(effectiveBaseFont)
         .sheet(item: $activeAnopeAction) { action in
@@ -218,6 +221,9 @@ struct ContentView: View {
         .sheet(isPresented: $isThemeControlsPresented) {
             ThemeControlsView()
                 .environmentObject(vm)
+        }
+        .sheet(isPresented: $isUsersSheetPresented) {
+            usersSheet
         }
         .fileExporter(
             isPresented: $showLogExporter,
@@ -255,6 +261,43 @@ struct ContentView: View {
             focusMessageFieldSoon()
         }
     }
+
+    private var contentPadding: CGFloat {
+#if os(iOS)
+        return 10
+#else
+        return 16
+#endif
+    }
+
+    private var connectedContent: some View {
+        VStack(spacing: 12) {
+            if vm.isConnected {
+                connectedTopBar
+            } else {
+                serverConfigPanel
+            }
+            paneTabsPanel
+            chatContentPanel
+            if !vm.dccTransfers.isEmpty {
+                dccTransfersPanel
+            }
+            inputPanel
+        }
+    }
+
+#if os(iOS)
+    private var disconnectedIOSContent: some View {
+        ScrollView {
+            VStack(spacing: 12) {
+                serverConfigPanel
+                    .frame(maxWidth: .infinity)
+            }
+            .frame(maxWidth: .infinity)
+            .padding(.bottom, 12)
+        }
+    }
+#endif
 
     private var serverConfigPanel: some View {
         GroupBox("Connection") {
@@ -501,6 +544,17 @@ struct ContentView: View {
 
     private var connectedTopBar: some View {
         HStack {
+#if os(iOS)
+            if vm.activeWindow.type == .channel {
+                Button {
+                    isUsersSheetPresented = true
+                } label: {
+                    Label("Users", systemImage: "person.2")
+                }
+                .buttonStyle(.bordered)
+            }
+#endif
+
             Spacer()
             Button("Disconnect") {
                 vm.disconnect()
@@ -513,47 +567,7 @@ struct ContentView: View {
     private var paneTabsPanel: some View {
         GroupBox("Windows") {
             HStack(spacing: 10) {
-                ScrollView(.horizontal) {
-                    HStack(spacing: 8) {
-                        ForEach(vm.windows) { pane in
-                            HStack(spacing: 6) {
-                                Button {
-                                    vm.selectWindow(pane.id)
-                                } label: {
-                                    HStack(spacing: 6) {
-                                        Text(pane.title)
-                                        if pane.unreadCount > 0 {
-                                            Text("\(pane.unreadCount)")
-                                                .font(themedFont(size: 11, weight: .semibold))
-                                                .padding(.horizontal, 6)
-                                                .padding(.vertical, 2)
-                                                .background(Color.white.opacity(0.2))
-                                                .clipShape(Capsule())
-                                        }
-                                    }
-                                }
-                                .buttonStyle(.borderedProminent)
-                                .tint(vm.selectedWindowID == pane.id ? .accentColor : .gray)
-                                .withMiddleClickCapture {
-                                    if vm.canCloseWindow(pane.id) {
-                                        vm.closeWindow(pane.id)
-                                    }
-                                }
-
-                                if vm.canCloseWindow(pane.id) {
-                                    Button {
-                                        vm.closeWindow(pane.id)
-                                    } label: {
-                                        Image(systemName: "xmark.circle.fill")
-                                            .font(.system(size: 12))
-                                    }
-                                    .buttonStyle(.plain)
-                                    .foregroundStyle(.secondary)
-                                }
-                            }
-                        }
-                    }
-                }
+                paneSelectionControl
 
                 Menu("Context Commands") {
                     ForEach(vm.contextualCommands) { command in
@@ -601,6 +615,108 @@ struct ContentView: View {
                     .foregroundStyle(vm.isOperator ? .green : .secondary)
             }
         }
+    }
+
+    @ViewBuilder
+    private var paneSelectionControl: some View {
+#if os(iOS)
+        GeometryReader { geo in
+            if useCompactPanePicker(availableWidth: geo.size.width) {
+                Menu {
+                    ForEach(vm.windows) { pane in
+                        Button {
+                            vm.selectWindow(pane.id)
+                        } label: {
+                            HStack(spacing: 8) {
+                                if vm.selectedWindowID == pane.id {
+                                    Image(systemName: "checkmark")
+                                }
+                                Text(compactPaneTitle(for: pane))
+                            }
+                        }
+                    }
+                } label: {
+                    Label("Pane: \(compactPaneTitle(for: vm.activeWindow))", systemImage: "rectangle.grid.1x2")
+                }
+                .buttonStyle(.bordered)
+            } else {
+                fullPaneTabsStrip
+            }
+        }
+        .fixedSize(horizontal: false, vertical: true)
+#else
+        fullPaneTabsStrip
+#endif
+    }
+
+    private var fullPaneTabsStrip: some View {
+        ScrollView(.horizontal) {
+            HStack(spacing: 8) {
+                ForEach(vm.windows) { pane in
+                    HStack(spacing: 6) {
+                        Button {
+                            vm.selectWindow(pane.id)
+                        } label: {
+                            HStack(spacing: 6) {
+                                Text(pane.title)
+                                if pane.unreadCount > 0 {
+                                    Text("\(pane.unreadCount)")
+                                        .font(themedFont(size: 11, weight: .semibold))
+                                        .padding(.horizontal, 6)
+                                        .padding(.vertical, 2)
+                                        .background(Color.white.opacity(0.2))
+                                        .clipShape(Capsule())
+                                }
+                            }
+                        }
+                        .buttonStyle(.borderedProminent)
+                        .tint(vm.selectedWindowID == pane.id ? .accentColor : .gray)
+                        .withMiddleClickCapture {
+                            if vm.canCloseWindow(pane.id) {
+                                vm.closeWindow(pane.id)
+                            }
+                        }
+
+                        if vm.canCloseWindow(pane.id) {
+                            Button {
+                                vm.closeWindow(pane.id)
+                            } label: {
+                                Image(systemName: "xmark.circle.fill")
+                                    .font(.system(size: 12))
+                            }
+                            .buttonStyle(.plain)
+                            .foregroundStyle(.secondary)
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    private func compactPaneTitle(for pane: IRCWindowPane) -> String {
+        if pane.unreadCount > 0 {
+            return "\(pane.title) (\(pane.unreadCount))"
+        }
+        return pane.title
+    }
+
+    private func useCompactPanePicker(availableWidth: CGFloat) -> Bool {
+#if os(iOS)
+        guard horizontalSizeClass == .compact else { return false }
+        // Estimate total tab strip width: ~10 pts per character + 24 pts padding per tab,
+        // plus 8 pts spacing between tabs. Reserve ~160 pts for the Context Commands button.
+        let reservedWidth: CGFloat = 160
+        let usable = availableWidth - reservedWidth
+        let estimatedTotal = vm.windows.reduce(CGFloat(0)) { acc, pane in
+            let title = pane.title
+            // +1 character if there is an unread badge
+            let charCount = CGFloat(title.count + (pane.unreadCount > 0 ? 4 : 0))
+            return acc + charCount * 10 + 24 + 8
+        }
+        return estimatedTotal > usable
+#else
+        return false
+#endif
     }
 
     private var logPanel: some View {
@@ -679,90 +795,114 @@ struct ContentView: View {
 
     private var userListPanel: some View {
         GroupBox("Users") {
-            List {
-                if vm.activeUserList.isEmpty {
-                    Text("No users to display")
-                        .foregroundStyle(.secondary)
-                } else {
-                    ForEach(vm.activeUserList, id: \.id) { user in
-                        HStack(spacing: 8) {
-                            Text(user.displayName)
-                                .font(.system(size: 12, weight: .regular, design: .monospaced))
-                                .frame(maxWidth: .infinity, alignment: .leading)
+            usersList
+        }
+#if os(macOS)
+        .frame(minWidth: 180, idealWidth: 220, maxWidth: 260)
+#endif
+    }
 
-                            Text(user.statusLabel)
-                                .font(.system(size: 10, weight: .semibold))
-                                .padding(.horizontal, 6)
-                                .padding(.vertical, 2)
-                                .foregroundStyle(statusForegroundColor(for: user.prefix))
-                                .background(statusBackgroundColor(for: user.prefix))
-                                .clipShape(Capsule())
-                        }
-                        .padding(.vertical, 2)
-                        .padding(.horizontal, 4)
-                        .background(
-                            RoundedRectangle(cornerRadius: 4)
-                                .fill(selectedUserNick == user.nick ? Color.accentColor.opacity(0.22) : .clear)
-                        )
-                        .contentShape(Rectangle())
-                        .onTapGesture {
-                            selectedUserNick = user.nick
-                        }
-                        .onTapGesture(count: 2) {
+    private var usersList: some View {
+        List {
+            if vm.activeUserList.isEmpty {
+                Text("No users to display")
+                    .foregroundStyle(.secondary)
+            } else {
+                ForEach(vm.activeUserList, id: \.id) { user in
+                    HStack(spacing: 8) {
+                        Text(user.displayName)
+                            .font(.system(size: 12, weight: .regular, design: .monospaced))
+                            .frame(maxWidth: .infinity, alignment: .leading)
+
+                        Text(user.statusLabel)
+                            .font(.system(size: 10, weight: .semibold))
+                            .padding(.horizontal, 6)
+                            .padding(.vertical, 2)
+                            .foregroundStyle(statusForegroundColor(for: user.prefix))
+                            .background(statusBackgroundColor(for: user.prefix))
+                            .clipShape(Capsule())
+                    }
+                    .padding(.vertical, 2)
+                    .padding(.horizontal, 4)
+                    .background(
+                        RoundedRectangle(cornerRadius: 4)
+                            .fill(selectedUserNick == user.nick ? Color.accentColor.opacity(0.22) : .clear)
+                    )
+                    .contentShape(Rectangle())
+                    .onTapGesture {
+                        selectedUserNick = user.nick
+                    }
+                    .onTapGesture(count: 2) {
+                        selectedUserNick = user.nick
+                        vm.openPrivateConversation(with: user.nick)
+                    }
+                    .contextMenu {
+                        Button("Open Private Chat") {
                             selectedUserNick = user.nick
                             vm.openPrivateConversation(with: user.nick)
                         }
-                        .contextMenu {
-                            Button("Open Private Chat") {
-                                selectedUserNick = user.nick
-                                vm.openPrivateConversation(with: user.nick)
-                            }
-                            Button("WHOIS") {
-                                selectedUserNick = user.nick
-                                vm.prefillWhois(for: user.nick)
-                            }
-                            Button("Mention") {
-                                selectedUserNick = user.nick
-                                vm.prefillMention(for: user.nick)
-                            }
-                            Button("Send File via DCC...") {
-                                selectedUserNick = user.nick
-                                promptDCCSend(to: user.nick)
-                            }
+                        Button("WHOIS") {
+                            selectedUserNick = user.nick
+                            vm.prefillWhois(for: user.nick)
+                        }
+                        Button("Mention") {
+                            selectedUserNick = user.nick
+                            vm.prefillMention(for: user.nick)
+                        }
+                        Button("Send File via DCC...") {
+                            selectedUserNick = user.nick
+                            promptDCCSend(to: user.nick)
+                        }
 
-                            Divider()
+                        Divider()
 
-                            Button("Op") {
-                                selectedUserNick = user.nick
-                                vm.performChannelUserMode(.op, for: user.nick)
-                            }
+                        Button("Op") {
+                            selectedUserNick = user.nick
+                            vm.performChannelUserMode(.op, for: user.nick)
+                        }
 
-                            Button("Deop") {
-                                selectedUserNick = user.nick
-                                vm.performChannelUserMode(.deop, for: user.nick)
-                            }
+                        Button("Deop") {
+                            selectedUserNick = user.nick
+                            vm.performChannelUserMode(.deop, for: user.nick)
+                        }
 
-                            Button("Voice") {
-                                selectedUserNick = user.nick
-                                vm.performChannelUserMode(.voice, for: user.nick)
-                            }
+                        Button("Voice") {
+                            selectedUserNick = user.nick
+                            vm.performChannelUserMode(.voice, for: user.nick)
+                        }
 
-                            Button("Devoice") {
-                                selectedUserNick = user.nick
-                                vm.performChannelUserMode(.devoice, for: user.nick)
-                            }
+                        Button("Devoice") {
+                            selectedUserNick = user.nick
+                            vm.performChannelUserMode(.devoice, for: user.nick)
                         }
                     }
                 }
             }
-            .scrollContentBackground(.hidden)
-            .background(
-                useCustomAppearance
-                    ? color(from: vm.config.appearanceBackgroundColor).opacity(0.82)
-                    : Color.clear
-            )
         }
-        .frame(minWidth: 180, idealWidth: 220, maxWidth: 260)
+        .scrollContentBackground(.hidden)
+        .background(
+            useCustomAppearance
+                ? color(from: vm.config.appearanceBackgroundColor).opacity(0.82)
+                : Color.clear
+        )
+    }
+
+    private var usersSheet: some View {
+#if os(iOS)
+        NavigationStack {
+            usersList
+                .navigationTitle("Channel Users")
+                .toolbar {
+                    ToolbarItem(placement: .topBarTrailing) {
+                        Button("Done") {
+                            isUsersSheetPresented = false
+                        }
+                    }
+                }
+        }
+#else
+        userListPanel
+#endif
     }
 
     private var chatContentPanel: some View {
@@ -774,9 +914,11 @@ struct ContentView: View {
             HStack(spacing: 10) {
                 logPanel
                     .frame(maxWidth: .infinity)
+#if os(macOS)
                 if vm.activeWindow.type == .channel {
                     userListPanel
                 }
+#endif
             }
         }
     }
