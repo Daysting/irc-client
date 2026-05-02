@@ -241,6 +241,19 @@ The app automatically restores between launches:
 
 ---
 
+## Privacy
+
+Daysting IRC does not require you to register an account or provide any personally identifiable information (PII) to use the app.
+
+- **No account required.** The app connects directly to an IRC server using only a nickname of your choice. Nicknames are not tied to a real identity.
+- **No data collection.** The app does not collect, transmit, or share any usage data, analytics, crash reports, or telemetry with the app developers.
+- **Local storage only.** All connection profile settings (server, nickname, passwords, theme preferences) are stored exclusively on your device using the platform's local storage (UserDefaults on Apple platforms; app settings on Windows). This data never leaves your device.
+- **Passwords.** Any SASL, NickServ, or OPER passwords you save are stored locally on your device. They are sent to the IRC server you connect to, and only over an encrypted TLS connection. They are not shared with any third party.
+- **Network traffic.** The only outbound connections the app makes are to the IRC server you specify. No other external services are contacted.
+- **No registration.** IRC nicknames are not inherently linked to personal identity. You may use any nickname that complies with the IRC server's rules.
+
+---
+
 ## Further Reading
 
 - [docs/USAGE.md](docs/USAGE.md) — detailed feature walkthrough
