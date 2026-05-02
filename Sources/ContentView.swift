@@ -163,7 +163,56 @@ private struct ThemedGroupBoxStyle: GroupBoxStyle {
         )
     }
 }
+
+private struct ThemedInputModifier: ViewModifier {
+    @EnvironmentObject private var vm: IRCViewModel
+    @FocusState private var isFocused: Bool
+
+    func body(content: Content) -> some View {
+        let useCustom = vm.config.enableCustomAppearance
+        let bgColor: Color = useCustom
+            ? Color(red: vm.config.appearanceBackgroundColor.red,
+                    green: vm.config.appearanceBackgroundColor.green,
+                    blue: vm.config.appearanceBackgroundColor.blue,
+                    opacity: vm.config.appearanceBackgroundColor.alpha * 0.9)
+            : Color(uiColor: .tertiarySystemBackground)
+        let strokeColor: Color = useCustom
+            ? Color(red: vm.config.appearanceTextColor.red,
+                    green: vm.config.appearanceTextColor.green,
+                    blue: vm.config.appearanceTextColor.blue,
+                    opacity: 0.3)
+            : Color(uiColor: .separator)
+        content
+            .textFieldStyle(.plain)
+            .focused($isFocused)
+            .padding(.horizontal, 10)
+            .padding(.vertical, 8)
+            .background(
+                RoundedRectangle(cornerRadius: 8)
+                    .fill(bgColor)
+                    .overlay(
+                        RoundedRectangle(cornerRadius: 8)
+                            .strokeBorder(strokeColor, lineWidth: 0.5)
+                    )
+            )
+            .contentShape(Rectangle())
+            .onTapGesture {
+                isFocused = true
+            }
+    }
+}
 #endif
+
+private extension View {
+    @ViewBuilder
+    func themedInputField() -> some View {
+#if os(iOS)
+        modifier(ThemedInputModifier())
+#else
+        textFieldStyle(.roundedBorder)
+#endif
+    }
+}
 
 struct ContentView: View {
     private enum FocusField: Hashable {
@@ -442,6 +491,7 @@ struct ContentView: View {
                         vm.connectToDaysting()
                     }
                     .buttonStyle(.borderedProminent)
+                    .tint(.accentColor)
                     .disabled(!vm.canConnectWithCurrentProfile)
 
                     Button("Custom Server...") {
@@ -575,6 +625,7 @@ struct ContentView: View {
                         vm.connectToDaysting()
                     }
                     .buttonStyle(.borderedProminent)
+                    .tint(.accentColor)
                     .keyboardShortcut("k", modifiers: [.command])
                     .disabled(!vm.canConnectWithCurrentProfile)
 
@@ -798,6 +849,7 @@ struct ContentView: View {
                 Button("Connect") {
                     connectCustomServerFromSheet()
                 }
+                .tint(.accentColor)
                 .keyboardShortcut(.defaultAction)
             }
         }
@@ -823,6 +875,7 @@ struct ContentView: View {
                 vm.disconnect()
             }
             .buttonStyle(.borderedProminent)
+            .tint(.accentColor)
             .keyboardShortcut("k", modifiers: [.command])
         }
     }
@@ -1248,9 +1301,6 @@ struct ContentView: View {
                 .focused($focusedField, equals: .messageInput)
 #if os(iOS)
                 .submitLabel(.send)
-                .onTapGesture {
-                    focusedField = .messageInput
-                }
 #endif
                 .onSubmit {
                     vm.sendCurrentInput()
