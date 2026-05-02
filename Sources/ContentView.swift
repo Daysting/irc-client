@@ -209,7 +209,7 @@ struct ContentView: View {
                 #endif
             }
             .padding(contentPadding)
-            .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
+            .frame(maxWidth: .infinity, maxHeight: .infinity)
         }
         .font(effectiveBaseFont)
         .sheet(item: $activeAnopeAction) { action in
@@ -294,7 +294,7 @@ struct ContentView: View {
     }
 
     private var iphoneConnectedContent: some View {
-        VStack(spacing: 12) {
+        VStack(spacing: 8) {
             if vm.isConnected {
                 connectedTopBar
             } else {
@@ -308,6 +308,7 @@ struct ContentView: View {
             }
             inputPanel
         }
+        .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
     }
 
     private var ipadConnectedContent: some View {
@@ -371,7 +372,118 @@ struct ContentView: View {
     }
 #endif
 
+    @ViewBuilder
     private var serverConfigPanel: some View {
+#if os(iOS)
+        if !isIPad {
+            iphoneServerConfigPanel
+        } else {
+            macosStyleServerConfigPanel
+        }
+#else
+        macosStyleServerConfigPanel
+#endif
+    }
+
+#if os(iOS)
+    private var iphoneServerConfigPanel: some View {
+        GroupBox("Connection") {
+            VStack(alignment: .leading, spacing: 12) {
+                HStack(spacing: 8) {
+                    Button("Daysting Server") {
+                        vm.connectToDaysting()
+                    }
+                    .buttonStyle(.borderedProminent)
+                    .disabled(!vm.canConnectWithCurrentProfile)
+
+                    Button("Custom Server...") {
+                        openCustomConnectSheet()
+                    }
+                    .buttonStyle(.bordered)
+                    .disabled(!vm.canConnectWithCurrentProfile)
+                }
+
+                TextField("Nickname", text: $vm.config.nickname)
+                    .textFieldStyle(.roundedBorder)
+
+                HStack(spacing: 8) {
+                    TextField("Channel", text: $vm.config.channel)
+                        .textFieldStyle(.roundedBorder)
+                        .validationBorder(color: vm.isPrimaryChannelInvalid ? .red : nil)
+                    if vm.isPrimaryChannelInvalid {
+                        ValidationHintIcon(
+                            color: .red,
+                            tooltip: "Primary channel must start with #, for example #lobby.",
+                            example: "#lobby"
+                        )
+                    }
+                }
+
+                Toggle("SASL Authentication", isOn: $vm.config.enableSASL)
+                    .toggleStyle(.switch)
+
+                if vm.config.enableSASL {
+                    Picker("Mechanism", selection: $vm.config.saslMechanism) {
+                        ForEach(SASLMechanism.allCases) { mechanism in
+                            Text(mechanism.title).tag(mechanism)
+                        }
+                    }
+                    .pickerStyle(.segmented)
+
+                    TextField("SASL Username (optional)", text: $vm.config.saslUsername)
+                        .textFieldStyle(.roundedBorder)
+                        .disabled(vm.config.saslMechanism == .external)
+
+                    HStack(spacing: 8) {
+                        SecureField("SASL Password", text: $vm.config.saslPassword)
+                            .textFieldStyle(.roundedBorder)
+                            .disabled(vm.config.saslMechanism == .external)
+                            .validationBorder(color: vm.isSASLPlainConfigurationIncomplete ? .orange : nil)
+                        if vm.isSASLPlainConfigurationIncomplete {
+                            ValidationHintIcon(
+                                color: .orange,
+                                tooltip: "SASL PLAIN needs a password.",
+                                example: "Enter your account password"
+                            )
+                        }
+                    }
+                }
+
+                SecureField("NickServ Password", text: $vm.config.nickServPassword)
+                    .textFieldStyle(.roundedBorder)
+
+                Button("Theme Controls") {
+                    isThemeControlsPresented = true
+                }
+                .buttonStyle(.bordered)
+
+                if !vm.themeStatusMessage.isEmpty {
+                    Text(vm.themeStatusMessage)
+                        .font(themedFont(size: 12))
+                        .foregroundStyle(vm.themeStatusIsError ? .red : .green)
+                }
+
+                if !vm.profileValidationErrors.isEmpty {
+                    ForEach(vm.profileValidationErrors, id: \.self) { item in
+                        Text("Error: \(item)")
+                            .font(themedFont(size: 12))
+                            .foregroundStyle(.red)
+                    }
+                }
+
+                if !vm.profileValidationWarnings.isEmpty {
+                    ForEach(vm.profileValidationWarnings, id: \.self) { item in
+                        Text("Warning: \(item)")
+                            .font(themedFont(size: 12))
+                            .foregroundStyle(.orange)
+                    }
+                }
+            }
+        }
+    }
+#endif
+
+    private var macosStyleServerConfigPanel: some View {
         GroupBox("Connection") {
             VStack(spacing: 10) {
                 HStack(spacing: 10) {
