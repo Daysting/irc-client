@@ -193,6 +193,20 @@ struct ContentView: View {
         return themedFont(size: size)
     }
 
+    private var effectiveTextColor: Color {
+        if useCustomAppearance {
+            return color(from: vm.config.appearanceTextColor)
+        }
+        return .primary
+    }
+
+    private var effectiveTintColor: Color {
+        if useCustomAppearance {
+            return color(from: vm.config.appearanceTextColor)
+        }
+        return .accentColor
+    }
+
     var body: some View {
         ZStack {
             effectiveBackgroundColor
@@ -213,6 +227,8 @@ struct ContentView: View {
             .frame(maxWidth: .infinity, maxHeight: .infinity)
         }
         .font(effectiveBaseFont)
+        .foregroundStyle(effectiveTextColor)
+        .tint(effectiveTintColor)
         .sheet(item: $activeAnopeAction) { action in
             anopePromptSheet(for: action)
         }
@@ -314,6 +330,7 @@ struct ContentView: View {
             }
             inputPanel
         }
+        .padding(.horizontal, 16)
         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
     }
 
@@ -1202,7 +1219,7 @@ struct ContentView: View {
         HStack(spacing: 10) {
             TextField("Message \(vm.activeWindowTitle) or use command (/ms HELP, /os HELP, /join #chan)", text: $vm.input)
                 .textFieldStyle(.roundedBorder)
-                .foregroundStyle(.primary)
+                .foregroundStyle(effectiveTextColor)
                 .focused($focusedField, equals: .messageInput)
 #if os(iOS)
                 .submitLabel(.send)
@@ -1232,9 +1249,6 @@ struct ContentView: View {
                 anopeServicesMenu
             }
         }
-#if os(iOS)
-        .padding(.horizontal, 10)
-#endif
     }
 
     @ViewBuilder

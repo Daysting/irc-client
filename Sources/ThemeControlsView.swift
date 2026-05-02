@@ -80,8 +80,38 @@ struct ThemeControlsView: View {
         InstalledFonts.allNames
     }
 
+    private var useCustomAppearance: Bool {
+        vm.config.enableCustomAppearance
+    }
+
+    private var effectiveTextColor: Color {
+        if useCustomAppearance {
+            return color(from: vm.config.appearanceTextColor)
+        }
+        return .primary
+    }
+
+    private var effectiveBackgroundColor: Color {
+        if useCustomAppearance {
+            return color(from: vm.config.appearanceBackgroundColor)
+        }
+#if canImport(UIKit)
+        return Color(uiColor: .systemBackground)
+#elseif canImport(AppKit)
+        return Color(nsColor: .windowBackgroundColor)
+#else
+        return Color(.systemBackground)
+#endif
+    }
+
     var body: some View {
-        themeControlsContent
+        ZStack {
+            effectiveBackgroundColor
+                .ignoresSafeArea()
+            themeControlsContent
+        }
+        .foregroundStyle(effectiveTextColor)
+        .tint(effectiveTextColor)
             .confirmationDialog("Delete selected theme?", isPresented: $showDeleteThemeConfirmation, titleVisibility: .visible) {
                 Button("Delete", role: .destructive) {
                     vm.deleteSelectedTheme()
