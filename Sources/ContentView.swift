@@ -166,7 +166,6 @@ private struct ThemedGroupBoxStyle: GroupBoxStyle {
 
 private struct ThemedInputModifier: ViewModifier {
     @EnvironmentObject private var vm: IRCViewModel
-    @FocusState private var isFocused: Bool
 
     func body(content: Content) -> some View {
         let useCustom = vm.config.enableCustomAppearance
@@ -184,7 +183,6 @@ private struct ThemedInputModifier: ViewModifier {
             : Color(uiColor: .separator)
         content
             .textFieldStyle(.plain)
-            .focused($isFocused)
             .background(Color.clear)
             .padding(.horizontal, 10)
             .padding(.vertical, 8)
@@ -197,9 +195,6 @@ private struct ThemedInputModifier: ViewModifier {
                     )
             )
             .contentShape(Rectangle())
-            .onTapGesture {
-                isFocused = true
-            }
     }
 }
 #endif
