@@ -145,6 +145,26 @@ private struct TextFileDocument: FileDocument {
     }
 }
 
+#if os(iOS)
+private struct ThemedGroupBoxStyle: GroupBoxStyle {
+    let useCustom: Bool
+    let backgroundColor: Color
+
+    func makeBody(configuration: Configuration) -> some View {
+        VStack(alignment: .leading, spacing: 6) {
+            configuration.label
+                .font(.subheadline.weight(.semibold))
+            configuration.content
+        }
+        .padding(12)
+        .background(
+            RoundedRectangle(cornerRadius: 10)
+                .fill(useCustom ? backgroundColor : Color(uiColor: .secondarySystemBackground))
+        )
+    }
+}
+#endif
+
 struct ContentView: View {
     private enum FocusField: Hashable {
         case messageInput
@@ -229,6 +249,9 @@ struct ContentView: View {
         .font(effectiveBaseFont)
         .foregroundStyle(effectiveTextColor)
         .tint(effectiveTintColor)
+#if os(iOS)
+        .groupBoxStyle(ThemedGroupBoxStyle(useCustom: useCustomAppearance, backgroundColor: effectiveBackgroundColor))
+#endif
         .sheet(item: $activeAnopeAction) { action in
             anopePromptSheet(for: action)
         }
@@ -363,6 +386,7 @@ struct ContentView: View {
             }
             inputPanel
         }
+        .padding(.horizontal, 16)
     }
 
     private var macosConnectedContent: some View {
@@ -389,6 +413,7 @@ struct ContentView: View {
                     .frame(maxWidth: .infinity)
             }
             .frame(maxWidth: .infinity)
+            .padding(.horizontal, 16)
             .padding(.bottom, 12)
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
