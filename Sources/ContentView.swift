@@ -264,7 +264,7 @@ struct ContentView: View {
 
     private var contentPadding: CGFloat {
 #if os(iOS)
-        return 10
+        return 0
 #else
         return 16
 #endif
@@ -935,6 +935,7 @@ struct ContentView: View {
                                 .id(idx)
                         }
                     }
+                    .frame(maxWidth: .infinity, maxHeight: .infinity)
                     .scrollContentBackground(.hidden)
                     .background(
                         useCustomAppearance
@@ -974,7 +975,9 @@ struct ContentView: View {
                     }
                 }
             }
+            .frame(maxWidth: .infinity, maxHeight: .infinity)
         }
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
     }
 
     private var userListPanel: some View {
