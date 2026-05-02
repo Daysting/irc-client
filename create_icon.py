@@ -117,7 +117,10 @@ appicon_specs = [
 ]
 
 for filename, pixel_size in appicon_specs:
-    resized = master_1024.resize((pixel_size, pixel_size), Image.Resampling.LANCZOS)
+    if isinstance(pixel_size, tuple):
+        resized = master_1024.resize(pixel_size, Image.Resampling.LANCZOS)
+    else:
+        resized = master_1024.resize((pixel_size, pixel_size), Image.Resampling.LANCZOS)
     resized.save(os.path.join(appiconset_dir, filename))
 
 contents = {

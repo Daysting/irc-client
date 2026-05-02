@@ -1,0 +1,2 @@
+Target dependency graph (1 target)
+Target 'DaystingIRC-tvOS' in project 'DaystingIRC' (no dependencies)

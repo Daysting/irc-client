@@ -1,4 +1,7 @@
 import SwiftUI
+#if canImport(GameController)
+import GameController
+#endif
 
 #if os(tvOS)
 
@@ -43,6 +46,38 @@ private struct TVTextInputStyle: ViewModifier {
     }
 }
 
+private struct TVFocusableActionButtonStyle: ButtonStyle {
+    var isSelected: Bool = false
+    @Environment(\.isFocused) private var isFocused
+
+    func makeBody(configuration: Configuration) -> some View {
+        configuration.label
+            .padding(.vertical, 8)
+            .padding(.horizontal, 18)
+            .background(
+                RoundedRectangle(cornerRadius: 10)
+                    .fill(backgroundColor)
+            )
+            .overlay(
+                RoundedRectangle(cornerRadius: 10)
+                    .strokeBorder(isFocused ? Color.white.opacity(0.95) : Color.clear, lineWidth: 3)
+            )
+            .scaleEffect(isFocused ? 1.06 : 1.0)
+            .animation(.easeInOut(duration: 0.12), value: isFocused)
+            .animation(.easeInOut(duration: 0.12), value: isSelected)
+    }
+
+    private var backgroundColor: Color {
+        if isFocused {
+            return .accentColor
+        }
+        if isSelected {
+            return Color.accentColor.opacity(0.70)
+        }
+        return Color.secondary.opacity(0.25)
+    }
+}
+
 // MARK: - Main tvOS View
 
 struct TVOSContentView: View {
@@ -57,6 +92,14 @@ struct TVOSContentView: View {
     @State private var customServerErrorMessage = ""
     @State private var isCustomConnectSheetPresented = false
 
+        private var hasHardwareKeyboard: Bool {
+    #if canImport(GameController)
+        GCKeyboard.coalesced != nil
+    #else
+        false
+    #endif
+        }
+
     var body: some View {
         ZStack {
             Color(.sRGB, red: 0.10, green: 0.10, blue: 0.12, opacity: 1)
@@ -68,8 +111,12 @@ struct TVOSContentView: View {
             }
         }
         .onAppear { focusMessageFieldSoon() }
-        .onChange(of: vm.selectedWindowID) { _ in focusMessageFieldSoon() }
-        .onChange(of: vm.isConnected) { _ in focusMessageFieldSoon() }
+        .onChange(of: vm.selectedWindowID) {
+            focusMessageFieldSoon()
+        }
+        .onChange(of: vm.isConnected) {
+            focusMessageFieldSoon()
+        }
     }
 
     // MARK: - Connected Layout (iPad template)
@@ -108,6 +155,7 @@ struct TVOSContentView: View {
             Button("Disconnect") {
                 vm.disconnect()
             }
+            .buttonStyle(TVFocusableActionButtonStyle())
         }
     }
 
@@ -130,17 +178,8 @@ struct TVOSContentView: View {
                                     .clipShape(Capsule())
                             }
                         }
-                        .padding(.vertical, 8)
-                        .padding(.horizontal, 20)
-                        .background(
-                            RoundedRectangle(cornerRadius: 8)
-                                .fill(vm.selectedWindowID == pane.id
-                                      ? Color.accentColor
-                                      : Color.secondary.opacity(0.2))
-                        )
                     }
-                    .buttonStyle(.plain)
-                    .focusable()
+                    .buttonStyle(TVFocusableActionButtonStyle(isSelected: vm.selectedWindowID == pane.id))
                 }
             }
         }
@@ -161,7 +200,7 @@ struct TVOSContentView: View {
                     .padding(16)
                 }
                 .frame(maxWidth: .infinity, maxHeight: .infinity)
-                .onChange(of: vm.activeLogs.count) { _ in
+                .onChange(of: vm.activeLogs.count) {
                     guard !vm.activeLogs.isEmpty else { return }
                     proxy.scrollTo(vm.activeLogs.count - 1, anchor: .bottom)
                 }
@@ -202,11 +241,18 @@ struct TVOSContentView: View {
 
     private var inputArea: some View {
         HStack(spacing: 12) {
-            TextField("Message \(vm.activeWindowTitle) or use /command…", text: $vm.input)
-                .modifier(TVTextInputStyle())
-                .focused($focusedField, equals: .messageInput)
-                .onSubmit { vm.sendCurrentInput() }
-                .frame(maxWidth: .infinity)
+            if hasHardwareKeyboard {
+                TextField("Message \(vm.activeWindowTitle) or use /command…", text: $vm.input)
+                    .modifier(TVTextInputStyle())
+                    .onSubmit { vm.sendCurrentInput() }
+                    .frame(maxWidth: .infinity)
+            } else {
+                TextField("Message \(vm.activeWindowTitle) or use /command…", text: $vm.input)
+                    .modifier(TVTextInputStyle())
+                    .focused($focusedField, equals: .messageInput)
+                    .onSubmit { vm.sendCurrentInput() }
+                    .frame(maxWidth: .infinity)
+            }
 
             Button("Send") {
                 vm.sendCurrentInput()
@@ -346,6 +392,7 @@ struct TVOSContentView: View {
 
     private func focusMessageFieldSoon() {
         guard vm.isConnected else { return }
+        guard !hasHardwareKeyboard else { return }
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
             focusedField = .messageInput
         }
