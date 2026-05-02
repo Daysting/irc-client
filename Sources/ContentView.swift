@@ -210,6 +210,9 @@ struct ContentView: View {
             }
             .padding(contentPadding)
             .frame(maxWidth: .infinity, maxHeight: .infinity)
+#if os(iOS)
+            .ignoresSafeArea(.container, edges: [.top, .bottom])
+#endif
         }
         .font(effectiveBaseFont)
         .sheet(item: $activeAnopeAction) { action in
