@@ -194,80 +194,6 @@ private struct ThemedInputModifier: ViewModifier {
                             .strokeBorder(strokeColor, lineWidth: 0.5)
                     )
             )
-            .contentShape(Rectangle())
-    }
-}
-
-private struct IOSMessageTextField: UIViewRepresentable {
-    @Binding var text: String
-    var placeholder: String
-    @Binding var isFocused: Bool
-    var onSubmit: () -> Void
-
-    final class Coordinator: NSObject, UITextFieldDelegate {
-        var parent: IOSMessageTextField
-
-        init(parent: IOSMessageTextField) {
-            self.parent = parent
-        }
-
-        @objc
-        func textDidChange(_ sender: UITextField) {
-            parent.text = sender.text ?? ""
-        }
-
-        func textFieldDidBeginEditing(_: UITextField) {
-            if !parent.isFocused {
-                parent.isFocused = true
-            }
-        }
-
-        func textFieldDidEndEditing(_: UITextField) {
-            if parent.isFocused {
-                parent.isFocused = false
-            }
-        }
-
-        func textFieldShouldReturn(_: UITextField) -> Bool {
-            parent.onSubmit()
-            return false
-        }
-    }
-
-    func makeCoordinator() -> Coordinator {
-        Coordinator(parent: self)
-    }
-
-    func makeUIView(context: Context) -> UITextField {
-        let textField = UITextField(frame: .zero)
-        textField.borderStyle = .none
-        textField.returnKeyType = .send
-        textField.clearButtonMode = .whileEditing
-        textField.delegate = context.coordinator
-        textField.autocorrectionType = .default
-        textField.autocapitalizationType = .none
-        textField.addTarget(context.coordinator, action: #selector(Coordinator.textDidChange(_:)), for: .editingChanged)
-        return textField
-    }
-
-    func updateUIView(_ uiView: UITextField, context _: Context) {
-        if uiView.text != text {
-            uiView.text = text
-        }
-
-        if uiView.placeholder != placeholder {
-            uiView.placeholder = placeholder
-        }
-
-        if isFocused, !uiView.isFirstResponder {
-            DispatchQueue.main.async {
-                uiView.becomeFirstResponder()
-            }
-        } else if !isFocused, uiView.isFirstResponder {
-            DispatchQueue.main.async {
-                uiView.resignFirstResponder()
-            }
-        }
     }
 }
 #endif
@@ -308,9 +234,6 @@ struct ContentView: View {
     @State private var showDCCFileImporter = false
     @State private var dccSendTargetNick: String?
     @State private var iphoneOperAutoLoginEnabled = false
-#if os(iOS)
-    @State private var iosMessageInputFocused = false
-#endif
 
     private var useCustomAppearance: Bool {
         vm.config.enableCustomAppearance
@@ -1367,23 +1290,20 @@ struct ContentView: View {
 
     private var inputPanel: some View {
         HStack(spacing: 10) {
-#if os(iOS)
-            IOSMessageTextField(
-                text: $vm.input,
-                placeholder: "Message \(vm.activeWindowTitle) or use command (/ms HELP, /os HELP, /join #chan)",
-                isFocused: $iosMessageInputFocused,
-                onSubmit: { vm.sendCurrentInput() }
-            )
-            .themedInputField()
-#else
             TextField("Message \(vm.activeWindowTitle) or use command (/ms HELP, /os HELP, /join #chan)", text: $vm.input)
-                .textFieldStyle(.roundedBorder)
+                .frame(maxWidth: .infinity)
+            .themedInputField()
                 .foregroundStyle(effectiveTextColor)
                 .focused($focusedField, equals: .messageInput)
+#if os(iOS)
+                .submitLabel(.send)
+                .onTapGesture {
+                    focusedField = .messageInput
+                }
+#endif
                 .onSubmit {
                     vm.sendCurrentInput()
                 }
-#endif
 
             Button("Send") {
                 vm.sendCurrentInput()
@@ -1784,11 +1704,7 @@ struct ContentView: View {
 
     private func focusMessageFieldSoon() {
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.05) {
-#if os(iOS)
-            iosMessageInputFocused = true
-#else
             focusedField = .messageInput
-#endif
         }
     }
 }
