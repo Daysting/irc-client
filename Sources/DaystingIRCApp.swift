@@ -47,10 +47,8 @@ final class AppActivationDelegate: NSObject, NSApplicationDelegate {
 #if os(iOS)
 final class IOSAppDelegate: NSObject, UIApplicationDelegate {
     func application(_ application: UIApplication, supportedInterfaceOrientationsFor window: UIWindow?) -> UIInterfaceOrientationMask {
-        // iPhone: portrait only. iPad: portrait and landscape.
-        UIDevice.current.userInterfaceIdiom == .phone
-            ? .portrait
-            : [.portrait, .portraitUpsideDown, .landscapeLeft, .landscapeRight]
+        // All orientations on both iPhone and iPad.
+        [.portrait, .portraitUpsideDown, .landscapeLeft, .landscapeRight]
     }
 }
 #endif

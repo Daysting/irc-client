@@ -302,6 +302,7 @@ struct ContentView: View {
             }
             paneTabsPanel
             chatContentPanel
+                .frame(maxHeight: .infinity)
             if !vm.dccTransfers.isEmpty {
                 dccTransfersPanel
             }
@@ -984,13 +985,14 @@ struct ContentView: View {
 
             HStack(spacing: 10) {
                 logPanel
-                    .frame(maxWidth: .infinity)
+                    .frame(maxWidth: .infinity, maxHeight: .infinity)
 #if os(macOS)
                 if vm.activeWindow.type == .channel {
                     userListPanel
                 }
 #endif
             }
+            .frame(maxHeight: .infinity)
         }
     }
 
