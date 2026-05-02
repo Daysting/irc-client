@@ -189,9 +189,11 @@ private struct ThemedInputModifier: ViewModifier {
             .background(
                 RoundedRectangle(cornerRadius: 8)
                     .fill(bgColor)
+                    .allowsHitTesting(false)
                     .overlay(
                         RoundedRectangle(cornerRadius: 8)
                             .strokeBorder(strokeColor, lineWidth: 0.5)
+                            .allowsHitTesting(false)
                     )
             )
     }
@@ -1297,9 +1299,6 @@ struct ContentView: View {
                 .focused($focusedField, equals: .messageInput)
 #if os(iOS)
                 .submitLabel(.send)
-                .onTapGesture {
-                    focusedField = .messageInput
-                }
 #endif
                 .onSubmit {
                     vm.sendCurrentInput()
