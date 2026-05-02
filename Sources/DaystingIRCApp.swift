@@ -1,5 +1,9 @@
 import SwiftUI
 
+#if os(iOS)
+import UIKit
+#endif
+
 #if os(macOS)
 import AppKit
 #endif
@@ -40,12 +44,26 @@ final class AppActivationDelegate: NSObject, NSApplicationDelegate {
 }
 #endif
 
+#if os(iOS)
+final class IOSAppDelegate: NSObject, UIApplicationDelegate {
+    func application(_ application: UIApplication, supportedInterfaceOrientationsFor window: UIWindow?) -> UIInterfaceOrientationMask {
+        // iPhone: portrait only. iPad: portrait and landscape.
+        UIDevice.current.userInterfaceIdiom == .phone
+            ? .portrait
+            : [.portrait, .portraitUpsideDown, .landscapeLeft, .landscapeRight]
+    }
+}
+#endif
+
 @main
 struct DaystingIRCApp: App {
     @StateObject private var viewModel = IRCViewModel()
 
 #if os(macOS)
     @NSApplicationDelegateAdaptor(AppActivationDelegate.self) private var appDelegate
+#endif
+#if os(iOS)
+    @UIApplicationDelegateAdaptor(IOSAppDelegate.self) private var iosAppDelegate
 #endif
 
     @SceneBuilder

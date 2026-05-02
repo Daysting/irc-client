@@ -14,6 +14,27 @@ Default quick-connect is `irc.daysting.com:6697`, and custom servers are support
 - macOS app: SwiftUI project in `Sources/` and `DaystingIRC.xcodeproj`
 - iOS/iPadOS app target config: generated from `project.yml` via XcodeGen (`DaystingIRC-iOS`)
 
+### macOS App Icon Setup
+
+The macOS app icon is configured via Assets.xcassets. After building in Xcode, run the cleanup script to ensure only the asset catalog icon is used:
+
+```bash
+./scripts/clean_macos_app_icon.sh "$BUILT_PRODUCTS_DIR/$EXECUTABLE_FOLDER_PATH"
+```
+
+Or manually for the Debug build:
+
+```bash
+scripts/clean_macos_app_icon.sh ~/Library/Developer/Xcode/DerivedData/DaystingIRC-*/Build/Products/Debug/DaystingIRC.app
+```
+
+This removes the generated .icns file and legacy CFBundleIconFile entry, leaving only the modern CFBundleIconName pointing to the asset catalog.
+
+**Note:** After cleanup, you may need to restart Finder and Dock for the icon to appear:
+```bash
+killall Finder Dock
+```
+
 ## Full Usage Guide
 
 For complete step-by-step instructions, see `docs/USAGE.md`.

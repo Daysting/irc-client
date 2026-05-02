@@ -210,7 +210,6 @@ struct ContentView: View {
             }
             .padding(contentPadding)
             .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
-            .ignoresSafeArea(.keyboard, edges: .bottom)
         }
         .font(effectiveBaseFont)
         .sheet(item: $activeAnopeAction) { action in
@@ -271,7 +270,30 @@ struct ContentView: View {
 #endif
     }
 
+#if os(iOS)
+    private var isIPad: Bool {
+        UIDevice.current.userInterfaceIdiom == .pad
+    }
+#else
+    private var isIPad: Bool {
+        false
+    }
+#endif
+
+    @ViewBuilder
     private var connectedContent: some View {
+#if os(iOS)
+        if isIPad {
+            ipadConnectedContent
+        } else {
+            iphoneConnectedContent
+        }
+#else
+        macosConnectedContent
+#endif
+    }
+
+    private var iphoneConnectedContent: some View {
         VStack(spacing: 12) {
             if vm.isConnected {
                 connectedTopBar
@@ -280,13 +302,58 @@ struct ContentView: View {
             }
             paneTabsPanel
             chatContentPanel
-                .frame(maxWidth: .infinity, maxHeight: .infinity)
             if !vm.dccTransfers.isEmpty {
                 dccTransfersPanel
             }
             inputPanel
         }
-        .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
+    }
+
+    private var ipadConnectedContent: some View {
+        VStack(spacing: 12) {
+            if vm.isConnected {
+                connectedTopBar
+            } else {
+                serverConfigPanel
+            }
+            paneTabsPanel
+            HStack(spacing: 10) {
+                VStack(spacing: 8) {
+                    if vm.activeWindow.type == .channel {
+                        channelTopicPanel
+                    }
+                    HStack(spacing: 10) {
+                        logPanel
+                            .frame(maxWidth: .infinity)
+                    }
+                }
+                .frame(maxWidth: .infinity)
+                if vm.activeWindow.type == .channel {
+                    userListPanel
+                        .frame(minWidth: 180, idealWidth: 220, maxWidth: 280)
+                }
+            }
+            if !vm.dccTransfers.isEmpty {
+                dccTransfersPanel
+            }
+            inputPanel
+        }
+    }
+
+    private var macosConnectedContent: some View {
+        VStack(spacing: 12) {
+            if vm.isConnected {
+                connectedTopBar
+            } else {
+                serverConfigPanel
+            }
+            paneTabsPanel
+            chatContentPanel
+            if !vm.dccTransfers.isEmpty {
+                dccTransfersPanel
+            }
+            inputPanel
+        }
     }
 
 #if os(iOS)
@@ -299,6 +366,7 @@ struct ContentView: View {
             .frame(maxWidth: .infinity)
             .padding(.bottom, 12)
         }
+        .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
     }
 #endif
 
@@ -548,7 +616,7 @@ struct ContentView: View {
     private var connectedTopBar: some View {
         HStack {
 #if os(iOS)
-            if vm.activeWindow.type == .channel {
+            if vm.activeWindow.type == .channel && !isIPad {
                 Button {
                     isUsersSheetPresented = true
                 } label: {
@@ -565,7 +633,6 @@ struct ContentView: View {
             .buttonStyle(.borderedProminent)
             .keyboardShortcut("k", modifiers: [.command])
         }
-        .frame(maxWidth: .infinity, alignment: .leading)
     }
 
     private var paneTabsPanel: some View {
@@ -619,7 +686,6 @@ struct ContentView: View {
                     .foregroundStyle(vm.isOperator ? .green : .secondary)
             }
         }
-        .frame(maxWidth: .infinity, alignment: .leading)
     }
 
     @ViewBuilder
@@ -649,7 +715,6 @@ struct ContentView: View {
             }
         }
         .fixedSize(horizontal: false, vertical: true)
-        .frame(maxWidth: .infinity, alignment: .leading)
 #else
         fullPaneTabsStrip
 #endif
@@ -797,7 +862,6 @@ struct ContentView: View {
                 }
             }
         }
-        .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
     }
 
     private var userListPanel: some View {
@@ -928,7 +992,6 @@ struct ContentView: View {
 #endif
             }
         }
-        .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
     }
 
     private func saveActiveLog() {
@@ -1009,7 +1072,6 @@ struct ContentView: View {
                 anopeServicesMenu
             }
         }
-        .frame(maxWidth: .infinity, alignment: .leading)
     }
 
     @ViewBuilder
