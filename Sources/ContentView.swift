@@ -169,6 +169,7 @@ struct ContentView: View {
     @State private var logExportDocument: TextFileDocument?
     @State private var showDCCFileImporter = false
     @State private var dccSendTargetNick: String?
+    @State private var iphoneOperAutoLoginEnabled = false
 
     private var useCustomAppearance: Bool {
         vm.config.enableCustomAppearance
@@ -210,9 +211,6 @@ struct ContentView: View {
             }
             .padding(contentPadding)
             .frame(maxWidth: .infinity, maxHeight: .infinity)
-#if os(iOS)
-        .ignoresSafeArea(.container, edges: .bottom)
-#endif
         }
         .font(effectiveBaseFont)
         .sheet(item: $activeAnopeAction) { action in
@@ -255,6 +253,11 @@ struct ContentView: View {
             }
         }
         .onAppear {
+#if os(iOS)
+            let hasOperName = !vm.config.operName.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
+            let hasOperPassword = !vm.config.operPassword.isEmpty
+            iphoneOperAutoLoginEnabled = hasOperName || hasOperPassword
+#endif
             focusMessageFieldSoon()
         }
         .onChange(of: vm.selectedWindowID) { _ in
@@ -276,22 +279,6 @@ struct ContentView: View {
 #if os(iOS)
     private var isIPad: Bool {
         UIDevice.current.userInterfaceIdiom == .pad
-    }
-
-    private var isOperAutoLoginEnabled: Binding<Bool> {
-        Binding(
-            get: {
-                let hasOperName = !vm.config.operName.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
-                let hasOperPassword = !vm.config.operPassword.isEmpty
-                return hasOperName || hasOperPassword
-            },
-            set: { isEnabled in
-                if !isEnabled {
-                    vm.config.operName = ""
-                    vm.config.operPassword = ""
-                }
-            }
-        )
     }
 #else
     private var isIPad: Bool {
@@ -471,10 +458,19 @@ struct ContentView: View {
                 SecureField("NickServ Password", text: $vm.config.nickServPassword)
                     .textFieldStyle(.roundedBorder)
 
-                Toggle("Enable OPER auto-login", isOn: isOperAutoLoginEnabled)
+                Toggle("Enable OPER auto-login", isOn: Binding(
+                    get: { iphoneOperAutoLoginEnabled },
+                    set: { isEnabled in
+                        iphoneOperAutoLoginEnabled = isEnabled
+                        if !isEnabled {
+                            vm.config.operName = ""
+                            vm.config.operPassword = ""
+                        }
+                    }
+                ))
                     .toggleStyle(.switch)
 
-                if isOperAutoLoginEnabled.wrappedValue {
+                if iphoneOperAutoLoginEnabled {
                     TextField("OPER Name", text: $vm.config.operName)
                         .textFieldStyle(.roundedBorder)
                         .validationBorder(color: vm.isOperConfigurationIncomplete ? .orange : nil)
