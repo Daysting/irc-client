@@ -44,12 +44,14 @@ final class AppActivationDelegate: NSObject, NSApplicationDelegate {
 }
 #endif
 
-#if os(iOS)
+#if canImport(UIKit)
 final class IOSAppDelegate: NSObject, UIApplicationDelegate {
+#if os(iOS)
     func application(_ application: UIApplication, supportedInterfaceOrientationsFor window: UIWindow?) -> UIInterfaceOrientationMask {
         // All orientations on both iPhone and iPad.
         [.portrait, .portraitUpsideDown, .landscapeLeft, .landscapeRight]
     }
+#endif
 }
 #endif
 
@@ -60,7 +62,7 @@ struct DaystingIRCApp: App {
 #if os(macOS)
     @NSApplicationDelegateAdaptor(AppActivationDelegate.self) private var appDelegate
 #endif
-#if os(iOS)
+#if canImport(UIKit)
     @UIApplicationDelegateAdaptor(IOSAppDelegate.self) private var iosAppDelegate
 #endif
 
@@ -85,8 +87,13 @@ struct DaystingIRCApp: App {
         .windowResizability(.contentSize)
 #else
         WindowGroup {
+#if os(tvOS)
+            TVOSContentView()
+                .environmentObject(viewModel)
+#else
             ContentView()
                 .environmentObject(viewModel)
+#endif
         }
 #endif
     }

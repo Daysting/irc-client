@@ -1,0 +1,79 @@
+{
+  "" : {
+    "diagnostics" : "/Volumes/App Drive/repositories/irc-client/build/DaystingIRC.build/Debug-appletvsimulator/DaystingIRC-tvOS.build/Objects-normal/x86_64/DaystingIRC-tvOS-primary.dia",
+    "emit-module-dependencies" : "/Volumes/App Drive/repositories/irc-client/build/DaystingIRC.build/Debug-appletvsimulator/DaystingIRC-tvOS.build/Objects-normal/x86_64/DaystingIRC-tvOS-primary-emit-module.d",
+    "emit-module-diagnostics" : "/Volumes/App Drive/repositories/irc-client/build/DaystingIRC.build/Debug-appletvsimulator/DaystingIRC-tvOS.build/Objects-normal/x86_64/DaystingIRC-tvOS-primary-emit-module.dia",
+    "pch" : "/Volumes/App Drive/repositories/irc-client/build/DaystingIRC.build/Debug-appletvsimulator/DaystingIRC-tvOS.build/Objects-normal/x86_64/DaystingIRC-tvOS-primary-Bridging-header.pch",
+    "swift-dependencies" : "/Volumes/App Drive/repositories/irc-client/build/DaystingIRC.build/Debug-appletvsimulator/DaystingIRC-tvOS.build/Objects-normal/x86_64/DaystingIRC-tvOS-primary.swiftdeps"
+  },
+  "/Volumes/App Drive/repositories/irc-client/Sources/ContentView.swift" : {
+    "const-values" : "/Volumes/App Drive/repositories/irc-client/build/DaystingIRC.build/Debug-appletvsimulator/DaystingIRC-tvOS.build/Objects-normal/x86_64/ContentView.swiftconstvalues",
+    "dependencies" : "/Volumes/App Drive/repositories/irc-client/build/DaystingIRC.build/Debug-appletvsimulator/DaystingIRC-tvOS.build/Objects-normal/x86_64/ContentView.d",
+    "diagnostics" : "/Volumes/App Drive/repositories/irc-client/build/DaystingIRC.build/Debug-appletvsimulator/DaystingIRC-tvOS.build/Objects-normal/x86_64/ContentView.dia",
+    "index-unit-output-path" : "/DaystingIRC.build/Debug-appletvsimulator/DaystingIRC-tvOS.build/Objects-normal/x86_64/ContentView.o",
+    "llvm-bc" : "/Volumes/App Drive/repositories/irc-client/build/DaystingIRC.build/Debug-appletvsimulator/DaystingIRC-tvOS.build/Objects-normal/x86_64/ContentView.bc",
+    "object" : "/Volumes/App Drive/repositories/irc-client/build/DaystingIRC.build/Debug-appletvsimulator/DaystingIRC-tvOS.build/Objects-normal/x86_64/ContentView.o",
+    "swift-dependencies" : "/Volumes/App Drive/repositories/irc-client/build/DaystingIRC.build/Debug-appletvsimulator/DaystingIRC-tvOS.build/Objects-normal/x86_64/ContentView.swiftdeps",
+    "swiftmodule" : "/Volumes/App Drive/repositories/irc-client/build/DaystingIRC.build/Debug-appletvsimulator/DaystingIRC-tvOS.build/Objects-normal/x86_64/ContentView~partial.swiftmodule"
+  },
+  "/Volumes/App Drive/repositories/irc-client/Sources/DCCTransfer.swift" : {
+    "const-values" : "/Volumes/App Drive/repositories/irc-client/build/DaystingIRC.build/Debug-appletvsimulator/DaystingIRC-tvOS.build/Objects-normal/x86_64/DCCTransfer.swiftconstvalues",
+    "dependencies" : "/Volumes/App Drive/repositories/irc-client/build/DaystingIRC.build/Debug-appletvsimulator/DaystingIRC-tvOS.build/Objects-normal/x86_64/DCCTransfer.d",
+    "diagnostics" : "/Volumes/App Drive/repositories/irc-client/build/DaystingIRC.build/Debug-appletvsimulator/DaystingIRC-tvOS.build/Objects-normal/x86_64/DCCTransfer.dia",
+    "index-unit-output-path" : "/DaystingIRC.build/Debug-appletvsimulator/DaystingIRC-tvOS.build/Objects-normal/x86_64/DCCTransfer.o",
+    "llvm-bc" : "/Volumes/App Drive/repositories/irc-client/build/DaystingIRC.build/Debug-appletvsimulator/DaystingIRC-tvOS.build/Objects-normal/x86_64/DCCTransfer.bc",
+    "object" : "/Volumes/App Drive/repositories/irc-client/build/DaystingIRC.build/Debug-appletvsimulator/DaystingIRC-tvOS.build/Objects-normal/x86_64/DCCTransfer.o",
+    "swift-dependencies" : "/Volumes/App Drive/repositories/irc-client/build/DaystingIRC.build/Debug-appletvsimulator/DaystingIRC-tvOS.build/Objects-normal/x86_64/DCCTransfer.swiftdeps",
+    "swiftmodule" : "/Volumes/App Drive/repositories/irc-client/build/DaystingIRC.build/Debug-appletvsimulator/DaystingIRC-tvOS.build/Objects-normal/x86_64/DCCTransfer~partial.swiftmodule"
+  },
+  "/Volumes/App Drive/repositories/irc-client/Sources/DaystingIRCApp.swift" : {
+    "const-values" : "/Volumes/App Drive/repositories/irc-client/build/DaystingIRC.build/Debug-appletvsimulator/DaystingIRC-tvOS.build/Objects-normal/x86_64/DaystingIRCApp.swiftconstvalues",
+    "dependencies" : "/Volumes/App Drive/repositories/irc-client/build/DaystingIRC.build/Debug-appletvsimulator/DaystingIRC-tvOS.build/Objects-normal/x86_64/DaystingIRCApp.d",
+    "diagnostics" : "/Volumes/App Drive/repositories/irc-client/build/DaystingIRC.build/Debug-appletvsimulator/DaystingIRC-tvOS.build/Objects-normal/x86_64/DaystingIRCApp.dia",
+    "index-unit-output-path" : "/DaystingIRC.build/Debug-appletvsimulator/DaystingIRC-tvOS.build/Objects-normal/x86_64/DaystingIRCApp.o",
+    "llvm-bc" : "/Volumes/App Drive/repositories/irc-client/build/DaystingIRC.build/Debug-appletvsimulator/DaystingIRC-tvOS.build/Objects-normal/x86_64/DaystingIRCApp.bc",
+    "object" : "/Volumes/App Drive/repositories/irc-client/build/DaystingIRC.build/Debug-appletvsimulator/DaystingIRC-tvOS.build/Objects-normal/x86_64/DaystingIRCApp.o",
+    "swift-dependencies" : "/Volumes/App Drive/repositories/irc-client/build/DaystingIRC.build/Debug-appletvsimulator/DaystingIRC-tvOS.build/Objects-normal/x86_64/DaystingIRCApp.swiftdeps",
+    "swiftmodule" : "/Volumes/App Drive/repositories/irc-client/build/DaystingIRC.build/Debug-appletvsimulator/DaystingIRC-tvOS.build/Objects-normal/x86_64/DaystingIRCApp~partial.swiftmodule"
+  },
+  "/Volumes/App Drive/repositories/irc-client/Sources/IRCClient.swift" : {
+    "const-values" : "/Volumes/App Drive/repositories/irc-client/build/DaystingIRC.build/Debug-appletvsimulator/DaystingIRC-tvOS.build/Objects-normal/x86_64/IRCClient.swiftconstvalues",
+    "dependencies" : "/Volumes/App Drive/repositories/irc-client/build/DaystingIRC.build/Debug-appletvsimulator/DaystingIRC-tvOS.build/Objects-normal/x86_64/IRCClient.d",
+    "diagnostics" : "/Volumes/App Drive/repositories/irc-client/build/DaystingIRC.build/Debug-appletvsimulator/DaystingIRC-tvOS.build/Objects-normal/x86_64/IRCClient.dia",
+    "index-unit-output-path" : "/DaystingIRC.build/Debug-appletvsimulator/DaystingIRC-tvOS.build/Objects-normal/x86_64/IRCClient.o",
+    "llvm-bc" : "/Volumes/App Drive/repositories/irc-client/build/DaystingIRC.build/Debug-appletvsimulator/DaystingIRC-tvOS.build/Objects-normal/x86_64/IRCClient.bc",
+    "object" : "/Volumes/App Drive/repositories/irc-client/build/DaystingIRC.build/Debug-appletvsimulator/DaystingIRC-tvOS.build/Objects-normal/x86_64/IRCClient.o",
+    "swift-dependencies" : "/Volumes/App Drive/repositories/irc-client/build/DaystingIRC.build/Debug-appletvsimulator/DaystingIRC-tvOS.build/Objects-normal/x86_64/IRCClient.swiftdeps",
+    "swiftmodule" : "/Volumes/App Drive/repositories/irc-client/build/DaystingIRC.build/Debug-appletvsimulator/DaystingIRC-tvOS.build/Objects-normal/x86_64/IRCClient~partial.swiftmodule"
+  },
+  "/Volumes/App Drive/repositories/irc-client/Sources/IRCModels.swift" : {
+    "const-values" : "/Volumes/App Drive/repositories/irc-client/build/DaystingIRC.build/Debug-appletvsimulator/DaystingIRC-tvOS.build/Objects-normal/x86_64/IRCModels.swiftconstvalues",
+    "dependencies" : "/Volumes/App Drive/repositories/irc-client/build/DaystingIRC.build/Debug-appletvsimulator/DaystingIRC-tvOS.build/Objects-normal/x86_64/IRCModels.d",
+    "diagnostics" : "/Volumes/App Drive/repositories/irc-client/build/DaystingIRC.build/Debug-appletvsimulator/DaystingIRC-tvOS.build/Objects-normal/x86_64/IRCModels.dia",
+    "index-unit-output-path" : "/DaystingIRC.build/Debug-appletvsimulator/DaystingIRC-tvOS.build/Objects-normal/x86_64/IRCModels.o",
+    "llvm-bc" : "/Volumes/App Drive/repositories/irc-client/build/DaystingIRC.build/Debug-appletvsimulator/DaystingIRC-tvOS.build/Objects-normal/x86_64/IRCModels.bc",
+    "object" : "/Volumes/App Drive/repositories/irc-client/build/DaystingIRC.build/Debug-appletvsimulator/DaystingIRC-tvOS.build/Objects-normal/x86_64/IRCModels.o",
+    "swift-dependencies" : "/Volumes/App Drive/repositories/irc-client/build/DaystingIRC.build/Debug-appletvsimulator/DaystingIRC-tvOS.build/Objects-normal/x86_64/IRCModels.swiftdeps",
+    "swiftmodule" : "/Volumes/App Drive/repositories/irc-client/build/DaystingIRC.build/Debug-appletvsimulator/DaystingIRC-tvOS.build/Objects-normal/x86_64/IRCModels~partial.swiftmodule"
+  },
+  "/Volumes/App Drive/repositories/irc-client/Sources/IRCViewModel.swift" : {
+    "const-values" : "/Volumes/App Drive/repositories/irc-client/build/DaystingIRC.build/Debug-appletvsimulator/DaystingIRC-tvOS.build/Objects-normal/x86_64/IRCViewModel.swiftconstvalues",
+    "dependencies" : "/Volumes/App Drive/repositories/irc-client/build/DaystingIRC.build/Debug-appletvsimulator/DaystingIRC-tvOS.build/Objects-normal/x86_64/IRCViewModel.d",
+    "diagnostics" : "/Volumes/App Drive/repositories/irc-client/build/DaystingIRC.build/Debug-appletvsimulator/DaystingIRC-tvOS.build/Objects-normal/x86_64/IRCViewModel.dia",
+    "index-unit-output-path" : "/DaystingIRC.build/Debug-appletvsimulator/DaystingIRC-tvOS.build/Objects-normal/x86_64/IRCViewModel.o",
+    "llvm-bc" : "/Volumes/App Drive/repositories/irc-client/build/DaystingIRC.build/Debug-appletvsimulator/DaystingIRC-tvOS.build/Objects-normal/x86_64/IRCViewModel.bc",
+    "object" : "/Volumes/App Drive/repositories/irc-client/build/DaystingIRC.build/Debug-appletvsimulator/DaystingIRC-tvOS.build/Objects-normal/x86_64/IRCViewModel.o",
+    "swift-dependencies" : "/Volumes/App Drive/repositories/irc-client/build/DaystingIRC.build/Debug-appletvsimulator/DaystingIRC-tvOS.build/Objects-normal/x86_64/IRCViewModel.swiftdeps",
+    "swiftmodule" : "/Volumes/App Drive/repositories/irc-client/build/DaystingIRC.build/Debug-appletvsimulator/DaystingIRC-tvOS.build/Objects-normal/x86_64/IRCViewModel~partial.swiftmodule"
+  },
+  "/Volumes/App Drive/repositories/irc-client/build/DaystingIRC.build/Debug-appletvsimulator/DaystingIRC-tvOS.build/DerivedSources/GeneratedAssetSymbols.swift" : {
+    "const-values" : "/Volumes/App Drive/repositories/irc-client/build/DaystingIRC.build/Debug-appletvsimulator/DaystingIRC-tvOS.build/Objects-normal/x86_64/GeneratedAssetSymbols.swiftconstvalues",
+    "dependencies" : "/Volumes/App Drive/repositories/irc-client/build/DaystingIRC.build/Debug-appletvsimulator/DaystingIRC-tvOS.build/Objects-normal/x86_64/GeneratedAssetSymbols.d",
+    "diagnostics" : "/Volumes/App Drive/repositories/irc-client/build/DaystingIRC.build/Debug-appletvsimulator/DaystingIRC-tvOS.build/Objects-normal/x86_64/GeneratedAssetSymbols.dia",
+    "index-unit-output-path" : "/DaystingIRC.build/Debug-appletvsimulator/DaystingIRC-tvOS.build/Objects-normal/x86_64/GeneratedAssetSymbols.o",
+    "llvm-bc" : "/Volumes/App Drive/repositories/irc-client/build/DaystingIRC.build/Debug-appletvsimulator/DaystingIRC-tvOS.build/Objects-normal/x86_64/GeneratedAssetSymbols.bc",
+    "object" : "/Volumes/App Drive/repositories/irc-client/build/DaystingIRC.build/Debug-appletvsimulator/DaystingIRC-tvOS.build/Objects-normal/x86_64/GeneratedAssetSymbols.o",
+    "swift-dependencies" : "/Volumes/App Drive/repositories/irc-client/build/DaystingIRC.build/Debug-appletvsimulator/DaystingIRC-tvOS.build/Objects-normal/x86_64/GeneratedAssetSymbols.swiftdeps",
+    "swiftmodule" : "/Volumes/App Drive/repositories/irc-client/build/DaystingIRC.build/Debug-appletvsimulator/DaystingIRC-tvOS.build/Objects-normal/x86_64/GeneratedAssetSymbols~partial.swiftmodule"
+  }
+}

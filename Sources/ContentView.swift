@@ -62,7 +62,7 @@ private struct ValidationHintIcon: View {
     }
 
     private func copyExampleToClipboard() {
-#if canImport(UIKit)
+#if os(iOS)
         UIPasteboard.general.string = example
 #elseif canImport(AppKit)
         let pasteboard = NSPasteboard.general
@@ -121,6 +121,7 @@ private extension View {
     }
 }
 
+#if !os(tvOS)
 private struct TextFileDocument: FileDocument {
     static var readableContentTypes: [UTType] { [.plainText] }
 
@@ -144,6 +145,7 @@ private struct TextFileDocument: FileDocument {
         FileWrapper(regularFileWithContents: Data(text.utf8))
     }
 }
+#endif
 
 #if os(iOS)
 private struct ThemedGroupBoxStyle: GroupBoxStyle {
@@ -163,7 +165,9 @@ private struct ThemedGroupBoxStyle: GroupBoxStyle {
         )
     }
 }
+#endif
 
+#if os(iOS) || os(tvOS)
 private struct ThemedInputModifier: ViewModifier {
     @EnvironmentObject private var vm: IRCViewModel
 
@@ -203,7 +207,7 @@ private struct ThemedInputModifier: ViewModifier {
 private extension View {
     @ViewBuilder
     func themedInputField() -> some View {
-#if os(iOS)
+#if os(iOS) || os(tvOS)
         modifier(ThemedInputModifier())
 #else
         textFieldStyle(.roundedBorder)
@@ -231,10 +235,12 @@ struct ContentView: View {
     @State private var customServerErrorMessage = ""
     @State private var isThemeControlsPresented = false
     @State private var isUsersSheetPresented = false
+#if !os(tvOS)
     @State private var showLogExporter = false
     @State private var logExportDocument: TextFileDocument?
     @State private var showDCCFileImporter = false
     @State private var dccSendTargetNick: String?
+#endif
     @State private var iphoneOperAutoLoginEnabled = false
 
     private var useCustomAppearance: Bool {
@@ -304,13 +310,16 @@ struct ContentView: View {
         .sheet(isPresented: $isCustomConnectSheetPresented) {
             customConnectSheet
         }
+#if !os(tvOS)
         .sheet(isPresented: $isThemeControlsPresented) {
             ThemeControlsView()
                 .environmentObject(vm)
         }
+#endif
         .sheet(isPresented: $isUsersSheetPresented) {
             usersSheet
         }
+#if !os(tvOS)
         .fileExporter(
             isPresented: $showLogExporter,
             document: logExportDocument,
@@ -337,6 +346,7 @@ struct ContentView: View {
                 vm.setThemeStatus("DCC file selection failed: \(error.localizedDescription)", isError: true)
             }
         }
+#endif
         .onAppear {
 #if os(iOS)
             let hasOperName = !vm.config.operName.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
@@ -354,7 +364,7 @@ struct ContentView: View {
     }
 
     private var contentPadding: CGFloat {
-#if os(iOS)
+#if os(iOS) || os(tvOS)
         return 0
 #else
         return 16
@@ -365,6 +375,10 @@ struct ContentView: View {
     private var isIPad: Bool {
         UIDevice.current.userInterfaceIdiom == .pad
     }
+#elseif os(tvOS)
+    private var isIPad: Bool {
+        true
+    }
 #else
     private var isIPad: Bool {
         false
@@ -373,7 +387,7 @@ struct ContentView: View {
 
     @ViewBuilder
     private var connectedContent: some View {
-#if os(iOS)
+#if os(iOS) || os(tvOS)
         if isIPad {
             ipadConnectedContent
         } else {
@@ -725,10 +739,12 @@ struct ContentView: View {
                     Text("Theme controls are available from the menu bar: Theme > Theme Controls")
                         .font(themedFont(size: 12))
                         .foregroundStyle(.secondary)
+#if !os(tvOS)
                     Button("Theme Controls") {
                         isThemeControlsPresented = true
                     }
                     .buttonStyle(.bordered)
+#endif
                     Spacer()
                 }
 
@@ -1039,11 +1055,13 @@ struct ContentView: View {
                     Text("\(vm.activeWindowTitle) Log")
                         .font(themedFont(size: 14, weight: .semibold))
                     Spacer()
+#if !os(tvOS)
                     Button("Save Log") {
                         saveActiveLog()
                     }
                     .buttonStyle(.bordered)
                     .disabled(vm.activeLogs.isEmpty)
+#endif
 
 #if os(macOS)
                     Button("Print Log") {
@@ -1090,10 +1108,12 @@ struct ContentView: View {
 
                         Divider()
 
+#if !os(tvOS)
                         Button("Save Log") {
                             saveActiveLog()
                         }
                         .disabled(vm.activeLogs.isEmpty)
+#endif
 
 #if os(macOS)
                         Button("Print Log") {
@@ -1165,10 +1185,12 @@ struct ContentView: View {
                             selectedUserNick = user.nick
                             vm.prefillMention(for: user.nick)
                         }
+#if !os(tvOS)
                         Button("Send File via DCC...") {
                             selectedUserNick = user.nick
                             promptDCCSend(to: user.nick)
                         }
+#endif
 
                         Divider()
 
@@ -1240,10 +1262,12 @@ struct ContentView: View {
         }
     }
 
+#if !os(tvOS)
     private func saveActiveLog() {
         logExportDocument = TextFileDocument(text: vm.activeLogsText)
         showLogExporter = true
     }
+#endif
 
 #if os(macOS)
     private func printActiveLog() {
@@ -1551,10 +1575,12 @@ struct ContentView: View {
         direction == .sending ? .blue : .green
     }
 
+#if !os(tvOS)
     private func promptDCCSend(to nick: String) {
         dccSendTargetNick = nick
         showDCCFileImporter = true
     }
+#endif
 
     private func openCustomConnectSheet() {
         customServerHost = vm.config.host
