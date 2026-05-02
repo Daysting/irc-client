@@ -185,6 +185,7 @@ private struct ThemedInputModifier: ViewModifier {
         content
             .textFieldStyle(.plain)
             .focused($isFocused)
+            .background(Color.clear)
             .padding(.horizontal, 10)
             .padding(.vertical, 8)
             .background(
