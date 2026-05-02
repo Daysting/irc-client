@@ -211,7 +211,7 @@ struct ContentView: View {
             .padding(contentPadding)
             .frame(maxWidth: .infinity, maxHeight: .infinity)
 #if os(iOS)
-            .ignoresSafeArea(.container, edges: [.top, .bottom])
+        .ignoresSafeArea(.container, edges: .bottom)
 #endif
         }
         .font(effectiveBaseFont)
@@ -276,6 +276,22 @@ struct ContentView: View {
 #if os(iOS)
     private var isIPad: Bool {
         UIDevice.current.userInterfaceIdiom == .pad
+    }
+
+    private var isOperAutoLoginEnabled: Binding<Bool> {
+        Binding(
+            get: {
+                let hasOperName = !vm.config.operName.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
+                let hasOperPassword = !vm.config.operPassword.isEmpty
+                return hasOperName || hasOperPassword
+            },
+            set: { isEnabled in
+                if !isEnabled {
+                    vm.config.operName = ""
+                    vm.config.operPassword = ""
+                }
+            }
+        )
     }
 #else
     private var isIPad: Bool {
@@ -454,6 +470,28 @@ struct ContentView: View {
 
                 SecureField("NickServ Password", text: $vm.config.nickServPassword)
                     .textFieldStyle(.roundedBorder)
+
+                Toggle("Enable OPER auto-login", isOn: isOperAutoLoginEnabled)
+                    .toggleStyle(.switch)
+
+                if isOperAutoLoginEnabled.wrappedValue {
+                    TextField("OPER Name", text: $vm.config.operName)
+                        .textFieldStyle(.roundedBorder)
+                        .validationBorder(color: vm.isOperConfigurationIncomplete ? .orange : nil)
+
+                    HStack(spacing: 8) {
+                        SecureField("OPER Password", text: $vm.config.operPassword)
+                            .textFieldStyle(.roundedBorder)
+                            .validationBorder(color: vm.isOperConfigurationIncomplete ? .orange : nil)
+                        if vm.isOperConfigurationIncomplete {
+                            ValidationHintIcon(
+                                color: .orange,
+                                tooltip: "OPER automation requires both fields.",
+                                example: "OPER Name=netadmin, OPER Password=********"
+                            )
+                        }
+                    }
+                }
 
                 Button("Theme Controls") {
                     isThemeControlsPresented = true
