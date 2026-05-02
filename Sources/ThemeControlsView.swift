@@ -81,6 +81,164 @@ struct ThemeControlsView: View {
     }
 
     var body: some View {
+        themeControlsContent
+            .confirmationDialog("Delete selected theme?", isPresented: $showDeleteThemeConfirmation, titleVisibility: .visible) {
+                Button("Delete", role: .destructive) {
+                    vm.deleteSelectedTheme()
+                }
+                Button("Cancel", role: .cancel) {}
+            } message: {
+                Text("This removes the currently selected theme preset.")
+            }
+            .confirmationDialog("Import Themes", isPresented: $showImportStrategyConfirmation, titleVisibility: .visible) {
+                Button("Replace Existing Names") {
+                    runThemeImport(strategy: .replaceExistingNames)
+                }
+                Button("Keep Both") {
+                    runThemeImport(strategy: .keepBoth)
+                }
+                Button("Cancel", role: .cancel) {
+                    vm.setThemeStatus("Import canceled", isError: true)
+                    pendingImportData = nil
+                    pendingImportFileName = ""
+                }
+            } message: {
+                Text("Choose how to handle imported themes that have the same name as existing themes.")
+            }
+            .fileExporter(
+                isPresented: $isExportingThemes,
+                document: exportDocument,
+                contentType: .json,
+                defaultFilename: "daysting-themes"
+            ) { result in
+                switch result {
+                case .success:
+                    vm.setThemeStatus("Exported themes", isError: false)
+                case .failure(let error):
+                    vm.setThemeStatus("Export failed: \(error.localizedDescription)", isError: true)
+                }
+                exportDocument = nil
+            }
+            .fileImporter(isPresented: $isImportingThemes, allowedContentTypes: [.json], allowsMultipleSelection: false) { result in
+                switch result {
+                case .success(let urls):
+                    guard let url = urls.first else {
+                        vm.setThemeStatus("Import failed: no file selected", isError: true)
+                        return
+                    }
+
+                    do {
+                        let data = try Data(contentsOf: url)
+                        pendingImportData = data
+                        pendingImportFileName = url.lastPathComponent
+                        showImportStrategyConfirmation = true
+                    } catch {
+                        vm.setThemeStatus("Import failed: \(error.localizedDescription)", isError: true)
+                    }
+                case .failure(let error):
+                    vm.setThemeStatus("Import failed: \(error.localizedDescription)", isError: true)
+                }
+            }
+    }
+
+    @ViewBuilder
+    private var themeControlsContent: some View {
+#if os(iOS)
+        ScrollView {
+            VStack(alignment: .leading, spacing: 12) {
+                Text("Theme Controls")
+                    .font(.title3.weight(.semibold))
+
+                Toggle("Custom Theme", isOn: $vm.config.enableCustomAppearance)
+                    .toggleStyle(.switch)
+
+                Picker("Font", selection: $vm.config.appearanceFontFamily) {
+                    ForEach(AppearanceFontFamily.allCases) { family in
+                        Text(family.title).tag(family)
+                    }
+                }
+
+                Stepper(
+                    "Font Size: \(Int(vm.config.appearanceFontSize))",
+                    value: $vm.config.appearanceFontSize,
+                    in: 10...24,
+                    step: 1
+                )
+
+                ColorPicker("Text", selection: appearanceTextColorBinding, supportsOpacity: true)
+                ColorPicker("Background", selection: appearanceBackgroundColorBinding, supportsOpacity: true)
+
+                TextField("Installed Font Name (optional)", text: appearanceFontNameBinding)
+                    .textFieldStyle(.roundedBorder)
+
+                Menu("Installed Fonts") {
+                    if installedFontNames.isEmpty {
+                        Text("No fonts available")
+                    } else {
+                        Button("Use Family Picker Only") {
+                            vm.config.appearanceFontName = nil
+                        }
+                        Divider()
+                        ForEach(installedFontNames, id: \.self) { fontName in
+                            Button(fontName) {
+                                vm.config.appearanceFontName = fontName
+                            }
+                        }
+                    }
+                }
+
+                TextField("Theme Name", text: $vm.themeDraftName)
+                    .textFieldStyle(.roundedBorder)
+
+                Button("Save Theme") {
+                    vm.saveCurrentTheme()
+                }
+                .disabled(vm.themeDraftName.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty)
+
+                Picker("Saved Themes", selection: $vm.selectedThemeID) {
+                    Text("Select Theme").tag("")
+                    ForEach(vm.savedThemes) { theme in
+                        Text(theme.name).tag(theme.id)
+                    }
+                }
+
+                HStack(spacing: 8) {
+                    Button("Apply Theme") {
+                        vm.applySelectedTheme()
+                    }
+                    .disabled(!vm.hasSelectedSavedTheme)
+
+                    Button("Delete Theme") {
+                        showDeleteThemeConfirmation = true
+                    }
+                    .disabled(!vm.hasSelectedSavedTheme)
+                }
+
+                HStack(spacing: 8) {
+                    Button("Reset Theme") {
+                        vm.resetAppearanceToDefaults()
+                    }
+
+                    Button("Export Themes") {
+                        exportThemesToJSONFile()
+                    }
+
+                    Button("Import Themes") {
+                        importThemesFromJSONFile()
+                    }
+                }
+
+                if !vm.themeStatusMessage.isEmpty {
+                    Text(vm.themeStatusMessage)
+                        .foregroundStyle(vm.themeStatusIsError ? .red : .green)
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                }
+            }
+            .frame(maxWidth: .infinity, alignment: .leading)
+            .padding(16)
+        }
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
+#else
         VStack(alignment: .leading, spacing: 12) {
             Text("Theme Controls")
                 .font(.title3.weight(.semibold))
@@ -188,63 +346,7 @@ struct ThemeControlsView: View {
             Spacer()
         }
         .padding(16)
-        .confirmationDialog("Delete selected theme?", isPresented: $showDeleteThemeConfirmation, titleVisibility: .visible) {
-            Button("Delete", role: .destructive) {
-                vm.deleteSelectedTheme()
-            }
-            Button("Cancel", role: .cancel) {}
-        } message: {
-            Text("This removes the currently selected theme preset.")
-        }
-        .confirmationDialog("Import Themes", isPresented: $showImportStrategyConfirmation, titleVisibility: .visible) {
-            Button("Replace Existing Names") {
-                runThemeImport(strategy: .replaceExistingNames)
-            }
-            Button("Keep Both") {
-                runThemeImport(strategy: .keepBoth)
-            }
-            Button("Cancel", role: .cancel) {
-                vm.setThemeStatus("Import canceled", isError: true)
-                pendingImportData = nil
-                pendingImportFileName = ""
-            }
-        } message: {
-            Text("Choose how to handle imported themes that have the same name as existing themes.")
-        }
-        .fileExporter(
-            isPresented: $isExportingThemes,
-            document: exportDocument,
-            contentType: .json,
-            defaultFilename: "daysting-themes"
-        ) { result in
-            switch result {
-            case .success:
-                vm.setThemeStatus("Exported themes", isError: false)
-            case .failure(let error):
-                vm.setThemeStatus("Export failed: \(error.localizedDescription)", isError: true)
-            }
-            exportDocument = nil
-        }
-        .fileImporter(isPresented: $isImportingThemes, allowedContentTypes: [.json], allowsMultipleSelection: false) { result in
-            switch result {
-            case .success(let urls):
-                guard let url = urls.first else {
-                    vm.setThemeStatus("Import failed: no file selected", isError: true)
-                    return
-                }
-
-                do {
-                    let data = try Data(contentsOf: url)
-                    pendingImportData = data
-                    pendingImportFileName = url.lastPathComponent
-                    showImportStrategyConfirmation = true
-                } catch {
-                    vm.setThemeStatus("Import failed: \(error.localizedDescription)", isError: true)
-                }
-            case .failure(let error):
-                vm.setThemeStatus("Import failed: \(error.localizedDescription)", isError: true)
-            }
-        }
+#endif
     }
 
     private func color(from rgba: RGBAColor) -> Color {
