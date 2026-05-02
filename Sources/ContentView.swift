@@ -1204,6 +1204,12 @@ struct ContentView: View {
                 .textFieldStyle(.roundedBorder)
                 .foregroundStyle(.primary)
                 .focused($focusedField, equals: .messageInput)
+#if os(iOS)
+                .submitLabel(.send)
+                .onTapGesture {
+                    focusedField = .messageInput
+                }
+#endif
                 .onSubmit {
                     vm.sendCurrentInput()
                 }
@@ -1226,6 +1232,9 @@ struct ContentView: View {
                 anopeServicesMenu
             }
         }
+#if os(iOS)
+        .padding(.horizontal, 10)
+#endif
     }
 
     @ViewBuilder
