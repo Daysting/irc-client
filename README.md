@@ -1,213 +1,249 @@
 # Daysting IRC
 
-A native SwiftUI IRC client for macOS, iOS, and iPadOS, configured for:
+A native IRC client for macOS, iOS, iPadOS, tvOS, and Windows.
 
-- Server: `irc.daysting.com`
-- Port: `6697`
-- TLS: required (minimum TLS 1.2)
-- Anope shortcuts: MemoServ and OperServ commands
+**Default server:** `irc.daysting.com:6697` · TLS required (minimum TLS 1.2) · Anope services support
 
-Default quick-connect is `irc.daysting.com:6697`, and custom servers are supported when TLS is enabled.
+---
 
-## Platform builds
+## Platforms
 
-- macOS app: SwiftUI project in `Sources/` and `DaystingIRC.xcodeproj`
-- iOS/iPadOS app target config: generated from `project.yml` via XcodeGen (`DaystingIRC-iOS`)
+| Platform | Technology | Minimum OS |
+|---|---|---|
+| macOS | SwiftUI | macOS 13 |
+| iOS / iPadOS | SwiftUI | iOS 16 |
+| tvOS | SwiftUI | tvOS 17 |
+| Windows | Avalonia (.NET) | Windows 10 |
 
-### macOS App Icon Setup
+---
 
-The macOS app icon is configured via Assets.xcassets. After building in Xcode, run the cleanup script to ensure only the asset catalog icon is used:
-
-```bash
-./scripts/clean_macos_app_icon.sh "$BUILT_PRODUCTS_DIR/$EXECUTABLE_FOLDER_PATH"
-```
-
-Or manually for the Debug build:
-
-```bash
-scripts/clean_macos_app_icon.sh ~/Library/Developer/Xcode/DerivedData/DaystingIRC-*/Build/Products/Debug/DaystingIRC.app
-```
-
-This removes the generated .icns file and legacy CFBundleIconFile entry, leaving only the modern CFBundleIconName pointing to the asset catalog.
-
-**Note:** After cleanup, you may need to restart Finder and Dock for the icon to appear:
-```bash
-killall Finder Dock
-```
-
-## Full Usage Guide
-
-For complete step-by-step instructions, see `docs/USAGE.md`.
-
-For Xcode launch and bug-testing workflow, see `docs/XCODE_DEBUGGING.md`.
-
-For Apple App Store deployment steps, see `docs/APP_STORE_DEPLOYMENT.md`.
-
-## Features
-
-- TLS connection via Apple Network framework (`NWConnection`)
-- Basic IRC registration (`NICK`, `USER`) and channel auto-join
-- IRCv3 CAP + SASL authentication (`PLAIN` and `EXTERNAL`)
-- Optional NickServ fallback identify (`PRIVMSG NickServ :IDENTIFY ...`)
-- Optional delayed channel join until NickServ identify confirmation
-- Tabbed panes for `Server`, `Channel`, and `Private` conversations
-- Contextual IRC command menus tied to the active pane type
-- Right-side user list pane for active conversation context
-- Clickable user list entries with quick actions (open private chat, WHOIS, mention)
-- User list includes channel privilege status (owner/admin/op/half-op/voice/user)
-- Contextual Anope Services menus by pane type with popup input forms when parameters are required
-- Expanded OperServ contextual menu coverage including OperType entitlement lookup and Add Oper provisioning
-- Operator command set that is blocked unless the session is logged in as server operator
-- Unread message badges on pane tabs
-- Close buttons for private/query tabs
-- Middle-click close for private/query tabs
-- "Close All Private Tabs" action in contextual command menu
-- "Close Other Private Tabs" action in contextual command menu
-- "Reopen Last Closed Private Tab" action in contextual command menu
-- "Recently Closed Private Tabs" submenu for reopening a specific private tab
-- Recently closed private-tab history persists across app restarts
-- Pane session persists across app restarts (open tabs, selected tab, unread badges)
-- Connection profile persists across app restarts (host, nick, channel, TLS/SASL/auth settings)
-- Alternate nickname fallback when preferred nick is in use
-- Automatic `/OPER` login from saved profile credentials
-- Automatic `/NS IDENTIFY <password>` at connect when NickServ password is provided
-- Automatic channel auto-join from saved channel list
-- Inline profile validation hints for common configuration mistakes
-- Field-level visual highlighting for invalid/incomplete profile inputs
-- Inline hover tooltips and click popovers next to highlighted fields with field-specific fix guidance and fix examples
-- One-click copy button in each validation popover example
-- Customizable app appearance: global font family, font size, text color, and background color
-- Installed-font theming: optional direct font-name entry and quick pick from installed fonts
-- Server pane uses a terminal-style monospaced log font suitable for ASCII art
-- Named theme presets: save, apply, delete, and reset appearance
-- Theme preset import/export as JSON files
-- Theme delete confirmation and import conflict strategy selection (Replace Existing Names or Keep Both)
-- Theme controls are in a separate window opened from menu bar: `Theme > Theme Controls`
-- PING/PONG keepalive handling
-- Slash command support
-- `/me` action command support
-- Chat message rendering in readable format: `<username> message`
-- Anope aliases:
-  - `/ns <command>` -> `PRIVMSG NickServ :<command>`
-  - `/cs <command>` -> `PRIVMSG ChanServ :<command>`
-  - `/ms <command>` -> `PRIVMSG MemoServ :<command>`
-  - `/os <command>` -> `PRIVMSG OperServ :<command>`
-  - `/hs <command>` -> `PRIVMSG HostServ :<command>`
-  - `/bs <command>` -> `PRIVMSG BotServ :<command>`
-
-## Build and run
+## Getting Started
 
 ### macOS
 
+**Requirements:** Xcode 15 or later, macOS 13+
+
+1. Clone the repository.
+2. Open the project in Xcode:
+   ```bash
+   open DaystingIRC.xcodeproj
+   ```
+3. Select the **DaystingIRC-macOS** scheme and **My Mac** destination.
+4. Press **Cmd+R** to build and run.
+
+Alternatively, build from the command line:
 ```bash
 swift build
 swift run
 ```
 
-If you want to open this as an Xcode project:
-
-```bash
-open Package.swift
-```
-
-Then in Xcode:
-- Select scheme `DaystingIRC-macOS`
-- Select destination `My Mac`
-- Build/Run with `Cmd+R`
-
-An explicit Xcode project is also included:
-
-```bash
-open DaystingIRC.xcodeproj
-```
-
-Or use the helper script:
-
-```bash
-./scripts/open_in_xcode.sh
-```
-
-To generate/update the macOS + iOS/iPadOS Xcode project from `project.yml`:
-
+To regenerate the Xcode project after editing `project.yml`:
 ```bash
 xcodegen generate
 ```
 
-If terminal-driven Xcode builds fail with a Command Line Tools error, switch the developer directory to full Xcode:
+---
 
-```bash
-sudo xcode-select -s /Applications/Xcode.app/Contents/Developer
-```
+### iOS / iPadOS
 
-## Usage
+**Requirements:** Xcode 15 or later, iOS 16+ device or simulator
 
-1. Launch app.
-2. Quick connect defaults to `irc.daysting.com:6697` with TLS enabled.
-3. Custom server connect supports other IRC servers with TLS enabled.
-4. Set nickname and channel.
-5. Optional profile automation:
-  - `Alt Nicks`: comma-separated fallbacks used when nickname is already in use.
-  - `Auto Join Channels`: comma-separated channels to join/open after login.
-  - `NickServ Password`: runs `/NS IDENTIFY <password>` at login.
-  - `OPER Name` + `OPER Password`: runs `/OPER` at login.
-6. Optional secure auth:
-  - Enable `SASL` and choose mechanism:
-    - `PLAIN`: fill `SASL Password` (plus optional `SASL User`).
-    - `EXTERNAL`: uses your TLS client identity (if configured on your system/network).
-  - Add `NickServ Password` if you want fallback identify behavior.
-  - Optional: enable `Delay Join` to wait for NickServ identify success before joining channels.
-  - If SASL is enabled but unavailable, the app continues and can still use NickServ.
-7. Press Connect (`Cmd+K`).
-  - Connect is disabled for critical profile errors (for example empty host or invalid primary channel format).
-8. Send normal messages or IRC raw commands:
-   - Normal text sends to your current channel.
-  - Prefix with `/` for raw command passthrough (supports full IRC command usage, e.g. `/join #support`).
-  - Use `/me <action>` for action messages.
-  - Use Anope aliases like `/ns HELP`, `/cs HELP`, `/ms HELP`, `/os HELP`, `/hs HELP`, `/bs HELP`.
-9. Use the tab strip to switch between server, channel, and private panes.
-10. The right-side `Users` pane shows users in the active channel.
-11. Click a user to open a private chat tab immediately.
-11. Right-click a user for quick actions: `Open Private Chat`, `WHOIS`, `Mention`, `Op`, `Deop`, `Voice`, and `Devoice`.
-12. Open `Context Commands` from the active pane for command shortcuts relevant to that pane type.
-13. Use `Anope Services` in contextual menus for service commands by service type.
-14. If a service command needs parameters (for example NickServ Register), a popup form collects input and runs the command.
-15. In the popup, enable `Advanced` to show a live command preview and include optional parameters only when filled.
-16. Private/query tabs can be closed with the `x` button on the tab.
-17. Private/query tabs can also be closed with middle-click on the tab.
-18. Use `Close All Private Tabs` from `Context Commands` to clean up query tabs quickly.
-19. Use `Close Other Private Tabs` to keep only the current private tab.
-20. Use `Reopen Last Closed Private Tab` to restore the last query tab you closed.
-21. Use `Recently Closed Private Tabs` to reopen a specific query tab from history.
-22. Operator commands are enabled only after the server reports operator status (for example after successful `/OPER`).
-23. Recently closed private-tab history is restored when the app starts.
-24. Open pane layout, selected pane, and unread counts are restored when the app starts.
-25. Connection profile settings are restored when the app starts.
-26. Invalid fields are highlighted in red (blocking) or orange (warning) directly in the connection form.
-27. Hover the warning icon next to a highlighted field to preview remediation guidance.
-27. Click the warning icon to open a popover with the same guidance text.
-28. Each popover includes a "Fix example" value pattern for quick correction.
-29. Use the popover `Copy` button to copy the example pattern to your clipboard.
-30. Open `Theme > Theme Controls` (or the in-view Theme Controls button) to manage appearance.
-31. Optional: enable `Custom Theme` to personalize font family, installed font name, font size, text color, and app background color.
-32. Enter a theme name and click `Save Theme` to store your current appearance settings.
-33. Saving with an existing theme name overwrites that theme.
-34. Use `Saved Themes` + `Apply Theme` to switch presets.
-35. Use `Delete Theme` to remove a preset and `Reset Theme` to restore defaults.
-36. `Delete Theme` asks for confirmation before removing the preset.
-37. Use `Export Themes` to write your presets to a JSON file.
-38. `Import Themes` lets you choose conflict handling: `Replace Existing Names` or `Keep Both`.
+1. Open `DaystingIRC.xcodeproj` in Xcode.
+2. Select the **DaystingIRC-iOS** scheme.
+3. Choose an iOS simulator or a connected device as the destination.
+4. Press **Cmd+R** to build and run.
 
-## Security notes
+To run on a physical device you will need a development team set in the Signing & Capabilities tab.
 
-- TLS transport is required and uses platform certificate validation.
-- Minimum TLS version is set to TLS 1.2.
-- For stricter policy (for example TLS 1.3 only or certificate pinning), extend `makeParameters` in `Sources/IRCClient.swift`.
-- SASL PLAIN requires TLS, and this client enforces TLS for all connections.
-- If `Delay Join` is enabled and NickServ confirmation is not seen, the app falls back to join after timeout.
-- Saved profile values are stored locally in UserDefaults on your Mac.
+---
 
-## Next improvements
+### tvOS (Apple TV)
 
-- Better IRC parser (prefix/command/params/tags)
-- Channel list and private message tabs
-- Persisted profiles and auto-reconnect
+**Requirements:** Xcode 15 or later, tvOS 17+ Apple TV or simulator
+
+1. Open `DaystingIRC.xcodeproj` in Xcode.
+2. Select the **DaystingIRC-tvOS** scheme.
+3. Choose an Apple TV simulator or a connected Apple TV as the destination.
+4. Press **Cmd+R** to build and run.
+
+**Remote navigation:**
+- Use the Siri Remote (or any MFi gamepad) to navigate between fields and buttons.
+- The on-screen keyboard appears automatically when a text field is focused — only if no hardware keyboard is connected.
+- Connect a Bluetooth keyboard to type directly without the on-screen keyboard.
+- Navigation buttons (Connect, Disconnect, channel tabs) are highlighted when focused so you can see which control is selected.
+
+---
+
+### Windows
+
+**Requirements:** .NET 8 SDK, Windows 10 or later
+
+1. Open a terminal and navigate to the `Windows/DaystingIRC.Windows` directory.
+2. Build and run:
+   ```powershell
+   dotnet run
+   ```
+3. To build a standalone installer, run:
+   ```bash
+   ./scripts/build_windows_installer.sh
+   ```
+   This produces an NSIS installer in `Windows/Installer/`.
+
+---
+
+## Connecting to a Server
+
+All platforms share the same connection flow:
+
+1. **Host** — IRC server hostname (default: `irc.daysting.com`).
+2. **Port** — Server port (default: `6697`).
+3. **TLS** — Always on; TLS 1.2 minimum is enforced.
+4. **Nickname** — Your preferred nick.
+5. **Channel** — Primary channel to join on connect (must start with `#`).
+6. Press **Connect** (keyboard shortcut: **Cmd+K** on macOS/iOS; select Connect button and press Select/Enter on tvOS).
+
+**Validation:** Fields highlighted in red block connecting. Fields highlighted in orange are warnings only. Tap or hover the warning icon next to a field for guidance and a one-click copy example.
+
+---
+
+## Authentication
+
+### SASL
+
+1. Enable **SASL** in the connection profile.
+2. Choose mechanism:
+   - **PLAIN** — enter your `SASL Password` (and optionally `SASL User`).
+   - **EXTERNAL** — uses your TLS client identity when available.
+
+### NickServ
+
+Set **NickServ Password** to automatically run `/NS IDENTIFY <password>` on connect.
+
+### Delayed channel join
+
+Enable **Delay Join** and set **NickServ Timeout** (seconds). The app waits for NickServ confirmation before joining channels, then falls back to joining after the timeout if no confirmation arrives.
+
+### IRC Operator auto-login
+
+Set **OPER Name** and **OPER Password** to automatically run `/OPER` on connect.
+
+---
+
+## Chatting
+
+- Type a message and press **Return** / **Enter** to send to the active channel or query.
+- Prefix with `/` to send raw IRC commands:
+  - `/join #channel` — join a channel
+  - `/part` — leave the current channel
+  - `/whois nick` — look up a user
+  - `/me <action>` — send an action message
+- **Anope service aliases:**
+  - `/ns <cmd>` → NickServ
+  - `/cs <cmd>` → ChanServ
+  - `/ms <cmd>` → MemoServ
+  - `/os <cmd>` → OperServ
+  - `/hs <cmd>` → HostServ
+  - `/bs <cmd>` → BotServ
+
+---
+
+## Tabs and Panes
+
+The interface uses a tab strip with three pane types:
+
+| Pane | Description |
+|---|---|
+| **Server** | Raw server messages and connection log |
+| **Channel** | Messages for a joined channel |
+| **Private** | Direct messages with another user |
+
+- Unread messages show a badge on the tab.
+- Private/query tabs can be closed with the **×** button, middle-click, or via **Context Commands**.
+- **Close All Private Tabs**, **Close Other Private Tabs**, **Reopen Last Closed Tab**, and a **Recently Closed** history are all available in the Context Commands menu.
+
+---
+
+## User List
+
+The right-side **Users** panel shows channel members with their privilege status:
+
+`~` Owner · `&` Admin · `@` Op · `%` Half-op · `+` Voice · (none) Regular
+
+- **Click** a user to open a private chat tab.
+- **Right-click** a user for quick actions: Open Private Chat, WHOIS, Mention, Op, Deop, Voice, Devoice.
+
+---
+
+## Anope Services Menus (macOS / iOS)
+
+Right-click (or long-press on iOS) the active pane to open **Anope Services**. Menus are filtered by pane type. Commands that require parameters show a popup form with a live command preview.
+
+Enable **Advanced** in the popup to include optional parameters and see the exact command that will be sent.
+
+---
+
+## Operator Commands
+
+Operator-only commands are blocked until the server confirms operator status after `/OPER`. Manual `/OPER` is always available in the input field.
+
+---
+
+## Appearance / Themes (macOS / iOS)
+
+Open **Theme > Theme Controls** from the menu bar (or the Theme Controls button on the connect screen) to customize:
+
+- Font family and size
+- Text color and background color
+- Installed-font override (any system font by name)
+
+**Presets:**
+1. Enter a theme name and click **Save Theme**.
+2. Select a saved theme and click **Apply Theme** to switch.
+3. **Delete Theme** removes a preset (with confirmation).
+4. **Reset Theme** restores the built-in defaults.
+
+**Import / Export:**
+- **Export Themes** — saves all presets to a JSON file.
+- **Import Themes** — loads from a JSON file; choose **Replace Existing Names** or **Keep Both** for conflicts.
+
+---
+
+## Persistence
+
+The app automatically restores between launches:
+- Connection profile settings
+- Open tabs and selected tab
+- Unread counts
+- Recently closed private-tab history
+- Saved theme presets
+
+---
+
+## Security
+
+- TLS is required for all connections; minimum TLS 1.2.
+- SASL PLAIN only runs over TLS.
+- Profile data is stored locally in UserDefaults (Apple platforms) / app settings (Windows).
+- To enforce TLS 1.3 or add certificate pinning, extend `makeParameters` in `Sources/IRCClient.swift`.
+
+---
+
+## Troubleshooting
+
+| Symptom | Fix |
+|---|---|
+| Connect button is disabled | Fix red-highlighted fields (empty host, channel missing `#`) |
+| Joined channels not appearing | Check **Auto Join Channels** — must be comma-separated, each starting with `#` |
+| SASL not working | For PLAIN ensure password is set; for EXTERNAL ensure TLS client identity is configured |
+| Operator commands blocked | Server has not yet granted operator status — try `/OPER` manually |
+| Theme import fails | Confirm the file is valid JSON containing an array of theme objects |
+| tvOS keyboard keeps appearing | Connect a Bluetooth keyboard; the on-screen keyboard will not pop up when a hardware keyboard is connected |
+
+---
+
+## Further Reading
+
+- [docs/USAGE.md](docs/USAGE.md) — detailed feature walkthrough
+- [docs/XCODE_DEBUGGING.md](docs/XCODE_DEBUGGING.md) — Xcode run and debug workflow
+- [docs/APP_STORE_DEPLOYMENT.md](docs/APP_STORE_DEPLOYMENT.md) — App Store submission steps
+
