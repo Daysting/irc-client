@@ -37,12 +37,14 @@
 /* Begin PBXFileReference section */
 		06930B8E0D22F3699D1A09BE /* IRCClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IRCClient.swift; sourceTree = "<group>"; };
 		0D759E7BB4B807CBAA8E40A9 /* IRCModels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IRCModels.swift; sourceTree = "<group>"; };
+		133D3C0436D3C76C96A73746 /* DaystingIRC-macOS.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = "DaystingIRC-macOS.entitlements"; sourceTree = "<group>"; };
 		381041F01636904D25052308 /* DaystingIRC-macOS.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "DaystingIRC-macOS.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		38322E51D0B8B2B040B5F18E /* IRCViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IRCViewModel.swift; sourceTree = "<group>"; };
 		425634645A8FEF9CB49F2921 /* ThemeControlsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ThemeControlsView.swift; sourceTree = "<group>"; };
 		61E227E54B869CE98632957E /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		6811D5089695BF865D9F9DBD /* DCCTransfer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DCCTransfer.swift; sourceTree = "<group>"; };
 		6A3A7F13499005C8AA5E7F07 /* DaystingIRC-tvOS.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = "DaystingIRC-tvOS.app"; sourceTree = BUILT_PRODUCTS_DIR; };
+		7E69B417AA1F076448F59BC0 /* iOS-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = "iOS-Info.plist"; sourceTree = "<group>"; };
 		885DFA94EB0B8D57EA86A993 /* DaystingIRC-iOS.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = "DaystingIRC-iOS.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		AF2EF92B397ADC203139A3A8 /* TVOSContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TVOSContentView.swift; sourceTree = "<group>"; };
 		B88CA96DD1A287D147E949D7 /* DaystingIRCApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DaystingIRCApp.swift; sourceTree = "<group>"; };
@@ -54,6 +56,8 @@
 			isa = PBXGroup;
 			children = (
 				61E227E54B869CE98632957E /* Assets.xcassets */,
+				133D3C0436D3C76C96A73746 /* DaystingIRC-macOS.entitlements */,
+				7E69B417AA1F076448F59BC0 /* iOS-Info.plist */,
 			);
 			path = Resources;
 			sourceTree = "<group>";
@@ -268,8 +272,8 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				INFOPLIST_FILE = Resources/iOS-Info.plist;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
+				INFOPLIST_FILE = "Resources/iOS-Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -286,8 +290,8 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				INFOPLIST_FILE = Resources/iOS-Info.plist;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
+				INFOPLIST_FILE = "Resources/iOS-Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -304,6 +308,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_ENTITLEMENTS = "Resources/DaystingIRC-macOS.entitlements";
 				COMBINE_HIDPI_IMAGES = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_KEY_CFBundleDisplayName = DaystingIRC;
@@ -390,6 +395,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_ENTITLEMENTS = "Resources/DaystingIRC-macOS.entitlements";
 				COMBINE_HIDPI_IMAGES = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_KEY_CFBundleDisplayName = DaystingIRC;
