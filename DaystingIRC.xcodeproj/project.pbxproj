@@ -7,7 +7,6 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		0BC6DE1BA6C1E78AF68D4646 /* DCCTransfer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6811D5089695BF865D9F9DBD /* DCCTransfer.swift */; };
 		342FD9AB9E48055D33CB6434 /* IRCClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = 06930B8E0D22F3699D1A09BE /* IRCClient.swift */; };
 		46CE9A752C4A8C6B68DB21D8 /* IRCViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 38322E51D0B8B2B040B5F18E /* IRCViewModel.swift */; };
 		46E20CA9DB22C51A1DD9A981 /* DCCTransfer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6811D5089695BF865D9F9DBD /* DCCTransfer.swift */; };
@@ -15,38 +14,28 @@
 		5EBB4BE061EEF5FFAF320FFF /* DaystingIRCApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = B88CA96DD1A287D147E949D7 /* DaystingIRCApp.swift */; };
 		72E6F8BDE6B07277165C8EF0 /* DaystingIRCApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = B88CA96DD1A287D147E949D7 /* DaystingIRCApp.swift */; };
 		772FBFDC9974787AEF641FDA /* IRCClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = 06930B8E0D22F3699D1A09BE /* IRCClient.swift */; };
-		77CF6ECA73DBC2739D377EFA /* DaystingIRCApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = B88CA96DD1A287D147E949D7 /* DaystingIRCApp.swift */; };
 		830DA43F620EEDE13868BEE5 /* IRCModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0D759E7BB4B807CBAA8E40A9 /* IRCModels.swift */; };
 		869B8530D781AA8348C28F1F /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D76C1ACE001C51E03E5ED235 /* ContentView.swift */; };
 		89D8E5F2A6D6C12818B1C78A /* IRCViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 38322E51D0B8B2B040B5F18E /* IRCViewModel.swift */; };
 		92F43A276C3528E364448B90 /* ThemeControlsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 425634645A8FEF9CB49F2921 /* ThemeControlsView.swift */; };
-		9B076324178246221D0BDC7C /* TVOSContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AF2EF92B397ADC203139A3A8 /* TVOSContentView.swift */; };
 		A1E195A23DEE15766514454E /* IRCModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0D759E7BB4B807CBAA8E40A9 /* IRCModels.swift */; };
 		A7D0F8BEB2AC157EEFD2FE03 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D76C1ACE001C51E03E5ED235 /* ContentView.swift */; };
 		AB05E497DDCB24EBEF4E6B23 /* DCCTransfer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6811D5089695BF865D9F9DBD /* DCCTransfer.swift */; };
-		AE559C5B1A59E630985E646F /* IRCViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 38322E51D0B8B2B040B5F18E /* IRCViewModel.swift */; };
 		BDC23E7E374AA6EC48FE522C /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 61E227E54B869CE98632957E /* Assets.xcassets */; };
-		BF83C0D8F89A756439E7C4FF /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 61E227E54B869CE98632957E /* Assets.xcassets */; };
 		CB15FF8CE37CF1F94FC1C9C3 /* ThemeControlsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 425634645A8FEF9CB49F2921 /* ThemeControlsView.swift */; };
-		D3B81860B25752163B8CDCFC /* TVOSContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AF2EF92B397ADC203139A3A8 /* TVOSContentView.swift */; };
-		DA61673270FEEAD16E61A2B0 /* IRCClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = 06930B8E0D22F3699D1A09BE /* IRCClient.swift */; };
-		DCDDFB630CDBD12E5556B463 /* TVOSContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AF2EF92B397ADC203139A3A8 /* TVOSContentView.swift */; };
-		ED7CBB9930D46C2EDB1D1E39 /* IRCModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0D759E7BB4B807CBAA8E40A9 /* IRCModels.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
 		06930B8E0D22F3699D1A09BE /* IRCClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IRCClient.swift; sourceTree = "<group>"; };
 		0D759E7BB4B807CBAA8E40A9 /* IRCModels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IRCModels.swift; sourceTree = "<group>"; };
 		133D3C0436D3C76C96A73746 /* DaystingIRC-macOS.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = "DaystingIRC-macOS.entitlements"; sourceTree = "<group>"; };
-		381041F01636904D25052308 /* DaystingIRC.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = DaystingIRC.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		381041F01636904D25052308 /* DaystingIRC-macOS.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "DaystingIRC-macOS.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		38322E51D0B8B2B040B5F18E /* IRCViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IRCViewModel.swift; sourceTree = "<group>"; };
 		425634645A8FEF9CB49F2921 /* ThemeControlsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ThemeControlsView.swift; sourceTree = "<group>"; };
 		61E227E54B869CE98632957E /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		6811D5089695BF865D9F9DBD /* DCCTransfer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DCCTransfer.swift; sourceTree = "<group>"; };
-		6A3A7F13499005C8AA5E7F07 /* DaystingIRC.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = DaystingIRC.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		7E69B417AA1F076448F59BC0 /* iOS-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = "iOS-Info.plist"; sourceTree = "<group>"; };
-		885DFA94EB0B8D57EA86A993 /* DaystingIRC.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = DaystingIRC.app; sourceTree = BUILT_PRODUCTS_DIR; };
-		AF2EF92B397ADC203139A3A8 /* TVOSContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TVOSContentView.swift; sourceTree = "<group>"; };
+		885DFA94EB0B8D57EA86A993 /* DaystingIRC-iOS.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = "DaystingIRC-iOS.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		B88CA96DD1A287D147E949D7 /* DaystingIRCApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DaystingIRCApp.swift; sourceTree = "<group>"; };
 		D76C1ACE001C51E03E5ED235 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -72,7 +61,6 @@
 				0D759E7BB4B807CBAA8E40A9 /* IRCModels.swift */,
 				38322E51D0B8B2B040B5F18E /* IRCViewModel.swift */,
 				425634645A8FEF9CB49F2921 /* ThemeControlsView.swift */,
-				AF2EF92B397ADC203139A3A8 /* TVOSContentView.swift */,
 			);
 			path = Sources;
 			sourceTree = "<group>";
@@ -89,9 +77,8 @@
 		E28127C02382EDB43563BB94 /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				885DFA94EB0B8D57EA86A993 /* DaystingIRC.app */,
-				381041F01636904D25052308 /* DaystingIRC.app */,
-				6A3A7F13499005C8AA5E7F07 /* DaystingIRC.app */,
+				885DFA94EB0B8D57EA86A993 /* DaystingIRC-iOS.app */,
+				381041F01636904D25052308 /* DaystingIRC-macOS.app */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -114,25 +101,7 @@
 			packageProductDependencies = (
 			);
 			productName = "DaystingIRC-macOS";
-			productReference = 381041F01636904D25052308 /* DaystingIRC.app */;
-			productType = "com.apple.product-type.application";
-		};
-		407ABEB5047342F7DA670E8D /* DaystingIRC-tvOS */ = {
-			isa = PBXNativeTarget;
-			buildConfigurationList = DFD0B8532C85554204BF6988 /* Build configuration list for PBXNativeTarget "DaystingIRC-tvOS" */;
-			buildPhases = (
-				1FB29A9DC100A5B2DEAE6E0E /* Sources */,
-				00D4BD5790D148AD4AEBA506 /* Resources */,
-			);
-			buildRules = (
-			);
-			dependencies = (
-			);
-			name = "DaystingIRC-tvOS";
-			packageProductDependencies = (
-			);
-			productName = "DaystingIRC-tvOS";
-			productReference = 6A3A7F13499005C8AA5E7F07 /* DaystingIRC.app */;
+			productReference = 381041F01636904D25052308 /* DaystingIRC-macOS.app */;
 			productType = "com.apple.product-type.application";
 		};
 		75177BBA374F7C08A6794DBC /* DaystingIRC-iOS */ = {
@@ -150,7 +119,7 @@
 			packageProductDependencies = (
 			);
 			productName = "DaystingIRC-iOS";
-			productReference = 885DFA94EB0B8D57EA86A993 /* DaystingIRC.app */;
+			productReference = 885DFA94EB0B8D57EA86A993 /* DaystingIRC-iOS.app */;
 			productType = "com.apple.product-type.application";
 		};
 /* End PBXNativeTarget section */
@@ -160,7 +129,15 @@
 			isa = PBXProject;
 			attributes = {
 				BuildIndependentTargetsInParallel = YES;
-				LastUpgradeCheck = 2640;
+				LastUpgradeCheck = 1430;
+				TargetAttributes = {
+					215AA0D79B4EF0B47F4E04E0 = {
+						DevelopmentTeam = "";
+					};
+					75177BBA374F7C08A6794DBC = {
+						DevelopmentTeam = "";
+					};
+				};
 			};
 			buildConfigurationList = F29D254F15DA10A3EF05F80A /* Build configuration list for PBXProject "DaystingIRC" */;
 			developmentRegion = en;
@@ -178,20 +155,11 @@
 			targets = (
 				75177BBA374F7C08A6794DBC /* DaystingIRC-iOS */,
 				215AA0D79B4EF0B47F4E04E0 /* DaystingIRC-macOS */,
-				407ABEB5047342F7DA670E8D /* DaystingIRC-tvOS */,
 			);
 		};
 /* End PBXProject section */
 
 /* Begin PBXResourcesBuildPhase section */
-		00D4BD5790D148AD4AEBA506 /* Resources */ = {
-			isa = PBXResourcesBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-				BF83C0D8F89A756439E7C4FF /* Assets.xcassets in Resources */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
 		4EBA7625701711DF35576B87 /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -211,19 +179,6 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
-		1FB29A9DC100A5B2DEAE6E0E /* Sources */ = {
-			isa = PBXSourcesBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-				0BC6DE1BA6C1E78AF68D4646 /* DCCTransfer.swift in Sources */,
-				77CF6ECA73DBC2739D377EFA /* DaystingIRCApp.swift in Sources */,
-				DA61673270FEEAD16E61A2B0 /* IRCClient.swift in Sources */,
-				ED7CBB9930D46C2EDB1D1E39 /* IRCModels.swift in Sources */,
-				AE559C5B1A59E630985E646F /* IRCViewModel.swift in Sources */,
-				D3B81860B25752163B8CDCFC /* TVOSContentView.swift in Sources */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
 		348188C4063F1C2A658C0A2C /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -234,7 +189,6 @@
 				772FBFDC9974787AEF641FDA /* IRCClient.swift in Sources */,
 				A1E195A23DEE15766514454E /* IRCModels.swift in Sources */,
 				89D8E5F2A6D6C12818B1C78A /* IRCViewModel.swift in Sources */,
-				9B076324178246221D0BDC7C /* TVOSContentView.swift in Sources */,
 				CB15FF8CE37CF1F94FC1C9C3 /* ThemeControlsView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -249,7 +203,6 @@
 				342FD9AB9E48055D33CB6434 /* IRCClient.swift in Sources */,
 				830DA43F620EEDE13868BEE5 /* IRCModels.swift in Sources */,
 				46CE9A752C4A8C6B68DB21D8 /* IRCViewModel.swift in Sources */,
-				DCDDFB630CDBD12E5556B463 /* TVOSContentView.swift in Sources */,
 				92F43A276C3528E364448B90 /* ThemeControlsView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -298,24 +251,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_ENTITLEMENTS = "Resources/DaystingIRC-macOS.entitlements";
-				CODE_SIGN_IDENTITY = "Apple Development";
-				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
-				DEAD_CODE_STRIPPING = YES;
-				ENABLE_APP_SANDBOX = YES;
-				ENABLE_FILE_ACCESS_DOWNLOADS_FOLDER = readwrite;
-				ENABLE_HARDENED_RUNTIME = YES;
-				ENABLE_INCOMING_NETWORK_CONNECTIONS = NO;
-				ENABLE_OUTGOING_NETWORK_CONNECTIONS = NO;
-				ENABLE_RESOURCE_ACCESS_AUDIO_INPUT = NO;
-				ENABLE_RESOURCE_ACCESS_BLUETOOTH = NO;
-				ENABLE_RESOURCE_ACCESS_CALENDARS = NO;
-				ENABLE_RESOURCE_ACCESS_CAMERA = NO;
-				ENABLE_RESOURCE_ACCESS_CONTACTS = NO;
-				ENABLE_RESOURCE_ACCESS_LOCATION = NO;
-				ENABLE_RESOURCE_ACCESS_PRINTING = YES;
-				ENABLE_RESOURCE_ACCESS_USB = NO;
-				ENABLE_USER_SELECTED_FILES = readwrite;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_KEY_CFBundleDisplayName = DaystingIRC;
 				INFOPLIST_KEY_NSAppTransportSecurity_NSAllowsArbitraryLoads = NO;
@@ -327,7 +263,6 @@
 				);
 				MACOSX_DEPLOYMENT_TARGET = 13.0;
 				PRODUCT_NAME = DaystingIRC;
-				PROVISIONING_PROFILE_SPECIFIER = "";
 				SDKROOT = macosx;
 			};
 			name = Release;
@@ -367,12 +302,10 @@
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				COPY_PHASE_STRIP = NO;
 				CURRENT_PROJECT_VERSION = 1.3;
-				DEAD_CODE_STRIPPING = YES;
 				DEBUG_INFORMATION_FORMAT = dwarf;
-				DEVELOPMENT_TEAM = AZ94QYXR6U;
+				DEVELOPMENT_TEAM = "";
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				ENABLE_TESTABILITY = YES;
-				ENABLE_USER_SCRIPT_SANDBOXING = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu11;
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_NO_COMMON_BLOCKS = YES;
@@ -394,7 +327,6 @@
 				ONLY_ACTIVE_ARCH = YES;
 				PRODUCT_BUNDLE_IDENTIFIER = com.daysting.ircclient;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				STRING_CATALOG_GENERATE_SYMBOLS = YES;
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_VERSION = 5.1;
@@ -406,24 +338,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_ENTITLEMENTS = "Resources/DaystingIRC-macOS.entitlements";
-				CODE_SIGN_IDENTITY = "Apple Development";
-				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
-				DEAD_CODE_STRIPPING = YES;
-				ENABLE_APP_SANDBOX = YES;
-				ENABLE_FILE_ACCESS_DOWNLOADS_FOLDER = readwrite;
-				ENABLE_HARDENED_RUNTIME = YES;
-				ENABLE_INCOMING_NETWORK_CONNECTIONS = NO;
-				ENABLE_OUTGOING_NETWORK_CONNECTIONS = NO;
-				ENABLE_RESOURCE_ACCESS_AUDIO_INPUT = NO;
-				ENABLE_RESOURCE_ACCESS_BLUETOOTH = NO;
-				ENABLE_RESOURCE_ACCESS_CALENDARS = NO;
-				ENABLE_RESOURCE_ACCESS_CAMERA = NO;
-				ENABLE_RESOURCE_ACCESS_CONTACTS = NO;
-				ENABLE_RESOURCE_ACCESS_LOCATION = NO;
-				ENABLE_RESOURCE_ACCESS_PRINTING = YES;
-				ENABLE_RESOURCE_ACCESS_USB = NO;
-				ENABLE_USER_SELECTED_FILES = readwrite;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_KEY_CFBundleDisplayName = DaystingIRC;
 				INFOPLIST_KEY_NSAppTransportSecurity_NSAllowsArbitraryLoads = NO;
@@ -435,7 +350,6 @@
 				);
 				MACOSX_DEPLOYMENT_TARGET = 13.0;
 				PRODUCT_NAME = DaystingIRC;
-				PROVISIONING_PROFILE_SPECIFIER = "";
 				SDKROOT = macosx;
 			};
 			name = Debug;
@@ -475,12 +389,10 @@
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				COPY_PHASE_STRIP = NO;
 				CURRENT_PROJECT_VERSION = 1.3;
-				DEAD_CODE_STRIPPING = YES;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
-				DEVELOPMENT_TEAM = AZ94QYXR6U;
+				DEVELOPMENT_TEAM = "";
 				ENABLE_NS_ASSERTIONS = NO;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
-				ENABLE_USER_SCRIPT_SANDBOXING = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu11;
 				GCC_NO_COMMON_BLOCKS = YES;
 				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
@@ -495,52 +407,11 @@
 				MTL_FAST_MATH = YES;
 				PRODUCT_BUNDLE_IDENTIFIER = com.daysting.ircclient;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				STRING_CATALOG_GENERATE_SYMBOLS = YES;
 				SWIFT_COMPILATION_MODE = wholemodule;
 				SWIFT_OPTIMIZATION_LEVEL = "-O";
 				SWIFT_VERSION = 5.1;
 			};
 			name = Release;
-		};
-		7717AC639309ADE181D78866 /* Release */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
-				GENERATE_INFOPLIST_FILE = YES;
-				INFOPLIST_KEY_CFBundleDisplayName = DaystingIRC;
-				INFOPLIST_KEY_NSAppTransportSecurity_NSAllowsArbitraryLoads = NO;
-				LD_RUNPATH_SEARCH_PATHS = (
-					"$(inherited)",
-					"@executable_path/Frameworks",
-				);
-				PRODUCT_BUNDLE_IDENTIFIER = com.daysting.ircclient.tvos;
-				PRODUCT_NAME = DaystingIRC;
-				SDKROOT = appletvos;
-				TARGETED_DEVICE_FAMILY = 3;
-				TVOS_DEPLOYMENT_TARGET = 17.0;
-			};
-			name = Release;
-		};
-		E00E08CFC2D5DC16CE345A07 /* Debug */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
-				GENERATE_INFOPLIST_FILE = YES;
-				INFOPLIST_KEY_CFBundleDisplayName = DaystingIRC;
-				INFOPLIST_KEY_NSAppTransportSecurity_NSAllowsArbitraryLoads = NO;
-				LD_RUNPATH_SEARCH_PATHS = (
-					"$(inherited)",
-					"@executable_path/Frameworks",
-				);
-				PRODUCT_BUNDLE_IDENTIFIER = com.daysting.ircclient.tvos;
-				PRODUCT_NAME = DaystingIRC;
-				SDKROOT = appletvos;
-				TARGETED_DEVICE_FAMILY = 3;
-				TVOS_DEPLOYMENT_TARGET = 17.0;
-			};
-			name = Debug;
 		};
 /* End XCBuildConfiguration section */
 
@@ -559,15 +430,6 @@
 			buildConfigurations = (
 				5A77E78040D6C4CF94D7A391 /* Debug */,
 				20140519D9797CA2AE2D8E1E /* Release */,
-			);
-			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Debug;
-		};
-		DFD0B8532C85554204BF6988 /* Build configuration list for PBXNativeTarget "DaystingIRC-tvOS" */ = {
-			isa = XCConfigurationList;
-			buildConfigurations = (
-				E00E08CFC2D5DC16CE345A07 /* Debug */,
-				7717AC639309ADE181D78866 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Debug;
