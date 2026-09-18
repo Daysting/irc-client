@@ -166,3 +166,7 @@ with open(os.path.join(appiconset_dir, 'Contents.json'), 'w', encoding='utf-8') 
     fh.write('\n')
 
 print('Icon images and asset catalog created successfully')
+
+# Keep the dedicated macOS artwork when regenerating the universal catalog.
+from scripts.create_macos_icon import main as create_macos_icon
+create_macos_icon()

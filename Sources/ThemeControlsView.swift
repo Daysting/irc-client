@@ -44,6 +44,22 @@ private enum InstalledFonts {
 struct ThemeControlsView: View {
     @EnvironmentObject private var vm: IRCViewModel
 
+    @State private var previewText = "[12:34] daysting: Welcome to #lobby!\n[12:35] you: Make yourself at home.\n\nType here to preview your font, size, and colors."
+
+    private var previewFont: Font {
+        let size = CGFloat(vm.config.appearanceFontSize)
+        guard useCustomAppearance else { return .system(size: 14) }
+        if let name = vm.config.appearanceFontName, !name.isEmpty {
+            return .custom(name, size: size)
+        }
+        switch vm.config.appearanceFontFamily {
+        case .system: return .system(size: size)
+        case .rounded: return .system(size: size, design: .rounded)
+        case .monospaced: return .system(size: size, design: .monospaced)
+        case .serif: return .system(size: size, design: .serif)
+        }
+    }
+
     @State private var showDeleteThemeConfirmation = false
     @State private var showImportStrategyConfirmation = false
     @State private var pendingImportData: Data?
@@ -268,6 +284,82 @@ struct ThemeControlsView: View {
             .padding(16)
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
+#elseif os(macOS)
+        VSplitView {
+            Form {
+                Section("Appearance") {
+                    Toggle("Custom Theme", isOn: $vm.config.enableCustomAppearance)
+                    Picker("Font family", selection: $vm.config.appearanceFontFamily) {
+                        ForEach(AppearanceFontFamily.allCases) { family in
+                            Text(family.title).tag(family)
+                        }
+                    }
+                    HStack {
+                        Slider(value: $vm.config.appearanceFontSize, in: 10...24, step: 1) {
+                            Text("Font size")
+                        }
+                        Text("\(Int(vm.config.appearanceFontSize)) pt").monospacedDigit()
+                            .frame(width: 44, alignment: .trailing)
+                    }
+                    ColorPicker("Text", selection: appearanceTextColorBinding, supportsOpacity: true)
+                    ColorPicker("Background", selection: appearanceBackgroundColorBinding, supportsOpacity: true)
+                    TextField("Installed font name", text: appearanceFontNameBinding)
+                        .textFieldStyle(.roundedBorder)
+                    Picker("Installed fonts", selection: appearanceFontNameBinding) {
+                        Text("Use font family").tag("")
+                        ForEach(installedFontNames, id: \.self) { Text($0).tag($0) }
+                    }
+                }
+                Section("Saved Themes") {
+                    TextField("Theme name", text: $vm.themeDraftName)
+                        .textFieldStyle(.roundedBorder)
+                    Button("Save Theme") { vm.saveCurrentTheme() }
+                        .disabled(vm.themeDraftName.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty)
+                    Picker("Saved themes", selection: $vm.selectedThemeID) {
+                        Text("Select Theme").tag("")
+                        ForEach(vm.savedThemes) { Text($0.name).tag($0.id) }
+                    }
+                    HStack {
+                        Button("Apply") { vm.applySelectedTheme() }.disabled(!vm.hasSelectedSavedTheme)
+                        Button("Delete…") { showDeleteThemeConfirmation = true }.disabled(!vm.hasSelectedSavedTheme)
+                        Spacer()
+                        Button("Reset") { vm.resetAppearanceToDefaults() }
+                    }
+                    HStack {
+                        Button("Export Themes…") { exportThemesToJSONFile() }
+                        Button("Import Themes…") { importThemesFromJSONFile() }
+                    }
+                }
+                if !vm.themeStatusMessage.isEmpty {
+                    Text(vm.themeStatusMessage)
+                        .foregroundStyle(vm.themeStatusIsError ? .red : .green)
+                }
+            }
+            .formStyle(.grouped)
+            .frame(minHeight: 250, idealHeight: 470, maxHeight: .infinity)
+
+            VStack(alignment: .leading, spacing: 8) {
+                HStack {
+                    Text("Live Preview").font(.headline)
+                    Spacer()
+                    Text("Type to try your theme").font(.caption).foregroundStyle(.secondary)
+                }
+                TextEditor(text: $previewText)
+                    .font(previewFont)
+                    .foregroundColor(effectiveTextColor)
+                    .scrollContentBackground(.hidden)
+                    .padding(8)
+                    .background(effectiveBackgroundColor)
+                    .clipShape(RoundedRectangle(cornerRadius: 8))
+                    .overlay(RoundedRectangle(cornerRadius: 8).stroke(.separator))
+                    .accessibilityLabel("Editable theme preview")
+                    .frame(maxWidth: .infinity, maxHeight: .infinity)
+                Text("Drag the divider above to resize the preview.")
+                    .font(.caption).foregroundStyle(.secondary)
+            }
+            .padding(16)
+            .frame(minHeight: 180, idealHeight: 260, maxHeight: .infinity)
+        }
 #else
         VStack(alignment: .leading, spacing: 12) {
             Text("Theme Controls")

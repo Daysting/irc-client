@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		DD1111111111111111111111 /* ConnectionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD2222222222222222222222 /* ConnectionView.swift */; };
 		342FD9AB9E48055D33CB6434 /* IRCClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = 06930B8E0D22F3699D1A09BE /* IRCClient.swift */; };
 		46CE9A752C4A8C6B68DB21D8 /* IRCViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 38322E51D0B8B2B040B5F18E /* IRCViewModel.swift */; };
 		46E20CA9DB22C51A1DD9A981 /* DCCTransfer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6811D5089695BF865D9F9DBD /* DCCTransfer.swift */; };
@@ -26,6 +27,7 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		DD2222222222222222222222 /* ConnectionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConnectionView.swift; sourceTree = "<group>"; };
 		06930B8E0D22F3699D1A09BE /* IRCClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IRCClient.swift; sourceTree = "<group>"; };
 		0D759E7BB4B807CBAA8E40A9 /* IRCModels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IRCModels.swift; sourceTree = "<group>"; };
 		133D3C0436D3C76C96A73746 /* DaystingIRC-macOS.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = "DaystingIRC-macOS.entitlements"; sourceTree = "<group>"; };
@@ -55,6 +57,7 @@
 			isa = PBXGroup;
 			children = (
 				D76C1ACE001C51E03E5ED235 /* ContentView.swift */,
+				DD2222222222222222222222 /* ConnectionView.swift */,
 				B88CA96DD1A287D147E949D7 /* DaystingIRCApp.swift */,
 				6811D5089695BF865D9F9DBD /* DCCTransfer.swift */,
 				06930B8E0D22F3699D1A09BE /* IRCClient.swift */,
@@ -184,6 +187,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				869B8530D781AA8348C28F1F /* ContentView.swift in Sources */,
+				DD1111111111111111111111 /* ConnectionView.swift in Sources */,
 				46E20CA9DB22C51A1DD9A981 /* DCCTransfer.swift in Sources */,
 				5EBB4BE061EEF5FFAF320FFF /* DaystingIRCApp.swift in Sources */,
 				772FBFDC9974787AEF641FDA /* IRCClient.swift in Sources */,

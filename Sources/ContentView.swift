@@ -221,6 +221,10 @@ struct ContentView: View {
     }
 
     @EnvironmentObject private var vm: IRCViewModel
+#if os(macOS)
+    @Environment(\.openWindow) private var openWindow
+    @State private var didPresentConnection = false
+#endif
 #if canImport(UIKit)
     @Environment(\.horizontalSizeClass) private var horizontalSizeClass
 #endif
@@ -354,11 +358,22 @@ struct ContentView: View {
             iphoneOperAutoLoginEnabled = hasOperName || hasOperPassword
 #endif
             focusMessageFieldSoon()
+#if os(macOS)
+            if !didPresentConnection {
+                didPresentConnection = true
+                if !vm.isConnected {
+                    DispatchQueue.main.async { openWindow(id: "connect") }
+                }
+            }
+#endif
         }
         .onChange(of: vm.selectedWindowID) { _ in
             focusMessageFieldSoon()
         }
-        .onChange(of: vm.isConnected) { _ in
+        .onChange(of: vm.isConnected) { connected in
+#if os(macOS)
+            if !connected { openWindow(id: "connect") }
+#endif
             focusMessageFieldSoon()
         }
     }
@@ -454,7 +469,16 @@ struct ContentView: View {
             if vm.isConnected {
                 connectedTopBar
             } else {
+#if os(macOS)
+                HStack {
+                    Text(vm.isConnecting ? "Connecting…" : "Disconnected")
+                        .foregroundStyle(.secondary)
+                    Spacer()
+                    Button("Connect…") { openWindow(id: "connect") }
+                }
+#else
                 serverConfigPanel
+#endif
             }
             paneTabsPanel
             chatContentPanel
@@ -1728,6 +1752,9 @@ struct ContentView: View {
     }
 
     private func focusMessageFieldSoon() {
+#if os(macOS)
+        guard vm.isConnected else { return }
+#endif
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.05) {
             focusedField = .messageInput
         }
