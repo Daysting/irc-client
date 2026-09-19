@@ -1,0 +1,7 @@
+# macOS icon artwork
+
+`macOS-master.png` is the transparent master created using the built-in OpenAI image-generation tool. `scripts/create_macos_icon.py` resizes it into every macOS asset-catalog and ICNS size without changing the artwork. iOS icons remain separate.
+
+Generation prompt (reference: the previous flat DaystingIRC icon):
+
+> Use case: style-transfer. Edit this macOS DaystingIRC app icon to be a little more flashy, distinctive and polished for its App Store presence. Retain the essential silhouette: rounded-square blue/indigo tile with one large white chat bubble containing a bold readable IRC # symbol. Transform the flat graphic into beautifully crafted dimensional enamel and frosted glass, luminous electric-blue and violet gradients, a subtle cyan edge light, sculpted bevels and restrained glossy highlights. Strong contrast and a simple bold center that stays legible at small Dock sizes. Sophisticated, vibrant, energetic, not cluttered. Straight-on orthographic view, no perspective tilt. One isolated square 1024x1024 production icon, tile occupying about 88% of canvas, evenly centered. Truly transparent background outside rounded tile, no opaque backdrop, no checkerboard drawn into pixels. No text except the # symbol, no extra badges, stars, objects or framing. Keep a generous chat mark and preserve its friendly outline. Return the final icon artwork, not a mockup.

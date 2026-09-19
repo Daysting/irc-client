@@ -13,6 +13,10 @@ private struct ThemeMenuCommands: Commands {
     @Environment(\.openWindow) private var openWindow
 
     var body: some Commands {
+        CommandGroup(after: .newItem) {
+            Button("Connect…") { openWindow(id: "connect") }
+                .keyboardShortcut("k", modifiers: [.command, .shift])
+        }
         CommandMenu("Theme") {
             Button("Theme Controls") {
                 openWindow(id: "theme-controls")
@@ -69,7 +73,7 @@ struct DaystingIRCApp: App {
     @SceneBuilder
     var body: some Scene {
 #if os(macOS)
-        WindowGroup {
+        Window("DaystingIRC", id: "chat") {
             ContentView()
                 .environmentObject(viewModel)
                 .frame(minWidth: 900, minHeight: 620)
@@ -79,12 +83,21 @@ struct DaystingIRCApp: App {
             ThemeMenuCommands()
         }
 
+        Window("Connect to IRC", id: "connect") {
+            ConnectionView()
+                .environmentObject(viewModel)
+                .frame(minWidth: 580, minHeight: 520)
+        }
+        .defaultSize(width: 640, height: 760)
+        .windowResizability(.contentMinSize)
+
         Window("Theme Controls", id: "theme-controls") {
             ThemeControlsView()
                 .environmentObject(viewModel)
-                .frame(minWidth: 760, minHeight: 360)
+                .frame(minWidth: 520, minHeight: 560)
         }
-        .windowResizability(.contentSize)
+        .defaultSize(width: 700, height: 780)
+        .windowResizability(.contentMinSize)
 #else
         WindowGroup {
 #if os(tvOS)
