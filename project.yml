@@ -26,7 +26,7 @@ targets:
         ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
         DEVELOPMENT_TEAM: AZ94QYXR6U
         MARKETING_VERSION: 1.4
-        CURRENT_PROJECT_VERSION: 1.4
+        CURRENT_PROJECT_VERSION: 3
         INFOPLIST_KEY_LSApplicationCategoryType: public.app-category.social-networking
         CODE_SIGN_ENTITLEMENTS: Resources/DaystingIRC-macOS.entitlements
         GENERATE_INFOPLIST_FILE: YES
