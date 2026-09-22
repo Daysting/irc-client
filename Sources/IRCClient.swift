@@ -58,8 +58,8 @@ final class IRCClient {
         let connection = NWConnection(host: endpoint, port: nwPort, using: parameters)
         self.connection = connection
 
-        connection.stateUpdateHandler = { [weak self] state in
-            guard let self else { return }
+        connection.stateUpdateHandler = { [weak self, weak connection] state in
+            guard let self, let connection, self.connection === connection else { return }
             switch state {
             case .ready:
                 self.isConnected = true
@@ -152,8 +152,9 @@ final class IRCClient {
     }
 
     private func startReceiveLoop() {
-        connection?.receive(minimumIncompleteLength: 1, maximumLength: 4096) { [weak self] content, _, isComplete, error in
-            guard let self else { return }
+        guard let connection else { return }
+        connection.receive(minimumIncompleteLength: 1, maximumLength: 4096) { [weak self, weak connection] content, _, isComplete, error in
+            guard let self, let connection, self.connection === connection else { return }
 
             if let content, !content.isEmpty, let text = String(data: content, encoding: .utf8) {
                 self.handleIncoming(text)

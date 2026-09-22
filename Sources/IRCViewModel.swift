@@ -127,6 +127,8 @@ final class IRCViewModel: ObservableObject {
     }
     @Published var input = ""
     @Published var isConnected = false
+    @Published private(set) var isConnecting = false
+    @Published private(set) var connectionStatus = ""
     @Published var isOperator = false
     @Published private(set) var windows: [IRCWindowPane] = [IRCWindowPane.server] {
         didSet {
@@ -206,10 +208,13 @@ final class IRCViewModel: ObservableObject {
         client.onStatus = { [weak self] status in
             Task { @MainActor in
                 self?.appendLog("[status] \(status)", to: IRCWindowPane.serverID)
+                self?.connectionStatus = status
                 if status.starts(with: "Connected") {
+                    self?.isConnecting = false
                     self?.isConnected = true
                 }
-                if status == "Connection closed" || status.starts(with: "Connection failed") {
+                if status == "Connection closed" || status.starts(with: "Connection failed") || status.starts(with: "Invalid port") || status == "Server closed the connection" || status.starts(with: "Receive error") {
+                    self?.isConnecting = false
                     self?.isConnected = false
                     self?.isOperator = false
                 }
@@ -564,6 +569,9 @@ final class IRCViewModel: ObservableObject {
     }
 
     private func connectCurrentConfig() {
+        guard !isConnected, !isConnecting, canConnectWithCurrentProfile else { return }
+        isConnecting = true
+        connectionStatus = "Connecting to \(config.host):\(config.port)…"
         if !config.useTLS {
             config.useTLS = true
             appendLog("[security] TLS enforced for this connection", to: IRCWindowPane.serverID)
@@ -594,6 +602,8 @@ final class IRCViewModel: ObservableObject {
     }
 
     func disconnect() {
+        isConnecting = false
+        connectionStatus = "Disconnected"
         client.disconnect()
         isConnected = false
         isOperator = false
