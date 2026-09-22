@@ -4,7 +4,9 @@ Need help with DaystingIRC on iPhone, iPad, or Mac?
 
 **Email support: [daysting@daysting.com](mailto:daysting@daysting.com)**
 
-Contact developer Erick Hofer with questions, connection problems, or bug reports. You do not need a GitHub account to request help by email. You can also [report an issue on GitHub](https://github.com/Daysting/irc-client/issues) if you have a GitHub account.
+**Business phone support: [763-334-6555](tel:+17633346555)**
+
+Contact developer Erick Hofer with questions, connection problems, or bug reports. You do not need a GitHub account to request help by email or phone. You can also [report an issue on GitHub](https://github.com/Daysting/irc-client/issues) if you have a GitHub account.
 
 ## Connecting for the first time
 
