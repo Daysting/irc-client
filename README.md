@@ -1,5 +1,13 @@
 # Daysting IRC
 
+## App access and IRC server accounts
+
+No account is needed to use DaystingIRC. You can connect to any IRC server that supports the app's required TLS connection; you are not limited to `irc.daysting.com`.
+
+Each server owner determines that server's account requirements, account-creation process, and rules. Any SASL or NickServ account belongs to the IRC network, not to DaystingIRC.
+
+`irc.daysting.com` does not require an account to participate. However, registering with its services is strongly recommended to protect your nickname and channel ownership. Registration is optional for participation.
+
 A native IRC client for macOS, iOS, iPadOS, tvOS, and Windows.
 
 **Default server:** `irc.daysting.com:6697` · TLS required (minimum TLS 1.2) · Anope services support
@@ -61,16 +69,27 @@ To run on a physical device you will need a development team set in the Signing 
 
 **Requirements:** Xcode 15 or later, tvOS 17+ Apple TV or simulator
 
-1. Open `DaystingIRC.xcodeproj` in Xcode.
+1. Open `DaystingIRC-tvOS.xcodeproj` in Xcode.
 2. Select the **DaystingIRC-tvOS** scheme.
 3. Choose an Apple TV simulator or a connected Apple TV as the destination.
 4. Press **Cmd+R** to build and run.
 
 **Remote navigation:**
 - Use the Siri Remote (or any MFi gamepad) to navigate between fields and buttons.
-- The on-screen keyboard appears automatically when a text field is focused — only if no hardware keyboard is connected.
+- Highlight a text field, then activate it to start text entry.
 - Connect a Bluetooth keyboard to type directly without the on-screen keyboard.
 - Navigation buttons (Connect, Disconnect, channel tabs) are highlighted when focused so you can see which control is selected.
+
+**Chatting with the remote:**
+
+1. Highlight **Message or /command**.
+2. Press **Enter** to activate text entry.
+3. Type your message or IRC command.
+4. Press **Enter** again to send it.
+
+This sequence is required when using the remote to type; highlighting the field alone does not start text entry.
+
+See the [Apple TV guide](docs/tvOS.md) for more details.
 
 ---
 
@@ -107,6 +126,8 @@ All platforms share the same connection flow:
 ---
 
 ## Authentication
+
+These options authenticate with your chosen IRC server. Configure them only as required by that server or to use your registered nickname; they are not an app sign-up requirement.
 
 ### SASL
 
@@ -245,12 +266,12 @@ The app automatically restores between launches:
 
 Daysting IRC does not require you to register an account or provide any personally identifiable information (PII) to use the app.
 
-- **No account required.** The app connects directly to an IRC server using only a nickname of your choice. Nicknames are not tied to a real identity.
+- **No account required.** DaystingIRC has no app account. A nickname is enough for guest participation on irc.daysting.com; other servers may require authentication under their own rules.
 - **No data collection.** The app does not collect, transmit, or share any usage data, analytics, crash reports, or telemetry with the app developers.
 - **Local storage only.** All connection profile settings (server, nickname, passwords, theme preferences) are stored exclusively on your device using the platform's local storage (UserDefaults on Apple platforms; app settings on Windows). This data never leaves your device.
 - **Passwords.** Any SASL, NickServ, or OPER passwords you save are stored locally on your device. They are sent to the IRC server you connect to, and only over an encrypted TLS connection. They are not shared with any third party.
 - **Network traffic.** The only outbound connections the app makes are to the IRC server you specify. No other external services are contacted.
-- **No registration.** IRC nicknames are not inherently linked to personal identity. You may use any nickname that complies with the IRC server's rules.
+- **Server registration.** Server owners set account and nickname rules. Registration on irc.daysting.com is optional for participation and strongly recommended to protect your nickname and channel ownership.
 
 ---
 

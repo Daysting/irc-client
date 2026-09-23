@@ -1,6 +1,14 @@
 # DaystingIRC Support
 
-Need help with DaystingIRC on iPhone, iPad, or Mac?
+## App access and IRC server accounts
+
+No account is needed to use DaystingIRC. You can connect to any IRC server that supports the app's required TLS connection; you are not limited to `irc.daysting.com`.
+
+Each server owner determines that server's account requirements, account-creation process, and rules. Any SASL or NickServ account belongs to the IRC network, not to DaystingIRC.
+
+`irc.daysting.com` does not require an account to participate. However, registering with its services is strongly recommended to protect your nickname and channel ownership. Registration is optional for participation.
+
+Need help with DaystingIRC on iPhone, iPad, Mac, or the Apple TV beta?
 
 **Email support: [daysting@daysting.com](mailto:daysting@daysting.com)**
 
@@ -13,10 +21,10 @@ Contact developer Erick Hofer with questions, connection problems, or bug report
 1. Open the Connect screen.
 2. Enter a nickname of your choice. If it is already in use or reserved, choose another nickname.
 3. Leave SASL off and leave SASL, NickServ, and OPER credentials empty for guest access to the default Daysting server.
-4. Tap **Daysting Server**, or use **irc.daysting.com**, port **6697**, with TLS.
+4. Enter your chosen IRC server's hostname and TLS port. For the default server, tap **Daysting Server**, or use **irc.daysting.com**, port **6697**, with TLS.
 5. Open the server window to read connection status and network responses. Join a channel to chat.
 
-No DaystingIRC app account is required. IRC networks may have their own registration requirements and rules. NickServ, SASL, OPER, and Anope service commands require the corresponding permissions on the connected network; they are optional for basic guest chat. Service replies appear in the server or service conversation.
+No DaystingIRC app account is required. IRC networks may have their own registration requirements and rules. SASL and NickServ authenticate with that network; OPER and privileged Anope commands require the corresponding server permissions. Credentials are optional for guest chat on irc.daysting.com; other servers set their own requirements. Service replies appear in the server or service conversation.
 
 ## Troubleshooting
 

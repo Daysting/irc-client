@@ -1,5 +1,13 @@
 # App Store Deployment Guide (macOS + iOS/iPadOS)
 
+## App access and IRC server accounts
+
+No account is needed to use DaystingIRC. You can connect to any IRC server that supports the app's required TLS connection; you are not limited to `irc.daysting.com`.
+
+Each server owner determines that server's account requirements, account-creation process, and rules. Any SASL or NickServ account belongs to the IRC network, not to DaystingIRC.
+
+`irc.daysting.com` does not require an account to participate. However, registering with its services is strongly recommended to protect your nickname and channel ownership. Registration is optional for participation.
+
 This project is prepared for Apple platform deployment with TLS-only IRC transport and shared SwiftUI code.
 
 ## 1. Generate Xcode Project

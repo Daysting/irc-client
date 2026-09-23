@@ -1,5 +1,13 @@
 # Daysting IRC Usage Guide
 
+## App access and IRC server accounts
+
+No account is needed to use DaystingIRC. You can connect to any IRC server that supports the app's required TLS connection; you are not limited to `irc.daysting.com`.
+
+Each server owner determines that server's account requirements, account-creation process, and rules. Any SASL or NickServ account belongs to the IRC network, not to DaystingIRC.
+
+`irc.daysting.com` does not require an account to participate. However, registering with its services is strongly recommended to protect your nickname and channel ownership. Registration is optional for participation.
+
 This guide walks through daily use of the app from first launch to advanced features.
 
 ## 1) Launch and Connect
@@ -18,9 +26,9 @@ swift run
 
 3. Custom server connections are supported for any IRC server with TLS enabled.
 
-3. Enter your nickname and primary channel (must start with `#`).
+4. Enter your nickname and primary channel (must start with `#`).
 
-4. Click `Connect` (or press `Cmd+K`).
+5. Click `Connect` (or press `Cmd+K`).
 
 ## 2) Required vs Optional Fields
 
@@ -38,7 +46,7 @@ Validation behavior:
 
 ## 3) Authentication Options
 
-You can use one or more of these together.
+These options authenticate with the selected IRC network, not with the app. You can use one or more together when required by the server or to use your registered nickname. For guest participation on irc.daysting.com, leave SASL off and the authentication fields empty.
 
 ### SASL
 
@@ -216,7 +224,7 @@ Check `Auto Join Channels` format:
 
 1. Set nick/channel.
 2. Add one fallback nick.
-3. Configure SASL and/or NickServ.
+3. Optionally register with your IRC network and configure SASL and/or NickServ, following the server owner's instructions. On irc.daysting.com, registration is strongly recommended to protect your nickname and channel ownership, but is not required to participate.
 4. Configure OPER if needed.
 5. Add auto-join channels.
 6. Save your appearance as a named theme.
