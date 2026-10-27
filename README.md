@@ -1,5 +1,9 @@
 # Daysting IRC
 
+## Web client
+
+The browser edition lives in [web/](web/README.md), including its WebSocket-to-TLS relay and tests. [Open the web client](https://daysting.github.io/irc-client/) once GitHub Pages is enabled. Live chat requires a deployed WebSocket endpoint; offline preview works without one.
+
 ## App access and IRC server accounts
 
 No account is needed to use DaystingIRC. You can connect to any IRC server that supports the app's required TLS connection; you are not limited to `irc.daysting.com`.

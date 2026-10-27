@@ -1,0 +1,17 @@
+[Unit]
+Description=DaystingIRC WebSocket to TLS relay
+After=network-online.target
+Wants=network-online.target
+[Service]
+Type=simple
+User=daysting-relay
+WorkingDirectory=/opt/daysting-irc-web
+EnvironmentFile=/etc/daysting-irc-relay.env
+ExecStart=/usr/bin/node relay/server.mjs
+Restart=on-failure
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=strict
+ProtectHome=true
+[Install]
+WantedBy=multi-user.target

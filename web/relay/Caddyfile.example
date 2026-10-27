@@ -1,0 +1,4 @@
+# Replace chat.example.com with your relay domain, pointed at this server.
+chat.example.com {
+    reverse_proxy 127.0.0.1:8787
+}

@@ -1,0 +1,2150 @@
+[
+  {
+    "id": "ns-help",
+    "service": "NickServ",
+    "title": "Help",
+    "command": "/ns help",
+    "contexts": [
+      "server",
+      "channel",
+      "privateMessage"
+    ],
+    "fields": []
+  },
+  {
+    "id": "ns-custom",
+    "service": "NickServ",
+    "title": "Custom NickServ Command",
+    "command": "/ns {command}",
+    "contexts": [
+      "server",
+      "channel",
+      "privateMessage"
+    ],
+    "fields": [
+      {
+        "id": "command",
+        "label": "Command",
+        "placeholder": "command args...",
+        "secure": false,
+        "optional": false
+      }
+    ]
+  },
+  {
+    "id": "ns-register",
+    "service": "NickServ",
+    "title": "Register",
+    "command": "/ns register {password} {email}",
+    "contexts": [
+      "server",
+      "channel"
+    ],
+    "fields": [
+      {
+        "id": "password",
+        "label": "Password",
+        "placeholder": "password",
+        "secure": true,
+        "optional": false
+      },
+      {
+        "id": "email",
+        "label": "Email",
+        "placeholder": "user@example.com",
+        "secure": false,
+        "optional": false
+      }
+    ]
+  },
+  {
+    "id": "ns-identify",
+    "service": "NickServ",
+    "title": "Identify",
+    "command": "/ns identify {password}",
+    "contexts": [
+      "server",
+      "channel",
+      "privateMessage"
+    ],
+    "fields": [
+      {
+        "id": "password",
+        "label": "Password",
+        "placeholder": "password",
+        "secure": true,
+        "optional": false
+      }
+    ]
+  },
+  {
+    "id": "ns-logout",
+    "service": "NickServ",
+    "title": "Logout",
+    "command": "/ns logout",
+    "contexts": [
+      "server",
+      "channel",
+      "privateMessage"
+    ],
+    "fields": []
+  },
+  {
+    "id": "ns-info",
+    "service": "NickServ",
+    "title": "Info",
+    "command": "/ns info {nick}",
+    "contexts": [
+      "server",
+      "channel",
+      "privateMessage"
+    ],
+    "fields": [
+      {
+        "id": "nick",
+        "label": "Nickname",
+        "placeholder": "nickname",
+        "secure": false,
+        "optional": true
+      }
+    ]
+  },
+  {
+    "id": "ns-list",
+    "service": "NickServ",
+    "title": "List",
+    "command": "/ns list {pattern}",
+    "contexts": [
+      "server"
+    ],
+    "fields": [
+      {
+        "id": "pattern",
+        "label": "Pattern",
+        "placeholder": "nick*",
+        "secure": false,
+        "optional": false
+      }
+    ]
+  },
+  {
+    "id": "ns-status",
+    "service": "NickServ",
+    "title": "Status",
+    "command": "/ns status {nick}",
+    "contexts": [
+      "server",
+      "channel",
+      "privateMessage"
+    ],
+    "fields": [
+      {
+        "id": "nick",
+        "label": "Nickname",
+        "placeholder": "nickname",
+        "secure": false,
+        "optional": false
+      }
+    ]
+  },
+  {
+    "id": "ns-alist",
+    "service": "NickServ",
+    "title": "AList",
+    "command": "/ns alist",
+    "contexts": [
+      "server",
+      "channel",
+      "privateMessage"
+    ],
+    "fields": []
+  },
+  {
+    "id": "ns-update",
+    "service": "NickServ",
+    "title": "Update",
+    "command": "/ns update",
+    "contexts": [
+      "server",
+      "channel",
+      "privateMessage"
+    ],
+    "fields": []
+  },
+  {
+    "id": "ns-group",
+    "service": "NickServ",
+    "title": "Group",
+    "command": "/ns group {target} {password}",
+    "contexts": [
+      "server",
+      "channel"
+    ],
+    "fields": [
+      {
+        "id": "target",
+        "label": "Target Nick",
+        "placeholder": "registeredNick",
+        "secure": false,
+        "optional": false
+      },
+      {
+        "id": "password",
+        "label": "Password",
+        "placeholder": "password",
+        "secure": true,
+        "optional": false
+      }
+    ]
+  },
+  {
+    "id": "ns-ungroup",
+    "service": "NickServ",
+    "title": "Ungroup",
+    "command": "/ns ungroup",
+    "contexts": [
+      "server",
+      "channel",
+      "privateMessage"
+    ],
+    "fields": []
+  },
+  {
+    "id": "ns-drop",
+    "service": "NickServ",
+    "title": "Drop",
+    "command": "/ns drop {nick}",
+    "contexts": [
+      "server",
+      "channel",
+      "privateMessage"
+    ],
+    "fields": [
+      {
+        "id": "nick",
+        "label": "Nickname",
+        "placeholder": "nickname",
+        "secure": false,
+        "optional": true
+      }
+    ]
+  },
+  {
+    "id": "ns-set-password",
+    "service": "NickServ",
+    "title": "Set Password",
+    "command": "/ns set password {newpassword}",
+    "contexts": [
+      "server",
+      "channel",
+      "privateMessage"
+    ],
+    "fields": [
+      {
+        "id": "newpassword",
+        "label": "New Password",
+        "placeholder": "new password",
+        "secure": true,
+        "optional": false
+      }
+    ]
+  },
+  {
+    "id": "ns-set-email",
+    "service": "NickServ",
+    "title": "Set Email",
+    "command": "/ns set email {email}",
+    "contexts": [
+      "server",
+      "channel",
+      "privateMessage"
+    ],
+    "fields": [
+      {
+        "id": "email",
+        "label": "Email",
+        "placeholder": "user@example.com",
+        "secure": false,
+        "optional": false
+      }
+    ]
+  },
+  {
+    "id": "ns-set-kill",
+    "service": "NickServ",
+    "title": "Set Kill",
+    "command": "/ns set kill {value}",
+    "contexts": [
+      "server",
+      "channel",
+      "privateMessage"
+    ],
+    "fields": [
+      {
+        "id": "value",
+        "label": "Kill Value",
+        "placeholder": "ON/OFF/QUICK/IMMED",
+        "secure": false,
+        "optional": false
+      }
+    ]
+  },
+  {
+    "id": "ns-set-protect",
+    "service": "NickServ",
+    "title": "Set Protect",
+    "command": "/ns set protect {value}",
+    "contexts": [
+      "server",
+      "channel",
+      "privateMessage"
+    ],
+    "fields": [
+      {
+        "id": "value",
+        "label": "Protect Value",
+        "placeholder": "ON/OFF",
+        "secure": false,
+        "optional": false
+      }
+    ]
+  },
+  {
+    "id": "ns-set-hide-email",
+    "service": "NickServ",
+    "title": "Set Hide Email",
+    "command": "/ns set hide email {value}",
+    "contexts": [
+      "server",
+      "channel",
+      "privateMessage"
+    ],
+    "fields": [
+      {
+        "id": "value",
+        "label": "Hide Email",
+        "placeholder": "ON/OFF",
+        "secure": false,
+        "optional": false
+      }
+    ]
+  },
+  {
+    "id": "ns-set-hide-usermask",
+    "service": "NickServ",
+    "title": "Set Hide Usermask",
+    "command": "/ns set hide usermask {value}",
+    "contexts": [
+      "server",
+      "channel",
+      "privateMessage"
+    ],
+    "fields": [
+      {
+        "id": "value",
+        "label": "Hide Usermask",
+        "placeholder": "ON/OFF",
+        "secure": false,
+        "optional": false
+      }
+    ]
+  },
+  {
+    "id": "ns-cert-add",
+    "service": "NickServ",
+    "title": "Cert Add",
+    "command": "/ns cert add {fingerprint}",
+    "contexts": [
+      "server",
+      "channel",
+      "privateMessage"
+    ],
+    "fields": [
+      {
+        "id": "fingerprint",
+        "label": "Fingerprint",
+        "placeholder": "SHA256 fingerprint",
+        "secure": false,
+        "optional": false
+      }
+    ]
+  },
+  {
+    "id": "ns-cert-del",
+    "service": "NickServ",
+    "title": "Cert Del",
+    "command": "/ns cert del {fingerprint}",
+    "contexts": [
+      "server",
+      "channel",
+      "privateMessage"
+    ],
+    "fields": [
+      {
+        "id": "fingerprint",
+        "label": "Fingerprint",
+        "placeholder": "SHA256 fingerprint",
+        "secure": false,
+        "optional": false
+      }
+    ]
+  },
+  {
+    "id": "ns-cert-list",
+    "service": "NickServ",
+    "title": "Cert List",
+    "command": "/ns cert list",
+    "contexts": [
+      "server",
+      "channel",
+      "privateMessage"
+    ],
+    "fields": []
+  },
+  {
+    "id": "ns-access-add",
+    "service": "NickServ",
+    "title": "Access Add",
+    "command": "/ns access add {mask}",
+    "contexts": [
+      "server",
+      "channel",
+      "privateMessage"
+    ],
+    "fields": [
+      {
+        "id": "mask",
+        "label": "Mask",
+        "placeholder": "nick!user@host",
+        "secure": false,
+        "optional": false
+      }
+    ]
+  },
+  {
+    "id": "ns-access-del",
+    "service": "NickServ",
+    "title": "Access Del",
+    "command": "/ns access del {mask}",
+    "contexts": [
+      "server",
+      "channel",
+      "privateMessage"
+    ],
+    "fields": [
+      {
+        "id": "mask",
+        "label": "Mask",
+        "placeholder": "nick!user@host",
+        "secure": false,
+        "optional": false
+      }
+    ]
+  },
+  {
+    "id": "ns-access-list",
+    "service": "NickServ",
+    "title": "Access List",
+    "command": "/ns access list",
+    "contexts": [
+      "server",
+      "channel",
+      "privateMessage"
+    ],
+    "fields": []
+  },
+  {
+    "id": "ns-ghost",
+    "service": "NickServ",
+    "title": "Ghost",
+    "command": "/ns ghost {nick} {password}",
+    "contexts": [
+      "server",
+      "channel"
+    ],
+    "fields": [
+      {
+        "id": "nick",
+        "label": "Nickname",
+        "placeholder": "nickname",
+        "secure": false,
+        "optional": false
+      },
+      {
+        "id": "password",
+        "label": "Password",
+        "placeholder": "password",
+        "secure": true,
+        "optional": false
+      }
+    ]
+  },
+  {
+    "id": "ns-recover",
+    "service": "NickServ",
+    "title": "Recover",
+    "command": "/ns recover {nick} {password}",
+    "contexts": [
+      "server",
+      "channel"
+    ],
+    "fields": [
+      {
+        "id": "nick",
+        "label": "Nickname",
+        "placeholder": "nickname",
+        "secure": false,
+        "optional": false
+      },
+      {
+        "id": "password",
+        "label": "Password",
+        "placeholder": "password",
+        "secure": true,
+        "optional": false
+      }
+    ]
+  },
+  {
+    "id": "ns-release",
+    "service": "NickServ",
+    "title": "Release",
+    "command": "/ns release {nick} {password}",
+    "contexts": [
+      "server",
+      "channel"
+    ],
+    "fields": [
+      {
+        "id": "nick",
+        "label": "Nickname",
+        "placeholder": "nickname",
+        "secure": false,
+        "optional": false
+      },
+      {
+        "id": "password",
+        "label": "Password",
+        "placeholder": "password",
+        "secure": true,
+        "optional": false
+      }
+    ]
+  },
+  {
+    "id": "cs-help",
+    "service": "ChanServ",
+    "title": "Help",
+    "command": "/cs help",
+    "contexts": [
+      "server",
+      "channel"
+    ],
+    "fields": []
+  },
+  {
+    "id": "cs-custom",
+    "service": "ChanServ",
+    "title": "Custom ChanServ Command",
+    "command": "/cs {command}",
+    "contexts": [
+      "server",
+      "channel"
+    ],
+    "fields": [
+      {
+        "id": "command",
+        "label": "Command",
+        "placeholder": "command args...",
+        "secure": false,
+        "optional": false
+      }
+    ]
+  },
+  {
+    "id": "cs-register",
+    "service": "ChanServ",
+    "title": "Register",
+    "command": "/cs register {channel} {description}",
+    "contexts": [
+      "server",
+      "channel"
+    ],
+    "fields": [
+      {
+        "id": "channel",
+        "label": "Channel",
+        "placeholder": "#channel",
+        "secure": false,
+        "optional": false
+      },
+      {
+        "id": "description",
+        "label": "Description",
+        "placeholder": "Channel description",
+        "secure": false,
+        "optional": false
+      }
+    ]
+  },
+  {
+    "id": "cs-identify",
+    "service": "ChanServ",
+    "title": "Identify",
+    "command": "/cs identify {channel} {password}",
+    "contexts": [
+      "server",
+      "channel"
+    ],
+    "fields": [
+      {
+        "id": "channel",
+        "label": "Channel",
+        "placeholder": "#channel",
+        "secure": false,
+        "optional": false
+      },
+      {
+        "id": "password",
+        "label": "Password",
+        "placeholder": "channel password",
+        "secure": true,
+        "optional": false
+      }
+    ]
+  },
+  {
+    "id": "cs-info",
+    "service": "ChanServ",
+    "title": "Info",
+    "command": "/cs info {channel}",
+    "contexts": [
+      "server",
+      "channel"
+    ],
+    "fields": [
+      {
+        "id": "channel",
+        "label": "Channel",
+        "placeholder": "#channel",
+        "secure": false,
+        "optional": true
+      }
+    ]
+  },
+  {
+    "id": "cs-list",
+    "service": "ChanServ",
+    "title": "List",
+    "command": "/cs list {pattern}",
+    "contexts": [
+      "server"
+    ],
+    "fields": [
+      {
+        "id": "pattern",
+        "label": "Pattern",
+        "placeholder": "#chan*",
+        "secure": false,
+        "optional": false
+      }
+    ]
+  },
+  {
+    "id": "cs-drop",
+    "service": "ChanServ",
+    "title": "Drop",
+    "command": "/cs drop {channel}",
+    "contexts": [
+      "server",
+      "channel"
+    ],
+    "fields": [
+      {
+        "id": "channel",
+        "label": "Channel",
+        "placeholder": "#channel",
+        "secure": false,
+        "optional": false
+      }
+    ]
+  },
+  {
+    "id": "cs-topic",
+    "service": "ChanServ",
+    "title": "Topic",
+    "command": "/cs topic {channel} {topic}",
+    "contexts": [
+      "server",
+      "channel"
+    ],
+    "fields": [
+      {
+        "id": "channel",
+        "label": "Channel",
+        "placeholder": "#channel",
+        "secure": false,
+        "optional": true
+      },
+      {
+        "id": "topic",
+        "label": "Topic",
+        "placeholder": "new topic",
+        "secure": false,
+        "optional": false
+      }
+    ]
+  },
+  {
+    "id": "cs-set-desc",
+    "service": "ChanServ",
+    "title": "Set Description",
+    "command": "/cs set {channel} desc {description}",
+    "contexts": [
+      "server",
+      "channel"
+    ],
+    "fields": [
+      {
+        "id": "channel",
+        "label": "Channel",
+        "placeholder": "#channel",
+        "secure": false,
+        "optional": true
+      },
+      {
+        "id": "description",
+        "label": "Description",
+        "placeholder": "channel description",
+        "secure": false,
+        "optional": false
+      }
+    ]
+  },
+  {
+    "id": "cs-set-url",
+    "service": "ChanServ",
+    "title": "Set URL",
+    "command": "/cs set {channel} url {url}",
+    "contexts": [
+      "server",
+      "channel"
+    ],
+    "fields": [
+      {
+        "id": "channel",
+        "label": "Channel",
+        "placeholder": "#channel",
+        "secure": false,
+        "optional": true
+      },
+      {
+        "id": "url",
+        "label": "URL",
+        "placeholder": "https://example.com",
+        "secure": false,
+        "optional": false
+      }
+    ]
+  },
+  {
+    "id": "cs-set-email",
+    "service": "ChanServ",
+    "title": "Set Email",
+    "command": "/cs set {channel} email {email}",
+    "contexts": [
+      "server",
+      "channel"
+    ],
+    "fields": [
+      {
+        "id": "channel",
+        "label": "Channel",
+        "placeholder": "#channel",
+        "secure": false,
+        "optional": true
+      },
+      {
+        "id": "email",
+        "label": "Email",
+        "placeholder": "ops@example.com",
+        "secure": false,
+        "optional": false
+      }
+    ]
+  },
+  {
+    "id": "cs-set-mlock",
+    "service": "ChanServ",
+    "title": "Set MLOCK",
+    "command": "/cs set {channel} mlock {modes}",
+    "contexts": [
+      "server",
+      "channel"
+    ],
+    "fields": [
+      {
+        "id": "channel",
+        "label": "Channel",
+        "placeholder": "#channel",
+        "secure": false,
+        "optional": true
+      },
+      {
+        "id": "modes",
+        "label": "Modes",
+        "placeholder": "+nt",
+        "secure": false,
+        "optional": false
+      }
+    ]
+  },
+  {
+    "id": "cs-set-private",
+    "service": "ChanServ",
+    "title": "Set Private",
+    "command": "/cs set {channel} private {value}",
+    "contexts": [
+      "server",
+      "channel"
+    ],
+    "fields": [
+      {
+        "id": "channel",
+        "label": "Channel",
+        "placeholder": "#channel",
+        "secure": false,
+        "optional": true
+      },
+      {
+        "id": "value",
+        "label": "Private",
+        "placeholder": "ON/OFF",
+        "secure": false,
+        "optional": false
+      }
+    ]
+  },
+  {
+    "id": "cs-set-secure",
+    "service": "ChanServ",
+    "title": "Set Secure",
+    "command": "/cs set {channel} secure {value}",
+    "contexts": [
+      "server",
+      "channel"
+    ],
+    "fields": [
+      {
+        "id": "channel",
+        "label": "Channel",
+        "placeholder": "#channel",
+        "secure": false,
+        "optional": true
+      },
+      {
+        "id": "value",
+        "label": "Secure",
+        "placeholder": "ON/OFF",
+        "secure": false,
+        "optional": false
+      }
+    ]
+  },
+  {
+    "id": "cs-set-keeptopic",
+    "service": "ChanServ",
+    "title": "Set KeepTopic",
+    "command": "/cs set {channel} keeptopic {value}",
+    "contexts": [
+      "server",
+      "channel"
+    ],
+    "fields": [
+      {
+        "id": "channel",
+        "label": "Channel",
+        "placeholder": "#channel",
+        "secure": false,
+        "optional": true
+      },
+      {
+        "id": "value",
+        "label": "KeepTopic",
+        "placeholder": "ON/OFF",
+        "secure": false,
+        "optional": false
+      }
+    ]
+  },
+  {
+    "id": "cs-set-topiclock",
+    "service": "ChanServ",
+    "title": "Set TopicLock",
+    "command": "/cs set {channel} topiclock {value}",
+    "contexts": [
+      "server",
+      "channel"
+    ],
+    "fields": [
+      {
+        "id": "channel",
+        "label": "Channel",
+        "placeholder": "#channel",
+        "secure": false,
+        "optional": true
+      },
+      {
+        "id": "value",
+        "label": "TopicLock",
+        "placeholder": "ON/OFF",
+        "secure": false,
+        "optional": false
+      }
+    ]
+  },
+  {
+    "id": "cs-op",
+    "service": "ChanServ",
+    "title": "Op",
+    "command": "/cs op {channel} {nick}",
+    "contexts": [
+      "channel",
+      "server"
+    ],
+    "fields": [
+      {
+        "id": "channel",
+        "label": "Channel",
+        "placeholder": "#channel",
+        "secure": false,
+        "optional": true
+      },
+      {
+        "id": "nick",
+        "label": "Nickname",
+        "placeholder": "nickname",
+        "secure": false,
+        "optional": true
+      }
+    ]
+  },
+  {
+    "id": "cs-deop",
+    "service": "ChanServ",
+    "title": "Deop",
+    "command": "/cs deop {channel} {nick}",
+    "contexts": [
+      "channel",
+      "server"
+    ],
+    "fields": [
+      {
+        "id": "channel",
+        "label": "Channel",
+        "placeholder": "#channel",
+        "secure": false,
+        "optional": true
+      },
+      {
+        "id": "nick",
+        "label": "Nickname",
+        "placeholder": "nickname",
+        "secure": false,
+        "optional": true
+      }
+    ]
+  },
+  {
+    "id": "cs-voice",
+    "service": "ChanServ",
+    "title": "Voice",
+    "command": "/cs voice {channel} {nick}",
+    "contexts": [
+      "channel",
+      "server"
+    ],
+    "fields": [
+      {
+        "id": "channel",
+        "label": "Channel",
+        "placeholder": "#channel",
+        "secure": false,
+        "optional": true
+      },
+      {
+        "id": "nick",
+        "label": "Nickname",
+        "placeholder": "nickname",
+        "secure": false,
+        "optional": true
+      }
+    ]
+  },
+  {
+    "id": "cs-devoice",
+    "service": "ChanServ",
+    "title": "Devoice",
+    "command": "/cs devoice {channel} {nick}",
+    "contexts": [
+      "channel",
+      "server"
+    ],
+    "fields": [
+      {
+        "id": "channel",
+        "label": "Channel",
+        "placeholder": "#channel",
+        "secure": false,
+        "optional": true
+      },
+      {
+        "id": "nick",
+        "label": "Nickname",
+        "placeholder": "nickname",
+        "secure": false,
+        "optional": true
+      }
+    ]
+  },
+  {
+    "id": "cs-kick",
+    "service": "ChanServ",
+    "title": "Kick",
+    "command": "/cs kick {channel} {nick} {reason}",
+    "contexts": [
+      "channel",
+      "server"
+    ],
+    "fields": [
+      {
+        "id": "channel",
+        "label": "Channel",
+        "placeholder": "#channel",
+        "secure": false,
+        "optional": true
+      },
+      {
+        "id": "nick",
+        "label": "Nickname",
+        "placeholder": "nickname",
+        "secure": false,
+        "optional": false
+      },
+      {
+        "id": "reason",
+        "label": "Reason",
+        "placeholder": "reason",
+        "secure": false,
+        "optional": true
+      }
+    ]
+  },
+  {
+    "id": "cs-ban",
+    "service": "ChanServ",
+    "title": "Ban",
+    "command": "/cs ban {channel} {nick}",
+    "contexts": [
+      "channel",
+      "server"
+    ],
+    "fields": [
+      {
+        "id": "channel",
+        "label": "Channel",
+        "placeholder": "#channel",
+        "secure": false,
+        "optional": true
+      },
+      {
+        "id": "nick",
+        "label": "Nickname/Mask",
+        "placeholder": "nickname or *!*@host",
+        "secure": false,
+        "optional": false
+      }
+    ]
+  },
+  {
+    "id": "cs-unban",
+    "service": "ChanServ",
+    "title": "Unban",
+    "command": "/cs unban {channel} {nick}",
+    "contexts": [
+      "channel",
+      "server"
+    ],
+    "fields": [
+      {
+        "id": "channel",
+        "label": "Channel",
+        "placeholder": "#channel",
+        "secure": false,
+        "optional": true
+      },
+      {
+        "id": "nick",
+        "label": "Nickname/Mask",
+        "placeholder": "nickname or *!*@host",
+        "secure": false,
+        "optional": false
+      }
+    ]
+  },
+  {
+    "id": "cs-akick-add",
+    "service": "ChanServ",
+    "title": "AKICK Add",
+    "command": "/cs akick {channel} add {mask} {reason}",
+    "contexts": [
+      "channel",
+      "server"
+    ],
+    "fields": [
+      {
+        "id": "channel",
+        "label": "Channel",
+        "placeholder": "#channel",
+        "secure": false,
+        "optional": true
+      },
+      {
+        "id": "mask",
+        "label": "Mask",
+        "placeholder": "nick!user@host",
+        "secure": false,
+        "optional": false
+      },
+      {
+        "id": "reason",
+        "label": "Reason",
+        "placeholder": "reason",
+        "secure": false,
+        "optional": true
+      }
+    ]
+  },
+  {
+    "id": "cs-akick-del",
+    "service": "ChanServ",
+    "title": "AKICK Del",
+    "command": "/cs akick {channel} del {mask}",
+    "contexts": [
+      "channel",
+      "server"
+    ],
+    "fields": [
+      {
+        "id": "channel",
+        "label": "Channel",
+        "placeholder": "#channel",
+        "secure": false,
+        "optional": true
+      },
+      {
+        "id": "mask",
+        "label": "Mask",
+        "placeholder": "nick!user@host",
+        "secure": false,
+        "optional": false
+      }
+    ]
+  },
+  {
+    "id": "cs-akick-list",
+    "service": "ChanServ",
+    "title": "AKICK List",
+    "command": "/cs akick {channel} list",
+    "contexts": [
+      "channel",
+      "server"
+    ],
+    "fields": [
+      {
+        "id": "channel",
+        "label": "Channel",
+        "placeholder": "#channel",
+        "secure": false,
+        "optional": true
+      }
+    ]
+  },
+  {
+    "id": "cs-flags",
+    "service": "ChanServ",
+    "title": "Flags",
+    "command": "/cs flags {channel} {target} {flags}",
+    "contexts": [
+      "channel",
+      "server"
+    ],
+    "fields": [
+      {
+        "id": "channel",
+        "label": "Channel",
+        "placeholder": "#channel",
+        "secure": false,
+        "optional": true
+      },
+      {
+        "id": "target",
+        "label": "Target",
+        "placeholder": "nickname/account",
+        "secure": false,
+        "optional": false
+      },
+      {
+        "id": "flags",
+        "label": "Flags",
+        "placeholder": "+VOP -AUTOOP",
+        "secure": false,
+        "optional": false
+      }
+    ]
+  },
+  {
+    "id": "cs-clear-users",
+    "service": "ChanServ",
+    "title": "Clear Users",
+    "command": "/cs clear users {channel}",
+    "contexts": [
+      "channel",
+      "server"
+    ],
+    "fields": [
+      {
+        "id": "channel",
+        "label": "Channel",
+        "placeholder": "#channel",
+        "secure": false,
+        "optional": true
+      }
+    ]
+  },
+  {
+    "id": "cs-clear-bans",
+    "service": "ChanServ",
+    "title": "Clear Bans",
+    "command": "/cs clear bans {channel}",
+    "contexts": [
+      "channel",
+      "server"
+    ],
+    "fields": [
+      {
+        "id": "channel",
+        "label": "Channel",
+        "placeholder": "#channel",
+        "secure": false,
+        "optional": true
+      }
+    ]
+  },
+  {
+    "id": "cs-clear-modes",
+    "service": "ChanServ",
+    "title": "Clear Modes",
+    "command": "/cs clear modes {channel}",
+    "contexts": [
+      "channel",
+      "server"
+    ],
+    "fields": [
+      {
+        "id": "channel",
+        "label": "Channel",
+        "placeholder": "#channel",
+        "secure": false,
+        "optional": true
+      }
+    ]
+  },
+  {
+    "id": "cs-clear-ops",
+    "service": "ChanServ",
+    "title": "Clear Ops",
+    "command": "/cs clear ops {channel}",
+    "contexts": [
+      "channel",
+      "server"
+    ],
+    "fields": [
+      {
+        "id": "channel",
+        "label": "Channel",
+        "placeholder": "#channel",
+        "secure": false,
+        "optional": true
+      }
+    ]
+  },
+  {
+    "id": "cs-clear-voices",
+    "service": "ChanServ",
+    "title": "Clear Voices",
+    "command": "/cs clear voices {channel}",
+    "contexts": [
+      "channel",
+      "server"
+    ],
+    "fields": [
+      {
+        "id": "channel",
+        "label": "Channel",
+        "placeholder": "#channel",
+        "secure": false,
+        "optional": true
+      }
+    ]
+  },
+  {
+    "id": "cs-invite",
+    "service": "ChanServ",
+    "title": "Invite",
+    "command": "/cs invite {channel}",
+    "contexts": [
+      "channel",
+      "server"
+    ],
+    "fields": [
+      {
+        "id": "channel",
+        "label": "Channel",
+        "placeholder": "#channel",
+        "secure": false,
+        "optional": true
+      }
+    ]
+  },
+  {
+    "id": "cs-unban-self",
+    "service": "ChanServ",
+    "title": "Unban Self",
+    "command": "/cs unban {channel}",
+    "contexts": [
+      "channel",
+      "server"
+    ],
+    "fields": [
+      {
+        "id": "channel",
+        "label": "Channel",
+        "placeholder": "#channel",
+        "secure": false,
+        "optional": true
+      }
+    ]
+  },
+  {
+    "id": "cs-status",
+    "service": "ChanServ",
+    "title": "Status",
+    "command": "/cs status {channel} {nick}",
+    "contexts": [
+      "channel",
+      "server"
+    ],
+    "fields": [
+      {
+        "id": "channel",
+        "label": "Channel",
+        "placeholder": "#channel",
+        "secure": false,
+        "optional": true
+      },
+      {
+        "id": "nick",
+        "label": "Nickname",
+        "placeholder": "nickname",
+        "secure": false,
+        "optional": true
+      }
+    ]
+  },
+  {
+    "id": "ms-help",
+    "service": "MemoServ",
+    "title": "Help",
+    "command": "/ms help",
+    "contexts": [
+      "server",
+      "channel",
+      "privateMessage"
+    ],
+    "fields": []
+  },
+  {
+    "id": "ms-send",
+    "service": "MemoServ",
+    "title": "Send",
+    "command": "/ms send {nick} {message}",
+    "contexts": [
+      "server",
+      "privateMessage"
+    ],
+    "fields": [
+      {
+        "id": "nick",
+        "label": "Nickname",
+        "placeholder": "nickname",
+        "secure": false,
+        "optional": false
+      },
+      {
+        "id": "message",
+        "label": "Message",
+        "placeholder": "memo text",
+        "secure": false,
+        "optional": false
+      }
+    ]
+  },
+  {
+    "id": "ms-list",
+    "service": "MemoServ",
+    "title": "List",
+    "command": "/ms list",
+    "contexts": [
+      "server",
+      "channel",
+      "privateMessage"
+    ],
+    "fields": []
+  },
+  {
+    "id": "ms-read",
+    "service": "MemoServ",
+    "title": "Read",
+    "command": "/ms read {number}",
+    "contexts": [
+      "server",
+      "channel",
+      "privateMessage"
+    ],
+    "fields": [
+      {
+        "id": "number",
+        "label": "Memo Number",
+        "placeholder": "1",
+        "secure": false,
+        "optional": false
+      }
+    ]
+  },
+  {
+    "id": "os-help",
+    "service": "OperServ",
+    "title": "Help",
+    "command": "/os help",
+    "contexts": [
+      "server"
+    ],
+    "fields": []
+  },
+  {
+    "id": "os-custom",
+    "service": "OperServ",
+    "title": "Custom OperServ Command",
+    "command": "/os {command}",
+    "contexts": [
+      "server"
+    ],
+    "fields": [
+      {
+        "id": "command",
+        "label": "Command",
+        "placeholder": "command args...",
+        "secure": false,
+        "optional": false
+      }
+    ]
+  },
+  {
+    "id": "os-opertype-list",
+    "service": "OperServ",
+    "title": "OperType List (Entitlements)",
+    "command": "/os opertype list",
+    "contexts": [
+      "server"
+    ],
+    "fields": []
+  },
+  {
+    "id": "os-opertype-info",
+    "service": "OperServ",
+    "title": "OperType Info",
+    "command": "/os opertype info {opertype}",
+    "contexts": [
+      "server"
+    ],
+    "fields": [
+      {
+        "id": "opertype",
+        "label": "OperType",
+        "placeholder": "Services-Admin",
+        "secure": false,
+        "optional": false
+      }
+    ]
+  },
+  {
+    "id": "os-oper-add",
+    "service": "OperServ",
+    "title": "Add Oper",
+    "command": "/os oper add {nickname} {opertype}",
+    "contexts": [
+      "server"
+    ],
+    "fields": [
+      {
+        "id": "nickname",
+        "label": "Nickname/Account",
+        "placeholder": "NickOrAccount",
+        "secure": false,
+        "optional": false
+      },
+      {
+        "id": "opertype",
+        "label": "OperType (Entitlement)",
+        "placeholder": "Services-Admin",
+        "secure": false,
+        "optional": false
+      }
+    ]
+  },
+  {
+    "id": "os-oper-del",
+    "service": "OperServ",
+    "title": "Del Oper",
+    "command": "/os oper del {nickname}",
+    "contexts": [
+      "server"
+    ],
+    "fields": [
+      {
+        "id": "nickname",
+        "label": "Nickname/Account",
+        "placeholder": "NickOrAccount",
+        "secure": false,
+        "optional": false
+      }
+    ]
+  },
+  {
+    "id": "os-oper-list",
+    "service": "OperServ",
+    "title": "Oper List",
+    "command": "/os oper list",
+    "contexts": [
+      "server"
+    ],
+    "fields": []
+  },
+  {
+    "id": "os-oper-info",
+    "service": "OperServ",
+    "title": "Oper Info",
+    "command": "/os oper info {nickname}",
+    "contexts": [
+      "server"
+    ],
+    "fields": [
+      {
+        "id": "nickname",
+        "label": "Nickname/Account",
+        "placeholder": "NickOrAccount",
+        "secure": false,
+        "optional": false
+      }
+    ]
+  },
+  {
+    "id": "os-akill-add",
+    "service": "OperServ",
+    "title": "AKILL Add",
+    "command": "/os akill add {mask} {time} {reason}",
+    "contexts": [
+      "server"
+    ],
+    "fields": [
+      {
+        "id": "mask",
+        "label": "Mask",
+        "placeholder": "baduser@host",
+        "secure": false,
+        "optional": false
+      },
+      {
+        "id": "time",
+        "label": "Duration",
+        "placeholder": "+1d",
+        "secure": false,
+        "optional": false
+      },
+      {
+        "id": "reason",
+        "label": "Reason",
+        "placeholder": "reason",
+        "secure": false,
+        "optional": false
+      }
+    ]
+  },
+  {
+    "id": "os-akill-del",
+    "service": "OperServ",
+    "title": "AKILL Del",
+    "command": "/os akill del {mask}",
+    "contexts": [
+      "server"
+    ],
+    "fields": [
+      {
+        "id": "mask",
+        "label": "Mask",
+        "placeholder": "baduser@host",
+        "secure": false,
+        "optional": false
+      }
+    ]
+  },
+  {
+    "id": "os-akill-list",
+    "service": "OperServ",
+    "title": "AKILL List",
+    "command": "/os akill list",
+    "contexts": [
+      "server"
+    ],
+    "fields": []
+  },
+  {
+    "id": "os-akill-view",
+    "service": "OperServ",
+    "title": "AKILL View",
+    "command": "/os akill view {mask}",
+    "contexts": [
+      "server"
+    ],
+    "fields": [
+      {
+        "id": "mask",
+        "label": "Mask",
+        "placeholder": "baduser@host",
+        "secure": false,
+        "optional": false
+      }
+    ]
+  },
+  {
+    "id": "os-ignore-add",
+    "service": "OperServ",
+    "title": "Ignore Add",
+    "command": "/os ignore add {mask} {time} {reason}",
+    "contexts": [
+      "server"
+    ],
+    "fields": [
+      {
+        "id": "mask",
+        "label": "Mask",
+        "placeholder": "nick!user@host",
+        "secure": false,
+        "optional": false
+      },
+      {
+        "id": "time",
+        "label": "Duration",
+        "placeholder": "+1h",
+        "secure": false,
+        "optional": false
+      },
+      {
+        "id": "reason",
+        "label": "Reason",
+        "placeholder": "reason",
+        "secure": false,
+        "optional": false
+      }
+    ]
+  },
+  {
+    "id": "os-ignore-del",
+    "service": "OperServ",
+    "title": "Ignore Del",
+    "command": "/os ignore del {mask}",
+    "contexts": [
+      "server"
+    ],
+    "fields": [
+      {
+        "id": "mask",
+        "label": "Mask",
+        "placeholder": "nick!user@host",
+        "secure": false,
+        "optional": false
+      }
+    ]
+  },
+  {
+    "id": "os-ignore-list",
+    "service": "OperServ",
+    "title": "Ignore List",
+    "command": "/os ignore list",
+    "contexts": [
+      "server"
+    ],
+    "fields": []
+  },
+  {
+    "id": "os-sqline-add",
+    "service": "OperServ",
+    "title": "SQLINE Add",
+    "command": "/os sqline add {mask} {time} {reason}",
+    "contexts": [
+      "server"
+    ],
+    "fields": [
+      {
+        "id": "mask",
+        "label": "Mask",
+        "placeholder": "badnick*",
+        "secure": false,
+        "optional": false
+      },
+      {
+        "id": "time",
+        "label": "Duration",
+        "placeholder": "+1d",
+        "secure": false,
+        "optional": false
+      },
+      {
+        "id": "reason",
+        "label": "Reason",
+        "placeholder": "reason",
+        "secure": false,
+        "optional": false
+      }
+    ]
+  },
+  {
+    "id": "os-sqline-del",
+    "service": "OperServ",
+    "title": "SQLINE Del",
+    "command": "/os sqline del {mask}",
+    "contexts": [
+      "server"
+    ],
+    "fields": [
+      {
+        "id": "mask",
+        "label": "Mask",
+        "placeholder": "badnick*",
+        "secure": false,
+        "optional": false
+      }
+    ]
+  },
+  {
+    "id": "os-sqline-list",
+    "service": "OperServ",
+    "title": "SQLINE List",
+    "command": "/os sqline list",
+    "contexts": [
+      "server"
+    ],
+    "fields": []
+  },
+  {
+    "id": "os-szline-add",
+    "service": "OperServ",
+    "title": "SZLINE Add",
+    "command": "/os szline add {mask} {time} {reason}",
+    "contexts": [
+      "server"
+    ],
+    "fields": [
+      {
+        "id": "mask",
+        "label": "Mask",
+        "placeholder": "*@bad.host",
+        "secure": false,
+        "optional": false
+      },
+      {
+        "id": "time",
+        "label": "Duration",
+        "placeholder": "+1d",
+        "secure": false,
+        "optional": false
+      },
+      {
+        "id": "reason",
+        "label": "Reason",
+        "placeholder": "reason",
+        "secure": false,
+        "optional": false
+      }
+    ]
+  },
+  {
+    "id": "os-szline-del",
+    "service": "OperServ",
+    "title": "SZLINE Del",
+    "command": "/os szline del {mask}",
+    "contexts": [
+      "server"
+    ],
+    "fields": [
+      {
+        "id": "mask",
+        "label": "Mask",
+        "placeholder": "*@bad.host",
+        "secure": false,
+        "optional": false
+      }
+    ]
+  },
+  {
+    "id": "os-szline-list",
+    "service": "OperServ",
+    "title": "SZLINE List",
+    "command": "/os szline list",
+    "contexts": [
+      "server"
+    ],
+    "fields": []
+  },
+  {
+    "id": "os-sgline-add",
+    "service": "OperServ",
+    "title": "SGLINE Add",
+    "command": "/os sgline add {mask} {time} {reason}",
+    "contexts": [
+      "server"
+    ],
+    "fields": [
+      {
+        "id": "mask",
+        "label": "Mask",
+        "placeholder": "badgecos*",
+        "secure": false,
+        "optional": false
+      },
+      {
+        "id": "time",
+        "label": "Duration",
+        "placeholder": "+1d",
+        "secure": false,
+        "optional": false
+      },
+      {
+        "id": "reason",
+        "label": "Reason",
+        "placeholder": "reason",
+        "secure": false,
+        "optional": false
+      }
+    ]
+  },
+  {
+    "id": "os-sgline-del",
+    "service": "OperServ",
+    "title": "SGLINE Del",
+    "command": "/os sgline del {mask}",
+    "contexts": [
+      "server"
+    ],
+    "fields": [
+      {
+        "id": "mask",
+        "label": "Mask",
+        "placeholder": "badgecos*",
+        "secure": false,
+        "optional": false
+      }
+    ]
+  },
+  {
+    "id": "os-sgline-list",
+    "service": "OperServ",
+    "title": "SGLINE List",
+    "command": "/os sgline list",
+    "contexts": [
+      "server"
+    ],
+    "fields": []
+  },
+  {
+    "id": "os-session-list",
+    "service": "OperServ",
+    "title": "Session List",
+    "command": "/os session list",
+    "contexts": [
+      "server"
+    ],
+    "fields": []
+  },
+  {
+    "id": "os-session-view",
+    "service": "OperServ",
+    "title": "Session View",
+    "command": "/os session view {host}",
+    "contexts": [
+      "server"
+    ],
+    "fields": [
+      {
+        "id": "host",
+        "label": "Host",
+        "placeholder": "example.com",
+        "secure": false,
+        "optional": false
+      }
+    ]
+  },
+  {
+    "id": "os-session-reset",
+    "service": "OperServ",
+    "title": "Session Reset",
+    "command": "/os session reset {host}",
+    "contexts": [
+      "server"
+    ],
+    "fields": [
+      {
+        "id": "host",
+        "label": "Host",
+        "placeholder": "example.com",
+        "secure": false,
+        "optional": false
+      }
+    ]
+  },
+  {
+    "id": "os-update",
+    "service": "OperServ",
+    "title": "Update",
+    "command": "/os update",
+    "contexts": [
+      "server"
+    ],
+    "fields": []
+  },
+  {
+    "id": "os-reload",
+    "service": "OperServ",
+    "title": "Reload",
+    "command": "/os reload",
+    "contexts": [
+      "server"
+    ],
+    "fields": []
+  },
+  {
+    "id": "os-restart",
+    "service": "OperServ",
+    "title": "Restart",
+    "command": "/os restart",
+    "contexts": [
+      "server"
+    ],
+    "fields": []
+  },
+  {
+    "id": "os-modlist",
+    "service": "OperServ",
+    "title": "Module List",
+    "command": "/os modlist",
+    "contexts": [
+      "server"
+    ],
+    "fields": []
+  },
+  {
+    "id": "os-modinfo",
+    "service": "OperServ",
+    "title": "Module Info",
+    "command": "/os modinfo {module}",
+    "contexts": [
+      "server"
+    ],
+    "fields": [
+      {
+        "id": "module",
+        "label": "Module",
+        "placeholder": "os_session",
+        "secure": false,
+        "optional": false
+      }
+    ]
+  },
+  {
+    "id": "os-modload",
+    "service": "OperServ",
+    "title": "Module Load",
+    "command": "/os modload {module}",
+    "contexts": [
+      "server"
+    ],
+    "fields": [
+      {
+        "id": "module",
+        "label": "Module",
+        "placeholder": "module_name",
+        "secure": false,
+        "optional": false
+      }
+    ]
+  },
+  {
+    "id": "os-modreload",
+    "service": "OperServ",
+    "title": "Module Reload",
+    "command": "/os modreload {module}",
+    "contexts": [
+      "server"
+    ],
+    "fields": [
+      {
+        "id": "module",
+        "label": "Module",
+        "placeholder": "module_name",
+        "secure": false,
+        "optional": false
+      }
+    ]
+  },
+  {
+    "id": "os-modunload",
+    "service": "OperServ",
+    "title": "Module Unload",
+    "command": "/os modunload {module}",
+    "contexts": [
+      "server"
+    ],
+    "fields": [
+      {
+        "id": "module",
+        "label": "Module",
+        "placeholder": "module_name",
+        "secure": false,
+        "optional": false
+      }
+    ]
+  },
+  {
+    "id": "hs-help",
+    "service": "HostServ",
+    "title": "Help",
+    "command": "/hs help",
+    "contexts": [
+      "server",
+      "channel",
+      "privateMessage"
+    ],
+    "fields": []
+  },
+  {
+    "id": "hs-request",
+    "service": "HostServ",
+    "title": "Request",
+    "command": "/hs request {vhost}",
+    "contexts": [
+      "server",
+      "channel",
+      "privateMessage"
+    ],
+    "fields": [
+      {
+        "id": "vhost",
+        "label": "Requested Vhost",
+        "placeholder": "vhost.example.com",
+        "secure": false,
+        "optional": false
+      }
+    ]
+  },
+  {
+    "id": "hs-on",
+    "service": "HostServ",
+    "title": "On",
+    "command": "/hs on",
+    "contexts": [
+      "server",
+      "channel",
+      "privateMessage"
+    ],
+    "fields": []
+  },
+  {
+    "id": "hs-off",
+    "service": "HostServ",
+    "title": "Off",
+    "command": "/hs off",
+    "contexts": [
+      "server",
+      "channel",
+      "privateMessage"
+    ],
+    "fields": []
+  },
+  {
+    "id": "bs-help",
+    "service": "BotServ",
+    "title": "Help",
+    "command": "/bs help",
+    "contexts": [
+      "server",
+      "channel"
+    ],
+    "fields": []
+  },
+  {
+    "id": "bs-assign",
+    "service": "BotServ",
+    "title": "Assign",
+    "command": "/bs assign {channel} {bot}",
+    "contexts": [
+      "server",
+      "channel"
+    ],
+    "fields": [
+      {
+        "id": "channel",
+        "label": "Channel",
+        "placeholder": "#channel",
+        "secure": false,
+        "optional": false
+      },
+      {
+        "id": "bot",
+        "label": "Bot",
+        "placeholder": "BotNick",
+        "secure": false,
+        "optional": false
+      }
+    ]
+  },
+  {
+    "id": "bs-unassign",
+    "service": "BotServ",
+    "title": "Unassign",
+    "command": "/bs unassign {channel}",
+    "contexts": [
+      "server",
+      "channel"
+    ],
+    "fields": [
+      {
+        "id": "channel",
+        "label": "Channel",
+        "placeholder": "#channel",
+        "secure": false,
+        "optional": false
+      }
+    ]
+  }
+]
