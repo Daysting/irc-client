@@ -2,7 +2,8 @@ import http from 'node:http';
 import tls from 'node:tls';
 import {WebSocketServer,WebSocket} from 'ws';
 import {validateLine} from '../dist/protocol.mjs';
-export function createRelay({host=process.env.IRC_HOST||'irc.daysting.com',port=Number(process.env.IRC_PORT||6697),origins=(process.env.ALLOWED_ORIGINS||'').split(',').filter(Boolean),connect=tls.connect}={}){
+export function createRelay({origins=(process.env.ALLOWED_ORIGINS||'').split(',').filter(Boolean),connect=tls.connect}={}){
+ const host='irc.daysting.com',port=6697;
  if(!origins.length)throw Error('Set ALLOWED_ORIGINS to the exact HTTPS web client origin.');
  if(!Number.isInteger(port)||port<1||port>65535)throw Error('Invalid IRC_PORT.');
  const server=http.createServer((req,res)=>{res.writeHead(req.url==='/health'?200:404,{'Content-Type':'text/plain'});res.end(req.url==='/health'?'DaystingIRC relay ready\n':'Not found\n');});
